@@ -1,0 +1,15 @@
+# === Runtime ===
+openpyxl>=3.1.2          # Lettura/scrittura file Excel (.xlsx)
+PyYAML>=6.0.1            # Lettura file di configurazione YAML
+Jinja2>=3.1.3            # Template HTML
+WeasyPrint>=61.0         # HTML → PDF (alta qualità tipografica)
+python-dateutil>=2.9.0   # Utilità per le date
+pytz>=2024.1             # Gestione fusi orari (utile per date italiane)
+
+# === Sviluppo ===
+pytest>=8.0.0            # Test
+pytest-cov>=4.1.0        # Coverage dei test
+black>=24.1.0            # Formattazione codice
+isort>=5.13.0            # Ordine import
+flake8>=7.0.0            # Linting
+mypy>=1.8.0              # Type checking

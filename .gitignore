@@ -1,0 +1,56 @@
+# =====================================================
+# .gitignore — Agenda Parrocchiale
+# =====================================================
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# === Ambienti virtuali ===
+.venv/
+venv/
+env/
+ENV/
+
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# === Test e coverage ===
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# === DATI SENSIBILI (privacy!) ===
+# Configurazioni compilate con dati reali (nomi, intenzioni, offerte)
+configs/*/config.xlsx
+!configs/_template/config.xlsx
+
+# Backup delle configurazioni (contengono dati personali!)
+configs/*/.backup/
+
+# PDF generati (contengono dati personali)
+output/*.pdf
+output/*.html
+
+# === File temporanei di Excel/LibreOffice ===
+~$*.xlsx
+*.xlsx.lock
+.~lock.*#
+
+# === Sistema operativo ===
+.DS_Store
+Thumbs.db
+
+# === Log ===
+*.log

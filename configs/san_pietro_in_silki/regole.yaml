@@ -1,0 +1,115 @@
+# =====================================================================
+# REGOLE LITURGICHE — San Pietro in Silki (Sassari)
+# =====================================================================
+# NOTA: Gli ORARI e i PERIODI stagionali NON stanno qui.
+#       Quelli sono dati annuali e vivono in config.xlsx.
+#       Qui restano solo regole e ricorrenze che NON cambiano.
+# =====================================================================
+
+nome_parrocchia: "San Pietro in Silki"
+citta: "Sassari"
+
+# --- Feste a data fissa ---
+festivi_fissi:
+  - { mese: 1,  giorno: 1,  nome: "Maria Santissima Madre di Dio" }
+  - { mese: 1,  giorno: 6,  nome: "Epifania" }
+  - { mese: 3,  giorno: 19, nome: "San Giuseppe" }
+  - { mese: 8,  giorno: 2,  nome: "Perdono di Assisi" }
+  - { mese: 8,  giorno: 11, nome: "Santa Chiara" }
+  - { mese: 8,  giorno: 15, nome: "Assunta" }
+  - { mese: 8,  giorno: 25, nome: "San Ludovico" }
+  - { mese: 9,  giorno: 8,  nome: "Natività della Beata Vergine Maria" }
+  - { mese: 9,  giorno: 28, nome: "Beato Bernardino da Feltre" }
+  - { mese: 10, giorno: 4,  nome: "San Francesco" }
+  - { mese: 11, giorno: 1,  nome: "Tutti i Santi" }
+  - { mese: 11, giorno: 2,  nome: "Commemorazione dei defunti" }
+  - { mese: 12, giorno: 6,  nome: "San Nicola" }
+  - { mese: 12, giorno: 8,  nome: "Immacolata Concezione" }
+  - { mese: 12, giorno: 25, nome: "Natale" }
+  - { mese: 12, giorno: 26, nome: "Santo Stefano" }
+
+# --- Eccezioni alle feste fisse ---
+eccezioni_festivi:
+  - { mese: 9,  giorno: 28, nome: "Beato Bernardino da Feltre", salta_se_domenica: true }
+  - { mese: 12, giorno: 26, nome: "Santo Stefano", orari_ridotti: ["10:00", "18:00"] }
+
+# --- Divieti pomeridiani (solo mattina) ---
+divieti_pomeridiani:
+  fissi:
+    - { mese: 8,  giorno: 15, nome: "Assunta" }
+    - { mese: 12, giorno: 6,  nome: "San Nicola" }
+  mobili:
+    - { tipo: "corpus_domini", nome: "Corpus Domini" }
+
+# --- Ricorrenze proprie del santuario ---
+ricorrenze_proprie:
+  - nome: "Triduo di San Salvatore"
+    data: { mese: 3, giorno: 14, durata_giorni: 3 }
+    tipo: "triduo"
+    compilazione: "manuale"
+    nota: "Iniziative variabili (messa, vespro, dopo vespro)"
+  - nome: "San Salvatore da Horta"
+    data: { mese: 3, giorno: 17 }
+    durata_giorni: 2  # 17 e 18 marzo
+  - nome: "Inaugurazione mese mariano"
+    data: { mese: 5, giorno: 1 }
+  - nome: "Beata Vergine delle Grazie"
+    data: { mese: 5, giorno: 9 }
+  - nome: "Festa del Voto"
+    data: { tipo: "ultima_domenica_maggio" }
+    nota: "Se coincide con Corpus Domini, slitta alla prima domenica di giugno"
+  - nome: "Ottavario Natività BVM"
+    data: { mese: 9, giorno_da: 1, giorno_a: 7 }
+  - nome: "Triduo San Francesco"
+    data: { mese: 10, giorno_da: 1, giorno_a: 3 }
+  - nome: "Notte dei Santuari"
+    data: { mese: 10, giorno: 31 }
+  - nome: "Novena dell'Immacolata"
+    data: { mese: 11, giorno_da: 29, mese_a: 12, giorno_a: 7 }
+  - nome: "Novena di Natale"
+    data: { mese: 12, giorno_da: 15, giorno_a: 23 }
+
+# --- Nove mercoledì di San Salvatore ---
+nove_mercoledi:
+  attivo: true
+  orario: "18:00"
+  regola: "9 mercoledì che precedono il 14 marzo"
+
+# --- Celebrazioni mobili (dipendono dalla Pasqua) ---
+celebrazioni_mobili:
+  - "Mercoledì delle Ceneri"
+  - "6 domeniche di Quaresima"
+  - "Domenica delle Palme"
+  - "Settimana Santa"
+  - "Triduo Pasquale"
+  - "Lunedì dell'Angelo"
+  - "Ascensione"
+  - "Pentecoste"
+  - "Santissima Trinità"
+  - "Corpus Domini"
+  - "4 domeniche di Avvento"
+
+# --- Giorni accorpati in una sola pagina ---
+giorni_accorpati:
+  - nome: "Venerdì e Sabato Santo"
+    tipo: "settimana_santa"
+
+# --- Matrimoni ---
+matrimoni:
+  attivi: true
+  giorni: ["sabato"]
+  mese_escluso: 5
+  mostra_in_agenda: true
+  posizione: "ultima_pagina"
+  contenuto: ["data", "ora", "nome_sposi"]
+
+# --- Intenzioni ---
+intenzioni:
+  numerazione_progressiva: false
+  mostra_offerta: false
+  campi_richiedente: []
+  righe_per_defunto: 3
+  numero_feriale_sera: 3
+  numero_feriale_mattina: 1
+  numero_festivo: 1
+  scrittura: "manuale"
