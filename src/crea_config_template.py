@@ -37,6 +37,7 @@ from openpyxl.styles import Alignment, Protection
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.worksheet import Worksheet
 
+from lettura_config import leggi_yaml
 from stili import (
     BORDO_SOTTILE,
     FILL_GIALLO,
@@ -48,6 +49,7 @@ from stili import (
     stile_nota,
     stile_titolo,
 )
+from util import configura_logging, mostra_riepilogo_warning
 
 # ----------------------------------------------------------------------
 # COSTANTI GLOBALI
@@ -676,6 +678,9 @@ def chiedi_conferma_sovrascrittura(profilo_dir: Path) -> bool:
 
 
 def main() -> None:
+    # Configura il logging e ottieni il collector dei warning
+    collector = configura_logging()
+
     parser = argparse.ArgumentParser(
         description="Genera il template config.xlsx con backup automatico.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -686,6 +691,12 @@ def main() -> None:
         type=str,
         default=None,
         help="Nome del profilo (es. san_pietro_in_silki). Se omesso, genera solo il template.",
+    )
+    parser.add_argument(
+        "--anno",
+        type=int,
+        default=datetime.now().year,
+        help="Anno dell'agenda (default: anno corrente).",
     )
     parser.add_argument(
         "--force",
@@ -738,7 +749,12 @@ def main() -> None:
     # --- Generazione normale ---
     # 1. Template vuoto (sempre, senza chiedere conferma)
     template_dir = CARTELLA_CONFIGS / "_template"
-    percorso_template = crea_config(template_dir)
+    percorso_template = crea_config(
+        template_dir,
+        anno=args.anno,
+        nome_parrocchia="Nome Parrocchia",
+        citta="Città",
+    )
     print(f"✅ Template generato: {percorso_template}")
 
     # 2. Profilo specifico
@@ -756,18 +772,28 @@ def main() -> None:
         if backup:
             print(f"📦 Backup creato: {backup.relative_to(ROOT_PROGETTO)}")
 
+        # Leggi i dati del profilo dalle regole.yaml
+        percorso_regole = profilo_dir / "regole.yaml"
+        if not percorso_regole.exists():
+            print(f"❌ File {percorso_regole} non trovato.")
+            sys.exit(1)
+
+        dati_yaml = leggi_yaml(percorso_regole)
+        nome_parrocchia = dati_yaml.get("nome_parrocchia", "Nome Parrocchia")
+        citta = dati_yaml.get("citta", "Città")
+
         # Genera il nuovo file
-        if args.profilo == "san_pietro_in_silki":
-            percorso_profilo = crea_config(
-                profilo_dir,
-                anno=2027,
-                nome_parrocchia="San Pietro in Silki",
-                citta="Sassari",
-            )
-        else:
-            percorso_profilo = crea_config(profilo_dir)
+        percorso_profilo = crea_config(
+            profilo_dir,
+            anno=args.anno,
+            nome_parrocchia=nome_parrocchia,
+            citta=citta,
+        )
         print(f"✅ Profilo generato: {percorso_profilo}")
 
-
-if __name__ == "__main__":
-    main()
+    # --- Riepilogo warning finale ---
+    # (Per ora il collector è sempre vuoto perché nessuna funzione di questo
+    #  script emette warning. Ma il pattern è coerente con gli altri script.)
+    if not mostra_riepilogo_warning(collector):
+        print("⏹️  Operazione annullata dall'utente.")
+        sys.exit(1)
