@@ -12,6 +12,9 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from lettura_config import (
     leggi_foglio_impostazioni,
+    leggi_foglio_intenzioni,
+    leggi_foglio_matrimoni,
+    leggi_foglio_note,
     leggi_yaml,
     parse_orari,
 )
@@ -244,3 +247,370 @@ def test_leggi_impostazioni_riga_non_data() -> None:
 
     dati = leggi_foglio_impostazioni(ws)
     assert len(dati["periodi"]) == 0
+
+    # ======================================================================
+    # FIXTURE — Foglio Intenzioni
+    # ======================================================================
+
+
+@pytest.fixture
+def foglio_intenzioni_valido() -> Worksheet:
+    """Crea un foglio Intenzioni valido in memoria."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    # Riga 2: intenzione completa
+    ws.cell(row=2, column=2, value=date(2027, 1, 15))
+    ws.cell(row=2, column=3, value="Per la pace nel mondo")
+    ws.cell(row=2, column=4, value=10.0)
+    ws.cell(row=2, column=5, value=date(2027, 1, 20))
+    ws.cell(row=2, column=6, value="Richiesta da Mario")
+
+    # Riga 3: senza data applicazione (non ancora applicata)
+    ws.cell(row=3, column=2, value=date(2027, 2, 1))
+    ws.cell(row=3, column=3, value="Per i defunti della famiglia Rossi")
+    ws.cell(row=3, column=4, value=20.0)
+
+    # Riga 4: completamente vuota → ignorata
+
+    # Riga 5: senza offerta
+    ws.cell(row=5, column=2, value=date(2027, 3, 10))
+    ws.cell(row=5, column=3, value="Per la salute di Anna")
+
+    return ws
+
+
+# ======================================================================
+# TEST — leggi_foglio_intenzioni
+# ======================================================================
+
+
+def test_leggi_intenzioni_valido(foglio_intenzioni_valido: Worksheet) -> None:
+    """Un foglio valido restituisce 3 intenzioni."""
+    intenzioni = leggi_foglio_intenzioni(foglio_intenzioni_valido)
+    assert len(intenzioni) == 3
+
+    # Prima intenzione
+    i1 = intenzioni[0]
+    assert i1.numero == 1
+    assert i1.data_consegna == date(2027, 1, 15)
+    assert i1.testo == "Per la pace nel mondo"
+    assert i1.offerta == 10.0
+    assert i1.data_applicazione == date(2027, 1, 20)
+    assert i1.note == "Richiesta da Mario"
+
+    # Seconda: senza data applicazione
+    i2 = intenzioni[1]
+    assert i2.numero == 2
+    assert i2.data_consegna == date(2027, 2, 1)
+    assert i2.data_applicazione is None
+    assert i2.offerta == 20.0
+
+    # Terza: senza offerta
+    i3 = intenzioni[2]
+    assert i3.numero == 3
+    assert i3.offerta is None
+
+
+def test_leggi_intenzioni_foglio_vuoto() -> None:
+    """Un foglio vuoto restituisce lista vuota."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert intenzioni == []
+
+
+def test_leggi_intenzioni_riga_senza_testo() -> None:
+    """Una riga con Data ma senza Intenzione viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    # Data compilata ma testo vuoto
+    ws.cell(row=2, column=2, value=date(2027, 1, 15))
+    ws.cell(row=2, column=3, value=None)
+
+    # Riga valida
+    ws.cell(row=3, column=2, value=date(2027, 2, 1))
+    ws.cell(row=3, column=3, value="Intenzione valida")
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert len(intenzioni) == 1
+    assert intenzioni[0].testo == "Intenzione valida"
+
+
+def test_leggi_intenzioni_data_non_valida() -> None:
+    """Una riga con Data non-data viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    # Stringa invece di data
+    ws.cell(row=2, column=2, value="15/01/2027")
+    ws.cell(row=2, column=3, value="Testo")
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert intenzioni == []
+
+
+def test_leggi_intenzioni_offerta_non_numerica() -> None:
+    """Un'offerta non numerica viene impostata a None con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    ws.cell(row=2, column=2, value=date(2027, 1, 15))
+    ws.cell(row=2, column=3, value="Testo valido")
+    ws.cell(row=2, column=4, value="dieci euro")  # non numerico
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert len(intenzioni) == 1
+    assert intenzioni[0].offerta is None
+
+
+# ======================================================================
+# FIXTURE — Foglio Matrimoni
+# ======================================================================
+
+
+@pytest.fixture
+def foglio_matrimoni_valido() -> Worksheet:
+    """Crea un foglio Matrimoni valido in memoria."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Matrimoni"
+
+    # Riga 2: matrimonio completo
+    ws.cell(row=2, column=1, value=date(2028, 6, 10))
+    ws.cell(row=2, column=2, value="15:30")
+    ws.cell(row=2, column=3, value="Maria Rossi e Luca Bianchi")
+    ws.cell(row=2, column=4, value="333-1234567")
+    ws.cell(row=2, column=5, value="Ricevimento in parrocchia")
+
+    # Riga 3: senza contatti e note
+    ws.cell(row=3, column=1, value=date(2028, 7, 15))
+    ws.cell(row=3, column=2, value="10:00")
+    ws.cell(row=3, column=3, value="Anna Verdi e Marco Neri")
+
+    # Riga 4: completamente vuota → ignorata
+
+    return ws
+
+
+# ======================================================================
+# TEST — leggi_foglio_matrimoni
+# ======================================================================
+
+
+def test_leggi_matrimoni_valido(foglio_matrimoni_valido: Worksheet) -> None:
+    """Un foglio valido restituisce 2 matrimoni."""
+    matrimoni = leggi_foglio_matrimoni(foglio_matrimoni_valido)
+    assert len(matrimoni) == 2
+
+    m1 = matrimoni[0]
+    assert m1.data == date(2028, 6, 10)
+    assert m1.ora == "15:30"
+    assert m1.nome_sposi == "Maria Rossi e Luca Bianchi"
+    assert m1.contatti == "333-1234567"
+    assert m1.note == "Ricevimento in parrocchia"
+
+    m2 = matrimoni[1]
+    assert m2.data == date(2028, 7, 15)
+    assert m2.ora == "10:00"
+    assert m2.contatti == ""
+    assert m2.note == ""
+
+
+def test_leggi_matrimoni_foglio_vuoto() -> None:
+    """Un foglio vuoto restituisce lista vuota."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Matrimoni"
+
+    assert leggi_foglio_matrimoni(ws) == []
+
+
+def test_leggi_matrimoni_senza_ora() -> None:
+    """Una riga senza Ora viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Matrimoni"
+
+    ws.cell(row=2, column=1, value=date(2028, 6, 10))
+    ws.cell(row=2, column=2, value=None)
+    ws.cell(row=2, column=3, value="Test")
+
+    assert leggi_foglio_matrimoni(ws) == []
+
+
+def test_leggi_matrimoni_ora_non_valida() -> None:
+    """Una riga con Ora malformata viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Matrimoni"
+
+    ws.cell(row=2, column=1, value=date(2028, 6, 10))
+    ws.cell(row=2, column=2, value="15.30")  # punto invece di due punti
+    ws.cell(row=2, column=3, value="Test")
+
+    assert leggi_foglio_matrimoni(ws) == []
+
+
+def test_leggi_matrimoni_senza_nome() -> None:
+    """Una riga senza Nome sposi viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Matrimoni"
+
+    ws.cell(row=2, column=1, value=date(2028, 6, 10))
+    ws.cell(row=2, column=2, value="15:30")
+    ws.cell(row=2, column=3, value=None)
+
+    assert leggi_foglio_matrimoni(ws) == []
+
+
+def test_leggi_matrimoni_data_non_data() -> None:
+    """Una riga con Data non-data viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Matrimoni"
+
+    ws.cell(row=2, column=1, value="10/06/2028")
+    ws.cell(row=2, column=2, value="15:30")
+    ws.cell(row=2, column=3, value="Test")
+
+    assert leggi_foglio_matrimoni(ws) == []
+
+
+def test_leggi_matrimoni_ora_nativa() -> None:
+    """Un'ora nativa (datetime.time) viene convertita in stringa HH:MM."""
+    from datetime import time
+
+    ws = crea_foglio_vuoto()
+    ws.title = "Matrimoni"
+
+    ws.cell(row=2, column=1, value=date(2028, 6, 10))
+    ws.cell(row=2, column=2, value=time(15, 30))
+    ws.cell(row=2, column=3, value="Test")
+
+    matrimoni = leggi_foglio_matrimoni(ws)
+    assert len(matrimoni) == 1
+    assert matrimoni[0].ora == "15:30"
+
+
+# ======================================================================
+# FIXTURE — Foglio Note
+# ======================================================================
+
+
+@pytest.fixture
+def foglio_note_valido() -> Worksheet:
+    """Crea un foglio Note valido in memoria."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Note"
+
+    # Riga 2: periodo multi-giorno
+    ws.cell(row=2, column=1, value=date(2027, 3, 14))
+    ws.cell(row=2, column=2, value=date(2027, 3, 16))
+    ws.cell(row=2, column=3, value="Triduo San Salvatore")
+
+    # Riga 3: giorno singolo (Al vuoto → Al = Dal)
+    ws.cell(row=3, column=1, value=date(2027, 5, 30))
+    ws.cell(row=3, column=3, value="Corpus Domini, vietato pomeriggio")
+
+    # Riga 4: completamente vuota → ignorata
+
+    # Riga 5: periodo lungo
+    ws.cell(row=5, column=1, value=date(2027, 5, 1))
+    ws.cell(row=5, column=2, value=date(2027, 5, 31))
+    ws.cell(row=5, column=3, value="Mese mariano, programma da definire")
+
+    return ws
+
+
+# ======================================================================
+# TEST — leggi_foglio_note
+# ======================================================================
+
+
+def test_leggi_note_valido(foglio_note_valido: Worksheet) -> None:
+    """Un foglio valido restituisce 3 note."""
+    note = leggi_foglio_note(foglio_note_valido)
+    assert len(note) == 3
+
+    # Prima: multi-giorno
+    n1 = note[0]
+    assert n1["dal"] == date(2027, 3, 14)
+    assert n1["al"] == date(2027, 3, 16)
+    assert n1["nota"] == "Triduo San Salvatore"
+
+    # Seconda: giorno singolo (Al = Dal)
+    n2 = note[1]
+    assert n2["dal"] == date(2027, 5, 30)
+    assert n2["al"] == date(2027, 5, 30)
+    assert n2["nota"] == "Corpus Domini, vietato pomeriggio"
+
+    # Terza: mese intero
+    n3 = note[2]
+    assert n3["dal"] == date(2027, 5, 1)
+    assert n3["al"] == date(2027, 5, 31)
+
+
+def test_leggi_note_foglio_vuoto() -> None:
+    """Un foglio vuoto restituisce lista vuota."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Note"
+
+    assert leggi_foglio_note(ws) == []
+
+
+def test_leggi_note_senza_nota() -> None:
+    """Una riga con Dal ma senza Nota viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Note"
+
+    ws.cell(row=2, column=1, value=date(2027, 3, 14))
+    ws.cell(row=2, column=3, value=None)
+
+    assert leggi_foglio_note(ws) == []
+
+
+def test_leggi_note_dal_non_data() -> None:
+    """Una riga con Dal non-data viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Note"
+
+    ws.cell(row=2, column=1, value="14/03/2027")
+    ws.cell(row=2, column=3, value="Test")
+
+    assert leggi_foglio_note(ws) == []
+
+
+def test_leggi_note_al_non_data() -> None:
+    """Una riga con Al non-data viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Note"
+
+    ws.cell(row=2, column=1, value=date(2027, 3, 14))
+    ws.cell(row=2, column=2, value="16/03/2027")
+    ws.cell(row=2, column=3, value="Test")
+
+    assert leggi_foglio_note(ws) == []
+
+
+def test_leggi_note_al_prima_di_dal() -> None:
+    """Una riga con Al < Dal viene ignorata con warning."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Note"
+
+    ws.cell(row=2, column=1, value=date(2027, 3, 16))
+    ws.cell(row=2, column=2, value=date(2027, 3, 14))  # Al < Dal
+    ws.cell(row=2, column=3, value="Test")
+
+    assert leggi_foglio_note(ws) == []
+
+
+def test_leggi_note_al_uguale_dal() -> None:
+    """Una nota con Al = Dal è valida."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Note"
+
+    ws.cell(row=2, column=1, value=date(2027, 3, 14))
+    ws.cell(row=2, column=2, value=date(2027, 3, 14))
+    ws.cell(row=2, column=3, value="Test")
+
+    note = leggi_foglio_note(ws)
+    assert len(note) == 1
+    assert note[0]["dal"] == note[0]["al"]
