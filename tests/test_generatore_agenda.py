@@ -8,13 +8,23 @@ import pytest
 
 from calcolo_liturgico import calcola_tutte_date_mobili
 from config import carica_config
-from dataclass_config import Config, Festa, Periodo, Ricorrenza
+from dataclass_config import (
+    Config,
+    Festa,
+    Intenzione,
+    Matrimonio,
+    Periodo,
+    Ricorrenza,
+)
 from generatore_agenda import (
     applica_divieti_pomeridiani,
     applica_eccezioni_orari,
     determina_tipo_giorno,
     festivita_del_giorno,
     festivo_fisso,
+    intenzioni_del_giorno,
+    matrimoni_del_giorno,
+    note_del_giorno,
     orari_per_giorno,
     trova_periodo,
 )
@@ -607,3 +617,155 @@ def test_festivita_config_reale_triduo_san_salvatore() -> None:
         info = festivita_del_giorno(date(2027, 3, giorno), config, date_mobili)
         assert info["nome"] == "Triduo di San Salvatore"
         assert info["particolare"] is True
+
+
+# ======================================================================
+# FIXTURE — Config con dati compilati
+# ======================================================================
+
+
+@pytest.fixture
+def config_con_dati() -> Config:
+    """Config con intenzioni, matrimoni e note."""
+    return Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        intenzioni=[
+            Intenzione(
+                numero=1,
+                data_consegna=date(2027, 1, 15),
+                testo="Per la pace",
+                data_applicazione=date(2027, 1, 20),
+            ),
+            Intenzione(
+                numero=2,
+                data_consegna=date(2027, 2, 1),
+                testo="Per i defunti",
+                data_applicazione=date(2027, 1, 20),  # stessa data
+            ),
+            Intenzione(
+                numero=3,
+                data_consegna=date(2027, 3, 1),
+                testo="Per la salute",
+                data_applicazione=date(2027, 3, 15),
+            ),
+        ],
+        matrimoni_prenotati=[
+            Matrimonio(
+                data=date(2027, 6, 12),
+                ora="15:30",
+                nome_sposi="Maria Rossi e Luca Bianchi",
+            ),
+            Matrimonio(
+                data=date(2027, 7, 10),
+                ora="10:00",
+                nome_sposi="Anna Verdi e Marco Neri",
+            ),
+        ],
+        note_annuali=[
+            {"dal": date(2027, 3, 14), "al": date(2027, 3, 16), "nota": "Triduo"},
+            {"dal": date(2027, 5, 1), "al": date(2027, 5, 31), "nota": "Mese mariano"},
+            {"dal": date(2027, 5, 30), "al": date(2027, 5, 30), "nota": "Corpus Domini"},
+        ],
+    )
+
+
+# ======================================================================
+# TEST — intenzioni_del_giorno
+# ======================================================================
+
+
+def test_intenzioni_del_giorno_una(config_con_dati: Config) -> None:
+    """Trova 1 intenzione applicata in una data."""
+    intenzioni = intenzioni_del_giorno(date(2027, 3, 15), config_con_dati)
+    assert len(intenzioni) == 1
+    assert intenzioni[0].testo == "Per la salute"
+
+
+def test_intenzioni_del_giorno_due_stessa_data(config_con_dati: Config) -> None:
+    """Trova 2 intenzioni applicate nella stessa data."""
+    intenzioni = intenzioni_del_giorno(date(2027, 1, 20), config_con_dati)
+    assert len(intenzioni) == 2
+    testi = {i.testo for i in intenzioni}
+    assert testi == {"Per la pace", "Per i defunti"}
+
+
+def test_intenzioni_del_giorno_nessuna(config_con_dati: Config) -> None:
+    """Nessuna intenzione applicata in una data."""
+    intenzioni = intenzioni_del_giorno(date(2027, 12, 25), config_con_dati)
+    assert intenzioni == []
+
+
+def test_intenzioni_del_giorno_ignora_senza_applicazione() -> None:
+    """Intenzioni senza data_applicazione non vengono mai restituite."""
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        intenzioni=[
+            Intenzione(
+                numero=1,
+                data_consegna=date(2027, 1, 15),
+                testo="Senza applicazione",
+                data_applicazione=None,
+            ),
+        ],
+    )
+    assert intenzioni_del_giorno(date(2027, 1, 15), config) == []
+
+
+# ======================================================================
+# TEST — matrimoni_del_giorno
+# ======================================================================
+
+
+def test_matrimoni_del_giorno_uno(config_con_dati: Config) -> None:
+    """Trova un matrimonio in una data."""
+    matrimoni = matrimoni_del_giorno(date(2027, 6, 12), config_con_dati)
+    assert len(matrimoni) == 1
+    assert matrimoni[0].nome_sposi == "Maria Rossi e Luca Bianchi"
+
+
+def test_matrimoni_del_giorno_nessuno(config_con_dati: Config) -> None:
+    """Nessun matrimonio in una data."""
+    matrimoni = matrimoni_del_giorno(date(2027, 12, 25), config_con_dati)
+    assert matrimoni == []
+
+
+# ======================================================================
+# TEST — note_del_giorno
+# ======================================================================
+
+
+def test_note_del_giorno_inizio_intervallo(config_con_dati: Config) -> None:
+    """Trova la nota all'inizio dell'intervallo."""
+    note = note_del_giorno(date(2027, 3, 14), config_con_dati)
+    assert len(note) == 1
+    assert note[0]["nota"] == "Triduo"
+
+
+def test_note_del_giorno_meta_intervallo(config_con_dati: Config) -> None:
+    """Trova la nota a metà dell'intervallo."""
+    note = note_del_giorno(date(2027, 3, 15), config_con_dati)
+    assert len(note) == 1
+    assert note[0]["nota"] == "Triduo"
+
+
+def test_note_del_giorno_fine_intervallo(config_con_dati: Config) -> None:
+    """Trova la nota alla fine dell'intervallo."""
+    note = note_del_giorno(date(2027, 3, 16), config_con_dati)
+    assert len(note) == 1
+
+
+def test_note_del_giorno_fuori_intervallo(config_con_dati: Config) -> None:
+    """Nessuna nota fuori dall'intervallo."""
+    note = note_del_giorno(date(2027, 3, 17), config_con_dati)
+    assert note == []
+
+
+def test_note_del_giorno_multiple(config_con_dati: Config) -> None:
+    """Una data può avere più note attive."""
+    # 30 maggio 2027 ricade sia in "Mese mariano" sia in "Corpus Domini"
+    note = note_del_giorno(date(2027, 5, 30), config_con_dati)
+    assert len(note) == 2
+    testi = {n["nota"] for n in note}
+    assert testi == {"Mese mariano", "Corpus Domini"}

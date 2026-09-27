@@ -399,3 +399,59 @@ def _nome_celebrazione_mobile(chiave: str) -> str:
         "festa_voto": "Festa del Voto",
     }
     return mapping.get(chiave, chiave)
+
+
+# ======================================================================
+# COLLEGAMENTO DATI CONFIG → GIORNI
+# ======================================================================
+
+
+def intenzioni_del_giorno(data: date, config: Config) -> list[Intenzione]:
+    """Restituisce le intenzioni applicate in una data.
+
+    Cerca tra config.intenzioni quelle con data_applicazione == data.
+
+    Args:
+        data: data del giorno
+        config: Config con la lista intenzioni
+
+    Returns:
+        Lista di Intenzione applicate in quel giorno.
+    """
+    return [i for i in config.intenzioni if i.data_applicazione == data]
+
+
+def matrimoni_del_giorno(data: date, config: Config) -> list[Matrimonio]:
+    """Restituisce i matrimoni previsti in una data.
+
+    Cerca tra config.matrimoni_prenotati quelli con data == data.
+
+    Args:
+        data: data del giorno
+        config: Config con la lista matrimoni_prenotati
+
+    Returns:
+        Lista di Matrimonio previsti in quel giorno.
+    """
+    return [m for m in config.matrimoni_prenotati if m.data == data]
+
+
+def note_del_giorno(data: date, config: Config) -> list[dict]:
+    """Restituisce le note attive in una data.
+
+    Una nota è attiva se dal <= data <= al.
+
+    Args:
+        data: data del giorno
+        config: Config con la lista note_annuali
+
+    Returns:
+        Lista di note attive in quel giorno.
+    """
+    note_attive: list[dict] = []
+    for nota in config.note_annuali:
+        dal = nota["dal"]
+        al = nota["al"]
+        if dal <= data <= al:
+            note_attive.append(nota)
+    return note_attive
