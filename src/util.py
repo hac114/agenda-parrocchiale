@@ -3,18 +3,24 @@ Utility condivise del progetto Agenda Parrocchiale.
 
 Contiene:
 - Configurazione del logging standard
-- Eventuali funzioni di utilità generale
+- Sistema di raccolta warning per riepilogo finale
+- Funzioni di utilità generale (helper per celle Excel)
 
 Il logging è configurato una sola volta all'avvio dello script principale
 (chiamando `configura_logging()`), poi ogni modulo usa:
 
     import logging
     logger = logging.getLogger(__name__)
+
+Il WarningCollector raccoglie tutti i warning emessi durante l'esecuzione.
+Alla fine dello script, `mostra_riepilogo_warning()` può essere chiamato per
+mostrare il riepilogo e chiedere conferma all'utente.
 """
 
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 # ======================================================================
 # COSTANTI
@@ -26,13 +32,51 @@ FORMATO_LOG = "[%(levelname)s] %(name)s: %(message)s"
 # Data/ora nel formato del log
 FORMATO_DATA = "%Y-%m-%d %H:%M:%S"
 
+
+# ======================================================================
+# WARNING COLLECTOR
+# ======================================================================
+
+
+class WarningCollector(logging.Handler):
+    """Handler di logging che raccoglie i warning per il riepilogo finale.
+
+    Funziona come un normale handler (stampa subito i warning sulla console),
+    ma tiene anche traccia di tutti i warning emessi, per poterli mostrare
+    in un riepilogo alla fine dello script.
+
+    Attributes:
+        warnings: lista dei messaggi di warning raccolti.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.WARNING)
+        self.warnings: list[str] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Registra il warning nella lista interna."""
+        self.warnings.append(self.format(record))
+
+    def ha_warning(self) -> bool:
+        """Restituisce True se ci sono warning raccolti."""
+        return len(self.warnings) > 0
+
+    def conta_warning(self) -> int:
+        """Restituisce il numero di warning raccolti."""
+        return len(self.warnings)
+
+    def svuota(self) -> None:
+        """Svuota la lista dei warning raccolti."""
+        self.warnings.clear()
+
+
 # ======================================================================
 # CONFIGURAZIONE LOGGING
 # ======================================================================
 
 
-def configura_logging(livello: int = logging.INFO) -> None:
-    """Configura il logging per tutto il progetto.
+def configura_logging(livello: int = logging.INFO) -> WarningCollector:
+    """Configura il logging per tutto il progetto e restituisce il collector.
 
     Da chiamare UNA SOLA VOLTA all'avvio dello script principale.
     Dopo la chiamata, ogni modulo può usare:
@@ -43,12 +87,51 @@ def configura_logging(livello: int = logging.INFO) -> None:
                  - logging.DEBUG → mostra anche debug
                  - logging.INFO → mostra info, warning, error, critical
                  - logging.WARNING → mostra solo warning e superiori
+
+    Returns:
+        Un'istanza di WarningCollector con tutti i warning raccolti.
+        Va passata a `mostra_riepilogo_warning()` alla fine dello script.
     """
+    # Configura il logger root
     logging.basicConfig(
         level=livello,
         format=FORMATO_LOG,
         datefmt=FORMATO_DATA,
     )
+
+    # Aggiungi il collector al logger root
+    collector = WarningCollector()
+    collector.setFormatter(logging.Formatter(FORMATO_LOG))
+    logging.getLogger().addHandler(collector)
+
+    return collector
+
+
+def mostra_riepilogo_warning(collector: WarningCollector) -> bool:
+    """Mostra il riepilogo dei warning e chiede conferma all'utente.
+
+    Args:
+        collector: il WarningCollector con i warning raccolti.
+
+    Returns:
+        True se l'utente conferma di voler procedere,
+        False se preferisce interrompere.
+    """
+    if not collector.ha_warning():
+        return True
+
+    num = collector.conta_warning()
+    print()
+    print("=" * 70)
+    print(f"⚠️  ATTENZIONE: {num} problemi rilevati durante la lettura")
+    print("=" * 70)
+    print()
+    for warning in collector.warnings:
+        print(f"  {warning}")
+    print()
+
+    risposta = input("Vuoi comunque procedere? [y/N]: ").strip().lower()
+    return risposta in ("y", "yes", "s", "si", "sì")
 
 
 # ======================================================================
@@ -56,7 +139,7 @@ def configura_logging(livello: int = logging.INFO) -> None:
 # ======================================================================
 
 
-def valore_come_stringa(cella) -> str:
+def valore_come_stringa(cella: Any) -> str:
     """Estrae il valore di una cella openpyxl come stringa.
 
     Gestisce il caso di cella vuota (None) restituendo stringa vuota.
