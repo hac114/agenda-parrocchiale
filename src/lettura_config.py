@@ -10,11 +10,15 @@ E li unifica in un'unica struttura `Config` usabile dal resto del progetto.
 
 from __future__ import annotations
 
+import logging
+import re
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
 import yaml
+
+logger = logging.getLogger(__name__)
 
 # ======================================================================
 # DATACLASS — Strutture dati
@@ -193,3 +197,56 @@ def leggi_yaml(percorso: Path) -> dict:
         )
 
     return dati
+
+
+# ======================================================================
+# PARSING ORARI
+# ======================================================================
+
+# Regex per riconoscere un orario valido nel formato H:MM o HH:MM
+# Esempi accettati: "7:00", "07:00", "18:30", "6:15"
+REGEX_ORARIO = re.compile(r"^\d{1,2}:\d{2}$")
+
+
+def parse_orari(stringa: str) -> list[str]:
+    """Estrae la lista di orari da una stringa multi-orario.
+
+    Separa su virgola, punto e virgola o spazi. Tiene solo i valori
+    che rispettano il formato HH:MM (o H:MM).
+
+    Args:
+        stringa: stringa tipo "7:00,10:00,18:00" oppure "7:00;10:00" o "7:00 10:00"
+
+    Returns:
+        Lista di orari validi (es. ["7:00", "10:00", "18:00"]).
+        Se la stringa è vuota, restituisce lista vuota.
+
+    Examples:
+        >>> parse_orari("7:00,10:00,18:00")
+        ['7:00', '10:00', '18:00']
+        >>> parse_orari("7:00;10:00")
+        ['7:00', '10:00']
+        >>> parse_orari("")
+        []
+        >>> parse_orari("pippo")
+        ['pippo'] genera warning nel log
+    """
+    if not stringa:
+        return []
+
+    # Divide su virgola, punto e virgola o spazi (uno o più)
+    parti = re.split(r"[,;\s]+", stringa.strip())
+
+    orari_validi: list[str] = []
+    for parte in parti:
+        if not parte:  # Salta stringhe vuote (es. "7:00,,18:00")
+            continue
+        if REGEX_ORARIO.match(parte):
+            orari_validi.append(parte)
+        else:
+            logger.warning(
+                "Valore '%s' non è un orario valido (formato atteso HH:MM). Ignorato.",
+                parte,
+            )
+
+    return orari_validi

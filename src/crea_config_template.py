@@ -531,25 +531,31 @@ def crea_foglio_note(wb: Workbook, righe: int = 30) -> None:
 
     Annotazioni libere per periodi o giorni speciali.
     Colonne:
-    - A: Periodo / Giorno (testo, compilabile)
-    - B: Nota (testo lungo con a capo automatico, compilabile)
+    - A: Dal (data inizio, compilabile)
+    - B: Al (data fine, compilabile)
+    - C: Nota (testo lungo, compilabile)
+
+    Comportamento:
+    - Se Al è vuoto e Dal è compilato, il sistema Python considera
+      il periodo come un giorno singolo (Al = Dal).
+    - L'utente NON deve compilare Al per note di un solo giorno.
 
     Uso tipico:
-    - "Maggio 2027 → programma mese mariano da definire"
-    - "14–16 marzo → triduo San Salvatore: vespro + processione"
-    - "30 maggio → Corpus Domini, vietato pomeriggio"
+    - Dal=14/03/2027, Al=16/03/2027, Nota="Triduo San Salvatore"
+    - Dal=01/05/2027, Al=31/05/2027, Nota="Mese mariano, programma da definire"
+    - Dal=30/05/2027, (Al vuoto), Nota="Corpus Domini, vietato pomeriggio"
 
     Note tecniche:
-    - Le celle hanno wrap_text attivo e allineamento in alto per gestire
-      testi lunghi su più righe.
-    - Nessuna validazione: le note sono testo libero.
+    - Le intestazioni hanno wrap_text attivo.
+    - Formato date su Dal/Al, formato testo su Nota.
+    - Validazione data su Dal e Al (range 2020-2100).
     """
     ws = wb.create_sheet("Note")
 
     # ------------------------------------------------------------------
     # INTESTAZIONI
     # ------------------------------------------------------------------
-    intestazioni = ["Periodo / Giorno", "Nota"]
+    intestazioni = ["Dal", "Al", "Nota"]
 
     for i, intest in enumerate(intestazioni, start=1):
         cella = ws.cell(row=1, column=i, value=intest)
@@ -569,33 +575,56 @@ def crea_foglio_note(wb: Workbook, righe: int = 30) -> None:
     # RIGHE DATI
     # ------------------------------------------------------------------
     for r in range(2, righe + 2):
-        for c in range(1, 3):
+        for c in range(1, 4):
             cella = ws.cell(row=r, column=c)
             cella.fill = FILL_GIALLO
             cella.border = BORDO_SOTTILE
-            # A capo automatico e allineamento in alto (testi lunghi)
-            cella.alignment = Alignment(
-                horizontal="left",
-                vertical="top",
-                wrap_text=True,
-            )
+            if c in (1, 2):
+                # Colonne Dal/Al → data
+                cella.number_format = "DD/MM/YYYY"
+                cella.alignment = Alignment(horizontal="left", vertical="center")
+            else:
+                # Colonna Nota → testo con a capo automatico
+                cella.alignment = Alignment(
+                    horizontal="left",
+                    vertical="top",
+                    wrap_text=True,
+                )
 
     # ------------------------------------------------------------------
     # LARGHEZZE COLONNE
     # ------------------------------------------------------------------
-    ws.column_dimensions["A"].width = 25  # Periodo / Giorno
-    ws.column_dimensions["B"].width = 80  # Nota (testo lungo)
+    ws.column_dimensions["A"].width = 14  # Dal
+    ws.column_dimensions["B"].width = 14  # Al
+    ws.column_dimensions["C"].width = 80  # Nota
+
+    # ------------------------------------------------------------------
+    # VALIDAZIONE INPUT
+    # ------------------------------------------------------------------
+    # Colonne Dal/Al: date valide tra 2020 e 2100
+    dv_data = DataValidation(
+        type="date",
+        operator="between",
+        formula1="DATE(2020,1,1)",
+        formula2="DATE(2100,12,31)",
+        allow_blank=True,
+        showErrorMessage=True,
+        errorTitle="Data non valida",
+        error="Inserisci una data valida (gg/mm/aaaa).",
+    )
+    ws.add_data_validation(dv_data)
+    dv_data.add(f"A2:B{righe + 1}")
 
     # ------------------------------------------------------------------
     # PROTEZIONE FOGLIO
     # ------------------------------------------------------------------
-    # Blocca tutto, poi sblocca solo le celle gialle (A–B)
+    # Blocca tutto, poi sblocca solo le celle gialle (A–C)
     for row in ws.iter_rows():
         for cell in row:
             cell.protection = Protection(locked=True)
 
     for r in range(2, righe + 2):
-        for c in range(1, 3):
+        for c in range(1, 4):
             ws.cell(row=r, column=c).protection = Protection(locked=False)
 
     ws.protection.sheet = True

@@ -52,21 +52,40 @@ nove_mercoledi:
   regola: "9 mercoledì che precedono il triduo"
 
 # --- Celebrazioni mobili (dipendono dalla Pasqua) ---
+# Ogni voce ha un "tipo" che indica al codice Python come calcolare la data.
+# Tipi disponibili:
+#   - pasqua                  → il giorno di Pasqua stesso
+#   - pasqua_meno_N            → N giorni prima della Pasqua
+#   - pasqua_piu_N             → N giorni dopo la Pasqua
+#   - domeniche_quaresima      → le 6 domeniche di Quaresima
+#   - domeniche_avvento        → le 4 domeniche di Avvento
+#   - settimana_santa          → la Settimana Santa (da Palme a Sabato)
+#   - triduo_pasquale          → Triduo Pasquale (Giovedì-Venerdì-Sabato)
 celebrazioni_mobili: []
-  # Esempio:
-  # - "Mercoledì delle Ceneri"
-  # - "Domenica delle Palme"
-  # - "Triduo Pasquale"
-  # - "Ascensione"
-  # - "Pentecoste"
-  # - "Corpus Domini"
-  # - "4 domeniche di Avvento"
+  # Esempi:
+  # - { nome: "Mercoledì delle Ceneri", tipo: "pasqua_meno_46" }
+  # - { nome: "Domenica delle Palme", tipo: "pasqua_meno_7" }
+  # - { nome: "Lunedì dell'Angelo", tipo: "pasqua_piu_1" }
+  # - { nome: "Ascensione", tipo: "pasqua_piu_39" }
+  # - { nome: "Pentecoste", tipo: "pasqua_piu_49" }
+  # - { nome: "Santissima Trinità", tipo: "pasqua_piu_56" }
+  # - { nome: "Corpus Domini", tipo: "pasqua_piu_60" }
+  # - { nome: "6 domeniche di Quaresima", tipo: "domeniche_quaresima" }
+  # - { nome: "4 domeniche di Avvento", tipo: "domeniche_avvento" }
+  # - { nome: "Settimana Santa", tipo: "settimana_santa" }
+  # - { nome: "Triduo Pasquale", tipo: "triduo_pasquale" }
+
+# --- Regole generali sulle celebrazioni ---
+# Stabiliscono come trattare alcune categorie di feste.
+regole_celebrazioni:
+  # Se una solennità cade in un giorno feriale, usa gli orari della domenica
+  solennita_usa_orari_festivi: true
 
 # --- Giorni accorpati in una sola pagina ---
 giorni_accorpati: []
   # Esempio:
   # - nome: "Venerdì e Sabato Santo"
-  #   tipo: "settimana_santa"
+  #     tipo: "settimana_santa"
 
 # --- Matrimoni ---
 matrimoni:

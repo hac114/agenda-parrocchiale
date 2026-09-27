@@ -78,3 +78,51 @@ def test_leggi_yaml_malformato(yaml_malformato: Path) -> None:
     """Uno YAML malformato solleva ValueError."""
     with pytest.raises(ValueError, match="YAML malformato"):
         leggi_yaml(yaml_malformato)
+
+
+# ======================================================================
+# TEST — parse_orari
+# ======================================================================
+
+
+def test_parse_orari_virgole() -> None:
+    """Orari separati da virgola."""
+    from lettura_config import parse_orari
+
+    assert parse_orari("7:00,10:00,18:00") == ["7:00", "10:00", "18:00"]
+
+
+def test_parse_orari_punto_virgola() -> None:
+    """Orari separati da punto e virgola."""
+    from lettura_config import parse_orari
+
+    assert parse_orari("7:00;10:00") == ["7:00", "10:00"]
+
+
+def test_parse_orari_spazi() -> None:
+    """Orari separati da spazi."""
+    from lettura_config import parse_orari
+
+    assert parse_orari("7:00 10:00 18:00") == ["7:00", "10:00", "18:00"]
+
+
+def test_parse_orari_vuoto() -> None:
+    """Stringa vuota → lista vuota."""
+    from lettura_config import parse_orari
+
+    assert parse_orari("") == []
+
+
+def test_parse_orari_valori_invalidi() -> None:
+    """Valori non validi vengono ignorati."""
+    from lettura_config import parse_orari
+
+    assert parse_orari("7:00,pippo,18:00") == ["7:00", "18:00"]
+    assert parse_orari("7.00,10:00") == ["10:00"]
+
+
+def test_parse_orari_misto() -> None:
+    """Separatori misti."""
+    from lettura_config import parse_orari
+
+    assert parse_orari("7:00, 10:00; 18:00") == ["7:00", "10:00", "18:00"]
