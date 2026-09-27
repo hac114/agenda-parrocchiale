@@ -22,6 +22,7 @@ from calcolo_liturgico import (
     calcola_prima_domenica_giugno,
     calcola_sabato_santo,
     calcola_trinita,
+    calcola_tutte_date_mobili,
     calcola_ultima_domenica_maggio,
     calcola_venerdi_santo,
 )
@@ -540,3 +541,124 @@ def test_festa_voto_logica_slittamento() -> None:
         else:
             # Non deve slittare
             assert voto == ultima
+
+
+# ======================================================================
+# TEST — calcola_tutte_date_mobili
+# ======================================================================
+
+
+def test_tutte_date_mobili_contiene_tutte_le_chiavi() -> None:
+    """Il dizionario contiene tutte le chiavi attese."""
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    chiavi_attese = {
+        # Singole
+        "pasqua",
+        "mercoledi_ceneri",
+        "domenica_palme",
+        "giovedi_santo",
+        "venerdi_santo",
+        "sabato_santo",
+        "lunedi_angelo",
+        "ascensione",
+        "pentecoste",
+        "trinita",
+        "corpus_domini",
+        "festa_voto",
+        # Liste
+        "domeniche_quaresima",
+        "domeniche_avvento",
+        "nove_mercoledi",
+    }
+    assert set(date_mobili.keys()) == chiavi_attese
+
+
+def test_tutte_date_mobili_2027_pasqua() -> None:
+    """Pasqua 2027 = 28 marzo."""
+    assert calcola_tutte_date_mobili(2027)["pasqua"] == date(2027, 3, 28)
+
+
+def test_tutte_date_mobili_2027_corpus_domini() -> None:
+    """Corpus Domini 2027 = 27 maggio."""
+    assert calcola_tutte_date_mobili(2027)["corpus_domini"] == date(2027, 5, 27)
+
+
+def test_tutte_date_mobili_2027_festa_voto() -> None:
+    """Festa del Voto 2027 = 6 giugno (slitta)."""
+    assert calcola_tutte_date_mobili(2027)["festa_voto"] == date(2027, 6, 6)
+
+
+def test_tutte_date_mobili_liste_hanno_giusta_lunghezza() -> None:
+    """Le liste hanno la lunghezza attesa."""
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    quaresima = date_mobili["domeniche_quaresima"]
+    avvento = date_mobili["domeniche_avvento"]
+    nove = date_mobili["nove_mercoledi"]
+
+    assert isinstance(quaresima, list)
+    assert isinstance(avvento, list)
+    assert isinstance(nove, list)
+
+    assert len(quaresima) == 5
+    assert len(avvento) == 4
+    assert len(nove) == 9
+
+
+def test_tutte_date_mobili_tipi_corretti() -> None:
+    """Le singole sono date, le liste sono liste di date."""
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    # Singole
+    for chiave in [
+        "pasqua",
+        "mercoledi_ceneri",
+        "domenica_palme",
+        "giovedi_santo",
+        "venerdi_santo",
+        "sabato_santo",
+        "lunedi_angelo",
+        "ascensione",
+        "pentecoste",
+        "trinita",
+        "corpus_domini",
+        "festa_voto",
+    ]:
+        assert isinstance(date_mobili[chiave], date), f"{chiave} non è una date"
+
+    # Liste
+    for chiave in ["domeniche_quaresima", "domeniche_avvento", "nove_mercoledi"]:
+        valore = date_mobili[chiave]
+        assert isinstance(valore, list), f"{chiave} non è una lista"
+        for d in valore:
+            assert isinstance(d, date), f"{chiave} contiene un elemento non-date"
+
+
+def test_tutte_date_mobili_tutte_le_date_sono_dell_anno() -> None:
+    """Tutte le date mobili sono nell'anno (o al massimo a fine anno)."""
+    for anno in range(2024, 2034):
+        date_mobili = calcola_tutte_date_mobili(anno)
+        for chiave, valore in date_mobili.items():
+            if isinstance(valore, list):
+                for d in valore:
+                    assert d.year == anno, f"{chiave} contiene data di anno diverso"
+            else:
+                assert valore.year == anno, f"{chiave} è di anno diverso"
+
+
+def test_tutte_date_mobili_ordine_cronologico() -> None:
+    """Le liste sono in ordine cronologico crescente."""
+    for anno in range(2024, 2034):
+        date_mobili = calcola_tutte_date_mobili(anno)
+        for chiave in ["domeniche_quaresima", "domeniche_avvento", "nove_mercoledi"]:
+            valore = date_mobili[chiave]
+            assert isinstance(valore, list)
+            for i in range(len(valore) - 1):
+                assert valore[i] < valore[i + 1], f"{chiave} non è ordinata"
+
+
+def test_tutte_date_mobili_pasqua_e_sempre_domenica() -> None:
+    """La Pasqua è sempre di domenica."""
+    for anno in range(2024, 2034):
+        assert calcola_tutte_date_mobili(anno)["pasqua"].weekday() == 6  # type: ignore[union-attr]

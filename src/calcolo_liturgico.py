@@ -440,3 +440,49 @@ def calcola_festa_voto(anno: int) -> date:
         return calcola_prima_domenica_giugno(anno)
 
     return ultima_domenica_maggio
+
+
+# ======================================================================
+# API PUBBLICA
+# ======================================================================
+
+
+def calcola_tutte_date_mobili(anno: int) -> dict[str, date | list[date]]:
+    """Calcola tutte le date mobili dell'anno liturgico.
+
+    Restituisce un dizionario con tutte le date mobili (dipendenti dalla
+    Pasqua) e le liste di date mobili (domeniche di Quaresima, Avvento,
+    nove mercoledì di San Salvatore, ecc.).
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Dizionario con chiavi snake_case. Ogni valore è:
+        - una `date` per le feste singole
+        - una `list[date]` per le feste multi-giorno o le liste di date
+
+    Examples:
+        >>> date_mobili = calcola_tutte_date_mobili(2027)
+        >>> date_mobili["pasqua"]
+        datetime.date(2027, 3, 28)
+    """
+    return {
+        # --- Feste singole ---
+        "pasqua": calcola_pasqua(anno),
+        "mercoledi_ceneri": calcola_mercoledi_ceneri(anno),
+        "domenica_palme": calcola_domenica_palme(anno),
+        "giovedi_santo": calcola_giovedi_santo(anno),
+        "venerdi_santo": calcola_venerdi_santo(anno),
+        "sabato_santo": calcola_sabato_santo(anno),
+        "lunedi_angelo": calcola_lunedi_angelo(anno),
+        "ascensione": calcola_ascensione(anno),
+        "pentecoste": calcola_pentecoste(anno),
+        "trinita": calcola_trinita(anno),
+        "corpus_domini": calcola_corpus_domini(anno),
+        "festa_voto": calcola_festa_voto(anno),
+        # --- Liste di date ---
+        "domeniche_quaresima": calcola_domeniche_quaresima(anno),
+        "domeniche_avvento": calcola_domeniche_avvento(anno),
+        "nove_mercoledi": calcola_nove_mercoledi(anno),
+    }
