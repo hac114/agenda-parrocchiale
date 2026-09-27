@@ -22,6 +22,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import date
 
+from calcolo_liturgico import calcola_corpus_domini
 from dataclass_config import Config, Intenzione, Matrimonio, Periodo
 
 logger = logging.getLogger(__name__)
@@ -211,3 +212,77 @@ def applica_eccezioni_orari(data: date, orari: list[str], config: Config) -> lis
             return list(eccezione.orari_ridotti)
 
     return orari
+
+
+def _e_divieto_pomeridiano(data: date, config: Config) -> bool:
+    """Verifica se la data ha un divieto pomeridiano.
+
+    Controlla:
+    1. Divieti fissi (config.divieti_pomeridiani_fissi)
+    2. Divieti mobili (Corpus Domini, calcolato per l'anno della data)
+
+    Args:
+        data: data da verificare
+        config: Config con i divieti
+
+    Returns:
+        True se la data ha un divieto pomeridiano.
+    """
+    # 1. Divieti fissi
+    for divieto in config.divieti_pomeridiani_fissi:
+        if divieto.mese == data.month and divieto.giorno == data.day:
+            return True
+
+    # 2. Divieti mobili (Corpus Domini per l'anno della data)
+    for divieto in config.divieti_pomeridiani_mobili:
+        tipo = divieto.get("tipo")
+        if tipo == "corpus_domini":
+            corpus_domini = calcola_corpus_domini(data.year)
+            if data == corpus_domini:
+                return True
+
+    return False
+
+
+def applica_divieti_pomeridiani(data: date, orari: list[str], config: Config) -> list[str]:
+    """Rimuove le Messe pomeridiane nei giorni con divieto.
+
+    Nei giorni con divieto pomeridiano (Assunta, San Nicola, Corpus Domini)
+    le Messe si celebrano solo al mattino (orari < 14:00).
+
+    Args:
+        data: data del giorno
+        orari: orari "normali" del giorno (già calcolati)
+        config: Config con i divieti
+
+    Returns:
+        Lista di orari dopo l'applicazione dei divieti.
+    """
+    if not _e_divieto_pomeridiano(data, config):
+        return orari
+
+    orari_mattina: list[str] = []
+    for orario in orari:
+        # Parsa "HH:MM" e controlla se è mattina (ore < 14)
+        try:
+            ore = int(orario.split(":")[0])
+        except (ValueError, IndexError):
+            # Orario malformato → tieni così com'è (warning)
+            logger.warning(
+                "Orario malformato '%s' per %s: mantenuto senza filtraggio.",
+                orario,
+                data,
+            )
+            orari_mattina.append(orario)
+            continue
+
+        if ore < 14:
+            orari_mattina.append(orario)
+        else:
+            logger.info(
+                "Divieto pomeridiano per %s: rimuovo orario '%s'.",
+                data,
+                orario,
+            )
+
+    return orari_mattina
