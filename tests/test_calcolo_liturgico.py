@@ -12,14 +12,17 @@ from calcolo_liturgico import (
     calcola_domenica_palme,
     calcola_domeniche_avvento,
     calcola_domeniche_quaresima,
+    calcola_festa_voto,
     calcola_giovedi_santo,
     calcola_lunedi_angelo,
     calcola_mercoledi_ceneri,
     calcola_nove_mercoledi,
     calcola_pasqua,
     calcola_pentecoste,
+    calcola_prima_domenica_giugno,
     calcola_sabato_santo,
     calcola_trinita,
+    calcola_ultima_domenica_maggio,
     calcola_venerdi_santo,
 )
 
@@ -440,3 +443,100 @@ def test_nove_mercoledi_14_marzo_mercoledi() -> None:
     mercoledi = calcola_nove_mercoledi(2029)
     # Il 9° deve essere il 7 marzo (non il 14)
     assert mercoledi[-1] == date(2029, 3, 7)
+
+
+# ======================================================================
+# TEST — Ultima domenica di maggio
+# ======================================================================
+
+
+def test_ultima_domenica_maggio_2027() -> None:
+    """Ultima domenica di maggio 2027 = 30 maggio."""
+    assert calcola_ultima_domenica_maggio(2027) == date(2027, 5, 30)
+
+
+def test_ultima_domenica_maggio_e_domenica() -> None:
+    """Cade sempre di domenica."""
+    for anno in range(2024, 2034):
+        assert calcola_ultima_domenica_maggio(anno).weekday() == 6
+
+
+def test_ultima_domenica_maggio_e_a_maggio() -> None:
+    """È sempre nel mese di maggio."""
+    for anno in range(2024, 2034):
+        d = calcola_ultima_domenica_maggio(anno)
+        assert d.month == 5
+        # Non più di 6 giorni prima del 31 maggio
+        assert (date(anno, 5, 31) - d).days <= 6
+
+
+# ======================================================================
+# TEST — Prima domenica di giugno
+# ======================================================================
+
+
+def test_prima_domenica_giugno_2027() -> None:
+    """Prima domenica di giugno 2027 = 6 giugno."""
+    assert calcola_prima_domenica_giugno(2027) == date(2027, 6, 6)
+
+
+def test_prima_domenica_giugno_e_domenica() -> None:
+    """Cade sempre di domenica."""
+    for anno in range(2024, 2034):
+        assert calcola_prima_domenica_giugno(anno).weekday() == 6
+
+
+def test_prima_domenica_giugno_e_a_giugno() -> None:
+    """È sempre nel mese di giugno, entro i primi 7 giorni."""
+    for anno in range(2024, 2034):
+        d = calcola_prima_domenica_giugno(anno)
+        assert d.month == 6
+        assert d.day <= 7
+
+
+# ======================================================================
+# TEST — Festa del Voto
+# ======================================================================
+
+
+def test_festa_voto_2027_slitta() -> None:
+    """Festa del Voto 2027 slitta a giugno (coincide con domenica Corpus Domini)."""
+    # Nel 2027: Corpus Domini 27/05 (giovedì), domenica 30/05
+    # Ultima domenica maggio = 30/05 → coincide → slitta
+    assert calcola_festa_voto(2027) == date(2027, 6, 6)
+
+
+def test_festa_voto_2026_non_slitta() -> None:
+    """Festa del Voto 2026 resta a maggio."""
+    # 2026: Corpus Domini 04/06 (giovedì), domenica 07/06
+    # Ultima domenica maggio = 31/05 → non coincide → non slitta
+    assert calcola_festa_voto(2026) == date(2026, 5, 31)
+
+
+def test_festa_voto_e_sempre_domenica() -> None:
+    """Cade sempre di domenica (sia che slitti sia che no)."""
+    for anno in range(2024, 2034):
+        assert calcola_festa_voto(anno).weekday() == 6
+
+
+def test_festa_voto_a_maggio_o_giugno() -> None:
+    """Cade in maggio (non slitta) o giugno (slitta)."""
+    for anno in range(2024, 2034):
+        d = calcola_festa_voto(anno)
+        assert d.month in (5, 6)
+
+
+def test_festa_voto_logica_slittamento() -> None:
+    """Verifica che la logica di slittamento sia coerente per tutti gli anni."""
+    for anno in range(2024, 2034):
+        ultima = calcola_ultima_domenica_maggio(anno)
+        corpus = calcola_corpus_domini(anno)
+        domenica_corpus = corpus + timedelta(days=3)
+        voto = calcola_festa_voto(anno)
+
+        if ultima == domenica_corpus:
+            # Deve slittare
+            assert voto == calcola_prima_domenica_giugno(anno)
+        else:
+            # Non deve slittare
+            assert voto == ultima

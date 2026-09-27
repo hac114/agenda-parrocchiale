@@ -365,3 +365,78 @@ def calcola_nove_mercoledi(anno: int) -> list[date]:
 
     # Genera i 9 mercoledì consecutivi
     return [primo_mercoledi + timedelta(weeks=i) for i in range(9)]
+
+
+# ======================================================================
+# FESTA DEL VOTO
+# ======================================================================
+
+
+def calcola_ultima_domenica_maggio(anno: int) -> date:
+    """Calcola l'ultima domenica di maggio dell'anno dato.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data dell'ultima domenica di maggio.
+    """
+    # 31 maggio
+    fine_maggio = date(anno, 5, 31)
+    # Torna indietro fino a domenica (weekday = 6)
+    giorni_indietro = (fine_maggio.weekday() - 6) % 7
+    return fine_maggio - timedelta(days=giorni_indietro)
+
+
+def calcola_prima_domenica_giugno(anno: int) -> date:
+    """Calcola la prima domenica di giugno dell'anno dato.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data della prima domenica di giugno.
+    """
+    # 1 giugno
+    inizio_giugno = date(anno, 6, 1)
+    # Avanza fino a domenica (weekday = 6)
+    giorni_avanti = (6 - inizio_giugno.weekday()) % 7
+    return inizio_giugno + timedelta(days=giorni_avanti)
+
+
+def calcola_festa_voto(anno: int) -> date:
+    """Calcola la data della Festa del Voto.
+
+    Regola (interpretazione del santuario):
+    - Normalmente: ultima domenica di maggio.
+    - Se coincide con la domenica del Corpus Domini (la domenica
+      immediatamente successiva al giovedì del Corpus Domini),
+      slitta alla prima domenica di giugno.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data della Festa del Voto.
+
+    Examples:
+        >>> calcola_festa_voto(2027)
+        datetime.date(2027, 6, 6)   # slitta perché coincide con la domenica del Corpus Domini
+    """
+    ultima_domenica_maggio = calcola_ultima_domenica_maggio(anno)
+
+    # Corpus Domini (giovedì) + 3 giorni = domenica del Corpus Domini
+    corpus_domini = calcola_corpus_domini(anno)
+    domenica_corpus_domini = corpus_domini + timedelta(days=3)
+
+    # Se la Festa del Voto coincide con la domenica del Corpus Domini, slitta
+    if ultima_domenica_maggio == domenica_corpus_domini:
+        logger.info(
+            "Festa del Voto %d: slitta a giugno (coincide con la domenica "
+            "del Corpus Domini del %s)",
+            anno,
+            domenica_corpus_domini,
+        )
+        return calcola_prima_domenica_giugno(anno)
+
+    return ultima_domenica_maggio
