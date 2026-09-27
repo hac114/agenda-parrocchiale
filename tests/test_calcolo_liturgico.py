@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-import pytest
-
 from calcolo_liturgico import (
     calcola_ascensione,
     calcola_corpus_domini,
