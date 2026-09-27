@@ -27,7 +27,7 @@ from datetime import date, datetime, time
 from openpyxl.worksheet.worksheet import Worksheet
 
 from dataclass_config import Intenzione, Matrimonio
-from util import valore_come_stringa
+from util import normalizza_data, valore_come_stringa
 
 logger = logging.getLogger(__name__)
 
@@ -148,29 +148,22 @@ def leggi_foglio_impostazioni(ws: Worksheet) -> dict:
     # Itera dalla prima riga periodi fino all'ultima riga con contenuto
     ultima_riga = ws.max_row or RIGA_INIZIO_PERIODI
     for riga in range(RIGA_INIZIO_PERIODI, ultima_riga + 1):
-        dal = ws.cell(row=riga, column=COL_DAL).value
-        al = ws.cell(row=riga, column=COL_AL).value
+        dal_raw = ws.cell(row=riga, column=COL_DAL).value
+        al_raw = ws.cell(row=riga, column=COL_AL).value
 
         # Riga completamente vuota → ignora silenziosamente
-        if dal is None and al is None:
+        if dal_raw is None and al_raw is None:
             continue
 
-        # Riga parziale: uno dei due manca → warning e ignora
-        if dal is None or al is None:
-            logger.warning(
-                "Impostazioni, riga %d: 'Dal' o 'Al' mancante. Riga ignorata.",
-                riga,
-            )
-            continue
+        # Normalizza date (Excel restituisce datetime, noi vogliamo date)
+        dal_date = normalizza_data(dal_raw)
+        al_date = normalizza_data(al_raw)
 
-        # Verifica che siano date native
-        if not isinstance(dal, date) or not isinstance(al, date):
+        # Riga parziale: uno dei due manca o non è una data valida → warning
+        if dal_date is None or al_date is None:
             logger.warning(
-                "Impostazioni, riga %d: 'Dal' o 'Al' non sono date valide "
-                "(trovato %s, %s). Riga ignorata.",
+                "Impostazioni, riga %d: 'Dal' o 'Al' mancante o non valida. Riga ignorata.",
                 riga,
-                type(dal).__name__,
-                type(al).__name__,
             )
             continue
 
@@ -180,8 +173,8 @@ def leggi_foglio_impostazioni(ws: Worksheet) -> dict:
 
         periodi.append(
             {
-                "dal": dal,
-                "al": al,
+                "dal": dal_date,
+                "al": al_date,
                 "orari_feriali": parse_orari(feriali_str),
                 "orari_festivi": parse_orari(festivi_str),
             }
@@ -249,8 +242,11 @@ def leggi_foglio_intenzioni(ws: Worksheet) -> list[Intenzione]:
         if data_consegna_raw is None:
             continue
 
+        # Normalizza la data (Excel restituisce datetime, noi vogliamo date)
+        data_consegna = normalizza_data(data_consegna_raw)
+
         # Verifica che sia una data valida
-        if not isinstance(data_consegna_raw, date):
+        if data_consegna is None:
             logger.warning(
                 "Intenzioni, riga %d: 'Data consegna' non è una data valida "
                 "(trovato: %s). Riga ignorata.",
@@ -296,9 +292,8 @@ def leggi_foglio_intenzioni(ws: Worksheet) -> list[Intenzione]:
         data_applicazione: date | None = None
 
         if data_applicazione_raw is not None:
-            if isinstance(data_applicazione_raw, date):
-                data_applicazione = data_applicazione_raw
-            else:
+            data_applicazione = normalizza_data(data_applicazione_raw)
+            if data_applicazione is None:
                 logger.warning(
                     "Intenzioni, riga %d: 'Data applicazione' non è una data valida "
                     "(trovato: %s). Impostata a None.",
@@ -319,7 +314,7 @@ def leggi_foglio_intenzioni(ws: Worksheet) -> list[Intenzione]:
         intenzioni.append(
             Intenzione(
                 numero=numero_progressivo,
-                data_consegna=data_consegna_raw,
+                data_consegna=data_consegna,
                 testo=testo_str,
                 offerta=offerta,
                 data_applicazione=data_applicazione,
@@ -379,7 +374,10 @@ def leggi_foglio_matrimoni(ws: Worksheet) -> list[Matrimonio]:
         if data_raw is None:
             continue
 
-        if not isinstance(data_raw, date):
+        # Normalizza la data (Excel restituisce datetime, noi vogliamo date)
+        data = normalizza_data(data_raw)
+
+        if data is None:
             logger.warning(
                 "Matrimoni, riga %d: 'Data' non è una data valida " "(trovato: %s). Riga ignorata.",
                 riga,
@@ -453,7 +451,7 @@ def leggi_foglio_matrimoni(ws: Worksheet) -> list[Matrimonio]:
         # ------------------------------------------------------------------
         matrimoni.append(
             Matrimonio(
-                data=data_raw,
+                data=data,
                 ora=ora_str,
                 nome_sposi=nome_sposi,
                 contatti=contatti,
@@ -519,7 +517,10 @@ def leggi_foglio_note(ws: Worksheet) -> list[dict]:
         if dal_raw is None:
             continue
 
-        if not isinstance(dal_raw, date):
+        # Normalizza la data (Excel restituisce datetime, noi vogliamo date)
+        dal = normalizza_data(dal_raw)
+
+        if dal is None:
             logger.warning(
                 "Note, riga %d: 'Dal' non è una data valida (trovato: %s). " "Riga ignorata.",
                 riga,
@@ -535,24 +536,25 @@ def leggi_foglio_note(ws: Worksheet) -> list[dict]:
 
         if al_raw is None:
             # Comportamento: Al = Dal (nota di un solo giorno)
-            al = dal_raw
-        elif isinstance(al_raw, date):
-            al = al_raw
+            al = dal
         else:
-            logger.warning(
-                "Note, riga %d: 'Al' non è una data valida (trovato: %s). " "Riga ignorata.",
-                riga,
-                type(al_raw).__name__,
-            )
-            continue
+            al_normalizzata = normalizza_data(al_raw)
+            if al_normalizzata is None:
+                logger.warning(
+                    "Note, riga %d: 'Al' non è una data valida (trovato: %s). " "Riga ignorata.",
+                    riga,
+                    type(al_raw).__name__,
+                )
+                continue
+            al = al_normalizzata
 
         # Verifica che Al >= Dal
-        if al < dal_raw:
+        if al < dal:
             logger.warning(
                 "Note, riga %d: 'Al' (%s) è precedente a 'Dal' (%s). " "Riga ignorata.",
                 riga,
                 al.strftime("%d/%m/%Y"),
-                dal_raw.strftime("%d/%m/%Y"),
+                dal.strftime("%d/%m/%Y"),
             )
             continue
 
@@ -573,7 +575,7 @@ def leggi_foglio_note(ws: Worksheet) -> list[dict]:
         # ------------------------------------------------------------------
         note.append(
             {
-                "dal": dal_raw,
+                "dal": dal,
                 "al": al,
                 "nota": nota,
             }

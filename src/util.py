@@ -20,6 +20,7 @@ mostrare il riepilogo e chiedere conferma all'utente.
 from __future__ import annotations
 
 import logging
+from datetime import date, datetime
 from typing import Any
 
 # ======================================================================
@@ -156,3 +157,27 @@ def valore_come_stringa(cella: Any) -> str:
     if valore is None:
         return ""
     return str(valore)
+
+
+# ======================================================================
+# NORMALIZZAZIONE DATE
+# ======================================================================
+
+
+def normalizza_data(valore: Any) -> date | None:
+    """Normalizza un valore di cella Excel a date (senza ora).
+
+    Excel restituisce date come datetime.datetime (con ore/minuti/secondi
+    a 00:00:00). Questa funzione estrae solo la parte data.
+
+    Args:
+        valore: valore della cella (può essere date, datetime, str, None)
+
+    Returns:
+        La data come `date`, o None se il valore non è una data valida.
+    """
+    if isinstance(valore, datetime):
+        return valore.date()
+    if isinstance(valore, date):
+        return valore
+    return None

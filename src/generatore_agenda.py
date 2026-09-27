@@ -22,7 +22,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import date
 
-from dataclass_config import Config, Intenzione, Matrimonio
+from dataclass_config import Config, Intenzione, Matrimonio, Periodo
 
 logger = logging.getLogger(__name__)
 
@@ -120,3 +120,27 @@ def determina_tipo_giorno(data: date, config: Config) -> tuple[str, str | None]:
 
     # 3. Feriale
     return "feriale", None
+
+
+def trova_periodo(data: date, config: Config) -> Periodo | None:
+    """Trova il periodo stagionale attivo per una data.
+
+    Scorre config.periodi e restituisce il primo periodo il cui
+    intervallo [dal, al] contiene la data.
+
+    Args:
+        data: data da verificare
+        config: Config con la lista periodi
+
+    Returns:
+        Il Periodo attivo, o None se nessuno matcha (con warning).
+    """
+    for periodo in config.periodi:
+        if periodo.dal <= data <= periodo.al:
+            return periodo
+
+    logger.warning(
+        "Nessun periodo trovato per la data %s. Possibile buco nella configurazione.",
+        data,
+    )
+    return None
