@@ -169,3 +169,45 @@ def orari_per_giorno(data: date, tipo: str, config: Config) -> list[str]:
         return list(periodo.orari_feriali)
     # Domenica, festivo, solennità → orari festivi
     return list(periodo.orari_festivi)
+
+
+def applica_eccezioni_orari(data: date, orari: list[str], config: Config) -> list[str]:
+    """Applica le eccezioni agli orari di un festivo.
+
+    Le eccezioni gestite (da config.eccezioni_festivi):
+    - salta_se_domenica=True → se cade di domenica, festa non celebrata (lista vuota)
+    - orari_ridotti=[...] → sostituiscono gli orari normali
+
+    Args:
+        data: data del giorno
+        orari: orari "normali" del giorno (già calcolati)
+        config: Config con eccezioni_festivi
+
+    Returns:
+        Lista di orari dopo l'applicazione delle eccezioni.
+    """
+    for eccezione in config.eccezioni_festivi:
+        # Corrisponde alla data?
+        if eccezione.mese != data.month or eccezione.giorno != data.day:
+            continue
+
+        # Caso 1: salta se domenica
+        if eccezione.salta_se_domenica and data.weekday() == 6:
+            logger.info(
+                "Festa '%s' del %s cade di domenica → non celebrata.",
+                eccezione.nome,
+                data,
+            )
+            return []
+
+        # Caso 2: orari ridotti
+        if eccezione.orari_ridotti:
+            logger.info(
+                "Festa '%s' del %s ha orari ridotti: %s",
+                eccezione.nome,
+                data,
+                eccezione.orari_ridotti,
+            )
+            return list(eccezione.orari_ridotti)
+
+    return orari

@@ -9,6 +9,7 @@ import pytest
 from config import carica_config
 from dataclass_config import Config, Festa, Periodo
 from generatore_agenda import (
+    applica_eccezioni_orari,
     determina_tipo_giorno,
     festivo_fisso,
     orari_per_giorno,
@@ -291,3 +292,110 @@ def test_orari_per_giorno_config_reale_estate_festivo() -> None:
     config = carica_config("san_pietro_in_silki")
     orari = orari_per_giorno(date(2027, 7, 15), "festivo", config)
     assert "21:00" in orari
+
+
+# ======================================================================
+# FIXTURE — Config con eccezioni
+# ======================================================================
+
+
+@pytest.fixture
+def config_con_eccezioni() -> Config:
+    """Config con due eccezioni: Bernardino (salta se dom) + Stefano (orari ridotti)."""
+    return Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        eccezioni_festivi=[
+            Festa(
+                nome="Beato Bernardino",
+                mese=9,
+                giorno=28,
+                salta_se_domenica=True,
+            ),
+            Festa(
+                nome="Santo Stefano",
+                mese=12,
+                giorno=26,
+                orari_ridotti=["10:00", "18:00"],
+            ),
+        ],
+    )
+
+
+# ======================================================================
+# TEST — applica_eccezioni_orari
+# ======================================================================
+
+
+def test_eccezioni_orari_ridotti(config_con_eccezioni: Config) -> None:
+    """Santo Stefano → orari ridotti."""
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    risultato = applica_eccezioni_orari(date(2027, 12, 26), orari, config_con_eccezioni)
+    assert risultato == ["10:00", "18:00"]
+
+
+def test_eccezioni_salta_se_domenica_ma_non_domenica(config_con_eccezioni: Config) -> None:
+    """Bernardino in giorno feriale → nessuna modifica."""
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    # 28 settembre 2027 = martedì
+    risultato = applica_eccezioni_orari(date(2027, 9, 28), orari, config_con_eccezioni)
+    assert risultato == orari
+
+
+def test_eccezioni_salta_se_domenica(config_con_eccezioni: Config) -> None:
+    """Bernardino di domenica → lista vuota."""
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    # 28 settembre 2031 = domenica
+    risultato = applica_eccezioni_orari(date(2031, 9, 28), orari, config_con_eccezioni)
+    assert risultato == []
+
+
+def test_eccezioni_data_non_coinvolta(config_con_eccezioni: Config) -> None:
+    """Data senza eccezioni → orari invariati."""
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    risultato = applica_eccezioni_orari(date(2027, 12, 25), orari, config_con_eccezioni)
+    assert risultato == orari
+
+
+def test_eccezioni_lista_vuota(config_minima: Config) -> None:
+    """Config senza eccezioni → orari invariati."""
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    risultato = applica_eccezioni_orari(date(2027, 6, 15), orari, config_minima)
+    assert risultato == orari
+
+
+def test_eccezioni_restituisce_copia(config_con_eccezioni: Config) -> None:
+    """La lista restituita è una copia, non l'originale."""
+    orari_originali = ["8:30", "10:00", "11:30", "18:00"]
+    risultato = applica_eccezioni_orari(date(2027, 12, 26), orari_originali, config_con_eccezioni)
+    risultato.append("99:99")
+    assert orari_originali == ["8:30", "10:00", "11:30", "18:00"]
+
+
+# ======================================================================
+# TEST INTEGRATIVI (con Config reale)
+# ======================================================================
+
+
+def test_eccezioni_config_reale_santo_stefano() -> None:
+    """Santo Stefano 2027 ha orari ridotti (10:00, 18:00)."""
+    config = carica_config("san_pietro_in_silki")
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    risultato = applica_eccezioni_orari(date(2027, 12, 26), orari, config)
+    assert risultato == ["10:00", "18:00"]
+
+
+def test_eccezioni_config_reale_bernardino_domenica() -> None:
+    """Beato Bernardino che cade di domenica (2031) → lista vuota."""
+    config = carica_config("san_pietro_in_silki")
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    risultato = applica_eccezioni_orari(date(2031, 9, 28), orari, config)
+    assert risultato == []
+
+
+def test_eccezioni_config_reale_bernardino_martedi() -> None:
+    """Beato Bernardino che cade di martedì (2027) → orari invariati."""
+    config = carica_config("san_pietro_in_silki")
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+    risultato = applica_eccezioni_orari(date(2027, 9, 28), orari, config)
+    assert risultato == orari
