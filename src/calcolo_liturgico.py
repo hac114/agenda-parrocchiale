@@ -99,3 +99,141 @@ def calcola_domenica_palme(anno: int) -> date:
         datetime.date(2027, 3, 21)
     """
     return calcola_pasqua(anno) - timedelta(days=7)
+
+
+# ======================================================================
+# TRIDUO PASQUALE
+# ======================================================================
+
+
+def calcola_giovedi_santo(anno: int) -> date:
+    """Giovedì Santo: 3 giorni prima della Pasqua.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data del Giovedì Santo.
+
+    Examples:
+        >>> calcola_giovedi_santo(2027)
+        datetime.date(2027, 3, 25)
+    """
+    return calcola_pasqua(anno) - timedelta(days=3)
+
+
+def calcola_venerdi_santo(anno: int) -> date:
+    """Venerdì Santo: 2 giorni prima della Pasqua.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data del Venerdì Santo.
+
+    Examples:
+        >>> calcola_venerdi_santo(2027)
+        datetime.date(2027, 3, 26)
+    """
+    return calcola_pasqua(anno) - timedelta(days=2)
+
+
+def calcola_sabato_santo(anno: int) -> date:
+    """Sabato Santo: 1 giorno prima della Pasqua.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data del Sabato Santo.
+
+    Examples:
+        >>> calcola_sabato_santo(2027)
+        datetime.date(2027, 3, 27)
+    """
+    return calcola_pasqua(anno) - timedelta(days=1)
+
+
+# ======================================================================
+# FESTE DOPO PASQUA
+# ======================================================================
+
+
+def calcola_lunedi_angelo(anno: int) -> date:
+    """Lunedì dell'Angelo: 1 giorno dopo la Pasqua.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data del Lunedì dell'Angelo.
+
+    Examples:
+        >>> calcola_lunedi_angelo(2027)
+        datetime.date(2027, 3, 29)
+    """
+    return calcola_pasqua(anno) + timedelta(days=1)
+
+
+def calcola_ascensione(anno: int) -> date:
+    """Ascensione: 39 giorni dopo la Pasqua (giovedì).
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data dell'Ascensione.
+
+    Examples:
+        >>> calcola_ascensione(2027)
+        datetime.date(2027, 5, 6)
+    """
+    return calcola_pasqua(anno) + timedelta(days=39)
+
+
+def calcola_pentecoste(anno: int) -> date:
+    """Pentecoste: 49 giorni dopo la Pasqua (domenica).
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data della Pentecoste.
+
+    Examples:
+        >>> calcola_pentecoste(2027)
+        datetime.date(2027, 5, 16)
+    """
+    return calcola_pasqua(anno) + timedelta(days=49)
+
+
+def calcola_trinita(anno: int) -> date:
+    """Santissima Trinità: 56 giorni dopo la Pasqua (domenica).
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data della Santissima Trinità.
+
+    Examples:
+        >>> calcola_trinita(2027)
+        datetime.date(2027, 5, 23)
+    """
+    return calcola_pasqua(anno) + timedelta(days=56)
+
+
+def calcola_corpus_domini(anno: int) -> date:
+    """Corpus Domini: 60 giorni dopo la Pasqua (giovedì).
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data del Corpus Domini.
+
+    Examples:
+        >>> calcola_corpus_domini(2027)
+        datetime.date(2027, 5, 27)
+    """
+    return calcola_pasqua(anno) + timedelta(days=60)
