@@ -76,7 +76,7 @@ class CalendarioAgenda:
 # ======================================================================
 
 
-def _festivo_fisso(data: date, config: Config) -> str | None:
+def festivo_fisso(data: date, config: Config) -> str | None:
     """Restituisce il nome del festivo fisso se la data corrisponde, altrimenti None.
 
     Args:
@@ -92,7 +92,7 @@ def _festivo_fisso(data: date, config: Config) -> str | None:
     return None
 
 
-def _determina_tipo_giorno(data: date, config: Config) -> tuple[str, str | None]:
+def determina_tipo_giorno(data: date, config: Config) -> tuple[str, str | None]:
     """Determina tipo e nome del giorno.
 
     Logica:
@@ -110,7 +110,7 @@ def _determina_tipo_giorno(data: date, config: Config) -> tuple[str, str | None]
         - nome: nome della festa (solo per "festivo"), altrimenti None
     """
     # 1. Festivo fisso?
-    nome_festivo = _festivo_fisso(data, config)
+    nome_festivo = festivo_fisso(data, config)
     if nome_festivo is not None:
         return "festivo", nome_festivo
 
