@@ -20,9 +20,10 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 
-from calcolo_liturgico import calcola_corpus_domini
+from calcolo_liturgico import calcola_corpus_domini, calcola_tutte_date_mobili
+from config import carica_config
 from dataclass_config import Config, Intenzione, Matrimonio, Periodo, Ricorrenza
 
 logger = logging.getLogger(__name__)
@@ -127,7 +128,13 @@ def trova_periodo(data: date, config: Config) -> Periodo | None:
     """Trova il periodo stagionale attivo per una data.
 
     Scorre config.periodi e restituisce il primo periodo il cui
-    intervallo [dal, al] contiene la data.
+    intervallo contiene la data.
+
+    Gestione periodi a cavallo d'anno:
+    Se un periodo ha `dal` > `al` (es. 01/10/2027 → 30/04/2028),
+    significa che attraversa il capodanno. In quel caso:
+    - Se data >= dal (dopo l'inizio) → matcha
+    - Se data <= al (prima della fine) → matcha
 
     Args:
         data: data da verificare
@@ -137,7 +144,7 @@ def trova_periodo(data: date, config: Config) -> Periodo | None:
         Il Periodo attivo, o None se nessuno matcha (con warning).
     """
     for periodo in config.periodi:
-        if periodo.dal <= data <= periodo.al:
+        if _data_in_periodo(data, periodo):
             return periodo
 
     logger.warning(
@@ -145,6 +152,39 @@ def trova_periodo(data: date, config: Config) -> Periodo | None:
         data,
     )
     return None
+
+
+def _data_in_periodo(data: date, periodo: Periodo) -> bool:
+    """Verifica se una data è compresa in un periodo.
+
+    Il confronto avviene su MESE e GIORNO, non sull'anno: così i periodi
+    "ciclici" (es. inverno 01/10 → 30/04) funzionano per qualsiasi anno.
+
+    Gestisce anche i periodi a cavallo d'anno:
+    - Periodo normale (dal <= al in mese/giorno), es. 01/05 → 31/05
+    - Periodo a cavallo d'anno (dal > al), es. 01/10 → 30/04
+
+    Args:
+        data: data da verificare
+        periodo: il Periodo
+
+    Returns:
+        True se la data è nel periodo.
+    """
+    # Estrai mese/giorno dalla data e dal periodo
+    m_data, g_data = data.month, data.day
+    m_dal, g_dal = periodo.dal.month, periodo.dal.day
+    m_al, g_al = periodo.al.month, periodo.al.day
+
+    # Caso 1: periodo normale (dal <= al in mese/giorno)
+    # Es. 01/05 → 31/05: (5,1) <= (5,31) → normale
+    if (m_dal, g_dal) <= (m_al, g_al):
+        return bool((m_dal, g_dal) <= (m_data, g_data) <= (m_al, g_al))
+
+    # Caso 2: periodo a cavallo d'anno (dal > al in mese/giorno)
+    # Es. 01/10 → 30/04: (10,1) > (4,30) → a cavallo
+    # Vale per: data >= dal (ottobre-dicembre) OPPURE data <= al (gennaio-aprile)
+    return bool((m_data, g_data) >= (m_dal, g_dal) or (m_data, g_data) <= (m_al, g_al))
 
 
 def orari_per_giorno(data: date, tipo: str, config: Config) -> list[str]:
@@ -455,3 +495,109 @@ def note_del_giorno(data: date, config: Config) -> list[dict]:
         if dal <= data <= al:
             note_attive.append(nota)
     return note_attive
+
+
+# ======================================================================
+# API PUBBLICA
+# ======================================================================
+
+
+def genera_agenda(config: Config) -> CalendarioAgenda:
+    """Genera il calendario completo dell'agenda.
+
+    Itera su tutti i giorni dell'anno (1 gennaio → 31 dicembre) e per
+    ciascuno determina tipo, nome, orari, eccezioni e collega i dati
+    (intenzioni, matrimoni, note).
+
+    Args:
+        config: Config caricata (con anno, periodi, festivi, ricorrenze, ecc.)
+
+    Returns:
+        CalendarioAgenda completo con tutti i giorni dell'anno.
+    """
+    anno = config.anno
+    logger.info("Generazione agenda per l'anno %d", anno)
+
+    # Calcola le date mobili una sola volta
+    date_mobili = calcola_tutte_date_mobili(anno)
+
+    # Itera su tutti i giorni dell'anno
+    inizio = date(anno, 1, 1)
+    fine = date(anno, 12, 31)
+
+    giorni: list[GiornoAgenda] = []
+    corrente = inizio
+    while corrente <= fine:
+        giorno = _crea_giorno_agenda(corrente, config, date_mobili)
+        giorni.append(giorno)
+        corrente += timedelta(days=1)
+
+    logger.info("Generati %d giorni", len(giorni))
+    return CalendarioAgenda(anno=anno, config=config, giorni=giorni)
+
+
+def _crea_giorno_agenda(
+    data: date,
+    config: Config,
+    date_mobili: dict[str, date | list[date]],
+) -> GiornoAgenda:
+    """Crea un GiornoAgenda completo per una data.
+
+    Args:
+        data: data del giorno
+        config: Config
+        date_mobili: date mobili calcolate
+
+    Returns:
+        GiornoAgenda completo.
+    """
+    # 1. Tipo e nome dai festivi fissi (base)
+    tipo, nome_festivo = determina_tipo_giorno(data, config)
+
+    # 2. Festività (ricorrenze proprie + celebrazioni mobili)
+    info_festivita = festivita_del_giorno(data, config, date_mobili)
+
+    # 3. Merge nome: festivo fisso vince, altrimenti ricorrenza/mobile
+    nome_finale = nome_festivo or info_festivita["nome"]
+
+    # 4. Orari base (da periodo attivo, in base a tipo)
+    orari = orari_per_giorno(data, tipo, config)
+
+    # 5. Applica eccezioni (orari ridotti, salta se domenica)
+    orari = applica_eccezioni_orari(data, orari, config)
+
+    # 6. Applica divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
+    orari = applica_divieti_pomeridiani(data, orari, config)
+
+    # 7. Collega dati
+    intenzioni = intenzioni_del_giorno(data, config)
+    matrimoni = matrimoni_del_giorno(data, config)
+    note = note_del_giorno(data, config)
+
+    return GiornoAgenda(
+        data=data,
+        tipo=tipo,
+        nome=nome_finale,
+        particolare=info_festivita["particolare"],
+        orari=orari,
+        intenzioni=intenzioni,
+        matrimoni=matrimoni,
+        note=note,
+    )
+
+
+def genera_agenda_da_profilo(profilo: str) -> CalendarioAgenda:
+    """Wrapper: carica la Config da un profilo e genera l'agenda.
+
+    Args:
+        profilo: nome del profilo (es. "san_pietro_in_silki")
+
+    Returns:
+        CalendarioAgenda completo.
+
+    Raises:
+        FileNotFoundError: se il profilo o i file non esistono
+        ValueError: se i file sono malformati
+    """
+    config = carica_config(profilo)
+    return genera_agenda(config)
