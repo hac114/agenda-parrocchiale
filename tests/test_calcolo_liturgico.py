@@ -10,6 +10,8 @@ from calcolo_liturgico import (
     calcola_ascensione,
     calcola_corpus_domini,
     calcola_domenica_palme,
+    calcola_domeniche_avvento,
+    calcola_domeniche_quaresima,
     calcola_giovedi_santo,
     calcola_lunedi_angelo,
     calcola_mercoledi_ceneri,
@@ -248,3 +250,117 @@ def test_calcola_corpus_domini_60_giorni_dopo() -> None:
     for anno in range(2024, 2034):
         differenza = calcola_corpus_domini(anno) - calcola_pasqua(anno)
         assert differenza.days == 60
+
+
+# ======================================================================
+# TEST — Domeniche di Quaresima
+# ======================================================================
+
+
+def test_domeniche_quaresima_2027() -> None:
+    """Le 5 domeniche di Quaresima 2027."""
+    attese = [
+        date(2027, 2, 14),
+        date(2027, 2, 21),
+        date(2027, 2, 28),
+        date(2027, 3, 7),
+        date(2027, 3, 14),
+    ]
+    assert calcola_domeniche_quaresima(2027) == attese
+
+
+def test_domeniche_quaresima_sono_5() -> None:
+    """Restituisce esattamente 5 domeniche."""
+    for anno in range(2024, 2034):
+        assert len(calcola_domeniche_quaresima(anno)) == 5
+
+
+def test_domeniche_quaresima_sono_domeniche() -> None:
+    """Tutte le domeniche di Quaresima cadono di domenica."""
+    for anno in range(2024, 2034):
+        for d in calcola_domeniche_quaresima(anno):
+            assert d.weekday() == 6
+
+
+def test_domeniche_quaresima_sono_consecutive() -> None:
+    """Le domeniche sono consecutive (7 giorni di distanza)."""
+    for anno in range(2024, 2034):
+        domeniche = calcola_domeniche_quaresima(anno)
+        for i in range(len(domeniche) - 1):
+            differenza = domeniche[i + 1] - domeniche[i]
+            assert differenza.days == 7
+
+
+def test_domeniche_quaresima_dopo_le_ceneri() -> None:
+    """La I domenica di Quaresima è dopo le Ceneri."""
+    for anno in range(2024, 2034):
+        ceneri = calcola_mercoledi_ceneri(anno)
+        prima_domenica = calcola_domeniche_quaresima(anno)[0]
+        assert prima_domenica > ceneri
+        # Non più di 4 giorni dopo (le Ceneri sono mercoledì)
+        assert (prima_domenica - ceneri).days <= 4
+
+
+def test_domeniche_quaresima_prima_delle_palme() -> None:
+    """La V domenica di Quaresima è prima delle Palme."""
+    for anno in range(2024, 2034):
+        quinta = calcola_domeniche_quaresima(anno)[-1]
+        palme = calcola_domenica_palme(anno)
+        assert quinta < palme
+        assert (palme - quinta).days == 7
+
+
+# ======================================================================
+# TEST — Domeniche di Avvento
+# ======================================================================
+
+
+def test_domeniche_avvento_2027() -> None:
+    """Le 4 domeniche di Avvento 2027."""
+    attese = [
+        date(2027, 11, 28),
+        date(2027, 12, 5),
+        date(2027, 12, 12),
+        date(2027, 12, 19),
+    ]
+    assert calcola_domeniche_avvento(2027) == attese
+
+
+def test_domeniche_avvento_sono_4() -> None:
+    """Restituisce esattamente 4 domeniche."""
+    for anno in range(2024, 2034):
+        assert len(calcola_domeniche_avvento(anno)) == 4
+
+
+def test_domeniche_avvento_sono_domeniche() -> None:
+    """Tutte le domeniche di Avvento cadono di domenica."""
+    for anno in range(2024, 2034):
+        for d in calcola_domeniche_avvento(anno):
+            assert d.weekday() == 6
+
+
+def test_domeniche_avvento_sono_consecutive() -> None:
+    """Le domeniche sono consecutive (7 giorni di distanza)."""
+    for anno in range(2024, 2034):
+        domeniche = calcola_domeniche_avvento(anno)
+        for i in range(len(domeniche) - 1):
+            differenza = domeniche[i + 1] - domeniche[i]
+            assert differenza.days == 7
+
+
+def test_domeniche_avvento_prima_di_natale() -> None:
+    """L'ultima domenica di Avvento è prima di Natale (25 dicembre)."""
+    for anno in range(2024, 2034):
+        natale = date(anno, 12, 25)
+        quarta = calcola_domeniche_avvento(anno)[-1]
+        assert quarta < natale
+        # Al massimo 7 giorni prima
+        assert (natale - quarta).days <= 7
+
+
+def test_domeniche_avvento_natale_di_domenica() -> None:
+    """Se Natale cade di domenica, la IV domenica è 7 giorni prima."""
+    # 2022: Natale era domenica
+    domeniche = calcola_domeniche_avvento(2022)
+    quarta = domeniche[-1]
+    assert quarta == date(2022, 12, 18)  # 7 giorni prima del 25/12/2022

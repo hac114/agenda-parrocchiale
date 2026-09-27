@@ -237,3 +237,80 @@ def calcola_corpus_domini(anno: int) -> date:
         datetime.date(2027, 5, 27)
     """
     return calcola_pasqua(anno) + timedelta(days=60)
+
+
+# ======================================================================
+# DOMENICHE DI QUARESIMA
+# ======================================================================
+
+
+def calcola_domeniche_quaresima(anno: int) -> list[date]:
+    """Calcola le 5 domeniche di Quaresima (I, II, III, IV, V).
+
+    La Quaresima inizia il Mercoledì delle Ceneri. Le prime 5 domeniche
+    dopo le Ceneri sono chiamate "domeniche di Quaresima".
+    La VI domenica è la Domenica delle Palme (calcolata a parte).
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Lista di 5 date, in ordine cronologico:
+        [I domenica, II domenica, III domenica, IV domenica, V domenica].
+
+    Examples:
+        >>> calcola_domeniche_quaresima(2027)
+        [date(2027, 2, 14), date(2027, 2, 21), date(2027, 2, 28),
+         date(2027, 3, 7), date(2027, 3, 14)]
+    """
+    ceneri = calcola_mercoledi_ceneri(anno)
+
+    # Trova la prima domenica dopo le Ceneri
+    # ceneri.weekday() = 2 (mercoledì)
+    # Giorni da aggiungere per arrivare alla prossima domenica (weekday = 6):
+    #   mercoledì → domenica = +4
+    #   giovedì → domenica = +3
+    #   ... ecc. (ma le Ceneri sono sempre mercoledì)
+    giorni_a_domenica = (6 - ceneri.weekday()) % 7
+    prima_domenica = ceneri + timedelta(days=giorni_a_domenica)
+
+    # Le 5 domeniche sono consecutive (7 giorni di distanza)
+    return [prima_domenica + timedelta(weeks=i) for i in range(5)]
+
+
+# ======================================================================
+# DOMENICHE DI AVVENTO
+# ======================================================================
+
+
+def calcola_domeniche_avvento(anno: int) -> list[date]:
+    """Calcola le 4 domeniche di Avvento.
+
+    Sono le 4 domeniche che precedono il Natale (25 dicembre).
+    La IV domenica di Avvento è l'ultima domenica prima di Natale.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Lista di 4 date, in ordine cronologico:
+        [I domenica, II domenica, III domenica, IV domenica].
+
+    Examples:
+        >>> calcola_domeniche_avvento(2027)
+        [date(2027, 11, 28), date(2027, 12, 5),
+         date(2027, 12, 12), date(2027, 12, 19)]
+    """
+    natale = date(anno, 12, 25)
+
+    # L'ultima domenica PRIMA di Natale
+    # Se Natale è domenica (weekday 6), l'ultima domenica di Avvento
+    # è 7 giorni prima (non lo stesso giorno)
+    giorni_a_domenica = (natale.weekday() - 6) % 7
+    if giorni_a_domenica == 0:
+        giorni_a_domenica = 7
+    quarta_domenica = natale - timedelta(days=giorni_a_domenica)
+
+    # Le 4 domeniche sono consecutive: la IV è l'ultima, I è 3 settimane prima
+    prima_domenica = quarta_domenica - timedelta(weeks=3)
+    return [prima_domenica + timedelta(weeks=i) for i in range(4)]
