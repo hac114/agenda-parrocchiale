@@ -314,3 +314,54 @@ def calcola_domeniche_avvento(anno: int) -> list[date]:
     # Le 4 domeniche sono consecutive: la IV è l'ultima, I è 3 settimane prima
     prima_domenica = quarta_domenica - timedelta(weeks=3)
     return [prima_domenica + timedelta(weeks=i) for i in range(4)]
+
+
+# ======================================================================
+# NOVE MERCOLEDÌ DI SAN SALVATORE
+# ======================================================================
+
+
+def calcola_nove_mercoledi(anno: int) -> list[date]:
+    """Calcola i 9 mercoledì che precedono il Triduo di San Salvatore.
+
+    Regola (interpretazione del santuario):
+    - Il 9° mercoledì è il mercoledì immediatamente PRIMA del 14 marzo.
+    - Il 1° mercoledì è 8 settimane prima del 9° (= 9° - 56 giorni).
+    - Tutti i mercoledì sono consecutivi (7 giorni di distanza).
+
+    Note:
+        - Il Triduo è fisso dal 14 al 16 marzo (non dipende dal giorno).
+        - Se il 14 marzo cade di mercoledì, il 9° mercoledì è il 7 marzo
+          (il mercoledì precedente, perché la regola dice "che precedono").
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Lista di 9 date, in ordine cronologico:
+        [1° mercoledì, 2° mercoledì, ..., 9° mercoledì].
+
+    Examples:
+        >>> calcola_nove_mercoledi(2027)
+        [date(2027, 1, 13), date(2027, 1, 20), date(2027, 1, 27),
+         date(2027, 2, 3), date(2027, 2, 10), date(2027, 2, 17),
+         date(2027, 2, 24), date(2027, 3, 3), date(2027, 3, 10)]
+    """
+    triduo_inizio = date(anno, 3, 14)
+
+    # Trova il mercoledì immediatamente prima del 14 marzo
+    # weekday: lunedì=0, martedì=1, ..., domenica=6
+    # Mercoledì: weekday = 2
+    # Se il 14 marzo è mercoledì, vogliamo il mercoledì precedente (7 giorni prima)
+    giorni_indietro = (triduo_inizio.weekday() - 2) % 7
+    if giorni_indietro == 0:
+        # Il 14 marzo è mercoledì → usa il mercoledì precedente
+        giorni_indietro = 7
+
+    nono_mercoledi = triduo_inizio - timedelta(days=giorni_indietro)
+
+    # Il 1° mercoledì è 8 settimane prima del 9°
+    primo_mercoledi = nono_mercoledi - timedelta(weeks=8)
+
+    # Genera i 9 mercoledì consecutivi
+    return [primo_mercoledi + timedelta(weeks=i) for i in range(9)]
