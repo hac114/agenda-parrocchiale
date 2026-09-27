@@ -41,7 +41,7 @@ from fogli_excel import (
     crea_foglio_matrimoni,
     crea_foglio_note,
 )
-from lettura_config import leggi_yaml
+from lettura_yaml import leggi_yaml
 from util import configura_logging, mostra_riepilogo_warning
 
 # ----------------------------------------------------------------------

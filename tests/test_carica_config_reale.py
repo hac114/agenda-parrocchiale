@@ -12,7 +12,7 @@ from pathlib import Path
 # Aggiungi src/ al path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from lettura_config import carica_config  # noqa: E402
+from config import carica_config
 
 # ======================================================================
 # ESECUZIONE
