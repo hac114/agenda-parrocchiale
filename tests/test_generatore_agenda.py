@@ -6,12 +6,14 @@ from datetime import date
 
 import pytest
 
+from calcolo_liturgico import calcola_tutte_date_mobili
 from config import carica_config
-from dataclass_config import Config, Festa, Periodo
+from dataclass_config import Config, Festa, Periodo, Ricorrenza
 from generatore_agenda import (
     applica_divieti_pomeridiani,
     applica_eccezioni_orari,
     determina_tipo_giorno,
+    festivita_del_giorno,
     festivo_fisso,
     orari_per_giorno,
     trova_periodo,
@@ -478,3 +480,130 @@ def test_divieto_restituisce_copia() -> None:
     risultato = applica_divieti_pomeridiani(date(2027, 8, 15), orari_originali, config)
     risultato.append("99:99")
     assert orari_originali == ["8:30", "10:00", "18:00"]
+
+
+# ======================================================================
+# FIXTURE — Config con ricorrenze proprie
+# ======================================================================
+
+
+@pytest.fixture
+def config_con_ricorrenze() -> Config:
+    """Config con 2 ricorrenze proprie."""
+    return Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        ricorrenze_proprie=[
+            Ricorrenza(
+                nome="Triduo di San Salvatore",
+                data_inizio=date(2027, 3, 14),
+                data_fine=date(2027, 3, 16),
+                tipo="triduo",
+            ),
+            Ricorrenza(
+                nome="San Salvatore da Horta",
+                data_inizio=date(2027, 3, 17),
+                data_fine=date(2027, 3, 18),
+            ),
+        ],
+    )
+
+
+# ======================================================================
+# TEST — festivita_del_giorno
+# ======================================================================
+
+
+def test_festivita_ricorrenza_singola(config_con_ricorrenze: Config) -> None:
+    """Una ricorrenza di un giorno è riconosciuta."""
+    info = festivita_del_giorno(date(2027, 3, 17), config_con_ricorrenze, {})
+    assert info["nome"] == "San Salvatore da Horta"
+    assert info["particolare"] is True
+    assert info["tipo_override"] is None
+
+
+def test_festivita_ricorrenza_multigiorno(config_con_ricorrenze: Config) -> None:
+    """Una ricorrenza multi-giorno copre tutti i giorni."""
+    for giorno in [14, 15, 16]:
+        info = festivita_del_giorno(date(2027, 3, giorno), config_con_ricorrenze, {})
+        assert info["nome"] == "Triduo di San Salvatore"
+        assert info["particolare"] is True
+
+
+def test_festivita_celebrazione_mobile() -> None:
+    """Una celebrazione mobile (Palme) è riconosciuta."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    # Palme 2027 = 21 marzo
+    info = festivita_del_giorno(date(2027, 3, 21), config, date_mobili)
+    assert info["nome"] == "Domenica delle Palme"
+    assert info["particolare"] is False
+
+
+def test_festivita_giorno_qualunque(config_minima: Config) -> None:
+    """Un giorno qualunque non ha nome né particolare."""
+    info = festivita_del_giorno(date(2027, 6, 15), config_minima, {})
+    assert info["nome"] is None
+    assert info["particolare"] is False
+
+
+def test_festivita_priorita_ricorrenza(config_con_ricorrenze: Config) -> None:
+    """Se una data è sia ricorrenza sia mobile, vince la ricorrenza."""
+    # Configura date_mobili con una data fittizia che coincide con la ricorrenza
+    date_mobili = {"pasqua": date(2027, 3, 17)}  # coincide con San Salvatore
+
+    info = festivita_del_giorno(date(2027, 3, 17), config_con_ricorrenze, date_mobili)
+    # La ricorrenza ha priorità
+    assert info["nome"] == "San Salvatore da Horta"
+    assert info["particolare"] is True
+
+
+def test_festivita_mobili_config_reale_pasqua() -> None:
+    """Pasqua 2027 (28 marzo) è riconosciuta come celebrazione mobile."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    info = festivita_del_giorno(date(2027, 3, 28), config, date_mobili)
+    assert info["nome"] == "Pasqua"
+    assert info["particolare"] is False
+
+
+def test_festivita_mobili_config_reale_corpus_domini() -> None:
+    """Corpus Domini 2027 (27 maggio) è riconosciuto."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    info = festivita_del_giorno(date(2027, 5, 27), config, date_mobili)
+    assert info["nome"] == "Corpus Domini"
+    assert info["particolare"] is False
+
+
+def test_festivita_mobili_config_reale_festa_voto() -> None:
+    """Festa del Voto 2027 (6 giugno, slittata) è riconosciuta."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    info = festivita_del_giorno(date(2027, 6, 6), config, date_mobili)
+    assert info["nome"] == "Festa del Voto"
+
+
+def test_festivita_config_reale_san_salvatore() -> None:
+    """San Salvatore 2027 (17 marzo) è ricorrenza propria."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    info = festivita_del_giorno(date(2027, 3, 17), config, date_mobili)
+    assert info["nome"] == "San Salvatore da Horta"
+    assert info["particolare"] is True
+
+
+def test_festivita_config_reale_triduo_san_salvatore() -> None:
+    """Triduo San Salvatore 2027 (14-16 marzo)."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    for giorno in [14, 15, 16]:
+        info = festivita_del_giorno(date(2027, 3, giorno), config, date_mobili)
+        assert info["nome"] == "Triduo di San Salvatore"
+        assert info["particolare"] is True

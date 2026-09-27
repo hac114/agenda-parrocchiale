@@ -70,7 +70,8 @@ def _ricorrenza_da_dict(dati: dict, anno: int) -> Ricorrenza | None:
     # Caso 1: data fissa (mese + giorno, opzionale durata_giorni)
     if "mese" in data_spec and "giorno" in data_spec:
         data_inizio = date(anno, data_spec["mese"], data_spec["giorno"])
-        durata = dati.get("durata_giorni", 1)
+        # durata_giorni può stare sia in data_spec sia al livello superiore
+        durata = data_spec.get("durata_giorni", dati.get("durata_giorni", 1))
         data_fine = data_inizio + timedelta(days=durata - 1) if durata > 1 else None
         return Ricorrenza(
             nome=nome,

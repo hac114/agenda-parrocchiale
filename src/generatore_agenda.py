@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from datetime import date
 
 from calcolo_liturgico import calcola_corpus_domini
-from dataclass_config import Config, Intenzione, Matrimonio, Periodo
+from dataclass_config import Config, Intenzione, Matrimonio, Periodo, Ricorrenza
 
 logger = logging.getLogger(__name__)
 
@@ -286,3 +286,116 @@ def applica_divieti_pomeridiani(data: date, orari: list[str], config: Config) ->
             )
 
     return orari_mattina
+
+
+def _ricorrenza_per_data(data: date, config: Config) -> Ricorrenza | None:
+    """Trova la ricorrenza propria attiva in una data.
+
+    Una ricorrenza è attiva se data è compresa tra data_inizio e data_fine
+    (o solo data_inizio se data_fine è None).
+
+    Args:
+        data: data da verificare
+        config: Config con ricorrenze_proprie
+
+    Returns:
+        La Ricorrenza attiva, o None se nessuna matcha.
+    """
+    for ricorrenza in config.ricorrenze_proprie:
+        inizio = ricorrenza.data_inizio
+        fine = ricorrenza.data_fine or ricorrenza.data_inizio
+        if inizio <= data <= fine:
+            return ricorrenza
+    return None
+
+
+def festivita_del_giorno(
+    data: date,
+    config: Config,
+    date_mobili: dict[str, date | list[date]],
+) -> dict:
+    """Determina nome, particolare e tipo_override per un giorno.
+
+    Priorità:
+    1. Se è una ricorrenza propria (es. San Salvatore) → particolare=True
+    2. Se è una celebrazione mobile (es. Palme, Ascensione) → nome dalla lista
+    3. Altrimenti → nome=None, particolare=False
+
+    Args:
+        data: data del giorno
+        config: Config con ricorrenze_proprie
+        date_mobili: dizionario da calcola_tutte_date_mobili()
+
+    Returns:
+        Dizionario con chiavi:
+        - nome: str | None — nome della festività
+        - particolare: bool — True se è una celebrazione particolare
+        - tipo_override: str | None — per ora sempre None
+    """
+    # 1. Ricorrenze proprie
+    ricorrenza = _ricorrenza_per_data(data, config)
+    if ricorrenza is not None:
+        return {
+            "nome": ricorrenza.nome,
+            "particolare": True,
+            "tipo_override": None,
+        }
+
+    # 2. Celebrazioni mobili (singole, non liste)
+    chiavi_singole = [
+        "pasqua",
+        "mercoledi_ceneri",
+        "domenica_palme",
+        "giovedi_santo",
+        "venerdi_santo",
+        "sabato_santo",
+        "lunedi_angelo",
+        "ascensione",
+        "pentecoste",
+        "trinita",
+        "corpus_domini",
+        "festa_voto",
+    ]
+
+    for chiave in chiavi_singole:
+        valore = date_mobili.get(chiave)
+        if isinstance(valore, date) and data == valore:
+            nome = _nome_celebrazione_mobile(chiave)
+            return {
+                "nome": nome,
+                "particolare": False,
+                "tipo_override": None,
+            }
+
+    # 3. Nessuna festività specifica
+    return {
+        "nome": None,
+        "particolare": False,
+        "tipo_override": None,
+    }
+
+
+def _nome_celebrazione_mobile(chiave: str) -> str:
+    """Mappa una chiave di date_mobili al nome leggibile.
+
+    Args:
+        chiave: chiave del dizionario date_mobili
+
+    Returns:
+        Nome leggibile della celebrazione.
+    """
+    mapping = {
+        "pasqua": "Pasqua",
+        "mercoledi_ceneri": "Mercoledì delle Ceneri",
+        "domenica_palme": "Domenica delle Palme",
+        "giovedi_santo": "Giovedì Santo",
+        "venerdi_santo": "Venerdì Santo",
+        "sabato_santo": "Sabato Santo",
+        "lunedi_angelo": "Lunedì dell'Angelo",
+        "ascensione": "Ascensione",
+        "pentecoste": "Pentecoste",
+        "trinita": "Santissima Trinità",
+        "corpus_domini": "Corpus Domini",
+        "festa_voto": "Festa del Voto",
+    }
+    return mapping.get(chiave, chiave)
