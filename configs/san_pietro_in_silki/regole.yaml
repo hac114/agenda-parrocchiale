@@ -96,7 +96,7 @@ celebrazioni_mobili:
   - { nome: "Pentecoste", tipo: "pasqua_piu_49" }
   - { nome: "Santissima Trinità", tipo: "pasqua_piu_56" }
   - { nome: "Corpus Domini", tipo: "pasqua_piu_60" }
-  - { nome: "6 domeniche di Quaresima", tipo: "domeniche_quaresima" }
+  - { nome: "5 domeniche di Quaresima", tipo: "domeniche_quaresima" }
   - { nome: "4 domeniche di Avvento", tipo: "domeniche_avvento" }
   - { nome: "Settimana Santa", tipo: "settimana_santa" }
   - { nome: "Triduo Pasquale", tipo: "triduo_pasquale" }

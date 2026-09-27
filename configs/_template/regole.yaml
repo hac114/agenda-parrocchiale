@@ -57,7 +57,8 @@ nove_mercoledi:
 #   - pasqua                  → il giorno di Pasqua stesso
 #   - pasqua_meno_N            → N giorni prima della Pasqua
 #   - pasqua_piu_N             → N giorni dopo la Pasqua
-#   - domeniche_quaresima      → le 6 domeniche di Quaresima
+#   - domeniche_quaresima      → le 5 domeniche di Quaresima (I-V)
+#                                (la Domenica delle Palme è separata)
 #   - domeniche_avvento        → le 4 domeniche di Avvento
 #   - settimana_santa          → la Settimana Santa (da Palme a Sabato)
 #   - triduo_pasquale          → Triduo Pasquale (Giovedì-Venerdì-Sabato)
@@ -70,7 +71,7 @@ celebrazioni_mobili: []
   # - { nome: "Pentecoste", tipo: "pasqua_piu_49" }
   # - { nome: "Santissima Trinità", tipo: "pasqua_piu_56" }
   # - { nome: "Corpus Domini", tipo: "pasqua_piu_60" }
-  # - { nome: "6 domeniche di Quaresima", tipo: "domeniche_quaresima" }
+  # - { nome: "5 domeniche di Quaresima", tipo: "domeniche_quaresima" }
   # - { nome: "4 domeniche di Avvento", tipo: "domeniche_avvento" }
   # - { nome: "Settimana Santa", tipo: "settimana_santa" }
   # - { nome: "Triduo Pasquale", tipo: "triduo_pasquale" }
