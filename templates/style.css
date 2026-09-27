@@ -1,0 +1,230 @@
+/* =====================================================================
+   STILE AGENDA — Formato A4
+   Per generazione PDF con WeasyPrint
+   ===================================================================== */
+
+/* --- Impostazioni pagina A4 --- */
+@page {
+    size: A4;
+    margin: 15mm 15mm 15mm 15mm;
+
+    @bottom-center {
+        content: counter(page);
+        font-family: "Times New Roman", serif;
+        font-size: 10pt;
+        color: #666;
+    }
+}
+
+/* --- Reset di base --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Times New Roman", Georgia, serif;
+    font-size: 11pt;
+    color: #000;
+    line-height: 1.4;
+}
+
+/* =====================================================================
+   PAGINA GIORNO
+   ===================================================================== */
+
+.pagina-giorno {
+    page-break-after: always;
+    padding: 5mm 0;
+}
+
+/* --- Intestazione con data --- */
+.intestazione {
+    border-bottom: 2px solid #333;
+    padding-bottom: 3mm;
+    margin-bottom: 5mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.data {
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+.giorno-settimana {
+    font-size: 14pt;
+    font-style: italic;
+    color: #555;
+}
+
+/* --- Festività --- */
+.festivita {
+    background-color: #f0f0f0;
+    border-left: 4px solid #333;
+    padding: 3mm 5mm;
+    margin-bottom: 5mm;
+}
+
+.nome-festivita {
+    font-size: 14pt;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* --- Messe --- */
+.messe {
+    margin-bottom: 5mm;
+}
+
+.messa {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid #ccc;
+    min-height: 12mm;
+    margin-bottom: 1mm;
+}
+
+.orario {
+    width: 25mm;
+    font-size: 14pt;
+    font-weight: bold;
+    padding: 2mm 3mm;
+    background-color: #f8f8f8;
+    border-right: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+}
+
+.spazio-intenzione {
+    flex: 1;
+    padding: 2mm 3mm;
+    /* Spazio vuoto per scrivere a mano il nome del defunto */
+}
+
+/* --- Sezioni (intenzioni, matrimoni, note) --- */
+.intenzioni,
+.matrimoni,
+.note {
+    margin-top: 5mm;
+    padding: 3mm;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+}
+
+.intenzioni h3,
+.matrimoni h3,
+.note h3 {
+    font-size: 12pt;
+    margin-bottom: 2mm;
+    border-bottom: 1px solid #999;
+    padding-bottom: 1mm;
+}
+
+.intenzione,
+.matrimonio,
+.nota {
+    margin-bottom: 1.5mm;
+    padding-left: 3mm;
+}
+
+.intenzione .numero {
+    font-weight: bold;
+    margin-right: 2mm;
+}
+
+.matrimonio .ora {
+    font-weight: bold;
+    margin-right: 3mm;
+}
+
+/* =====================================================================
+   COPERTINA
+   ===================================================================== */
+
+.pagina-copertina {
+    page-break-after: always;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.contenuto-copertina {
+    padding: 20mm;
+}
+
+.titolo {
+    font-size: 32pt;
+    font-weight: bold;
+    margin-bottom: 5mm;
+}
+
+.sottotitolo {
+    font-size: 20pt;
+    font-style: italic;
+    color: #555;
+    margin-bottom: 15mm;
+}
+
+.anno {
+    font-size: 72pt;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5mm;
+}
+
+.sottotitolo-anno {
+    font-size: 16pt;
+    color: #666;
+    letter-spacing: 2px;
+}
+
+/* =====================================================================
+   REGISTRO INTENZIONI
+   ===================================================================== */
+
+.pagina-registro {
+    page-break-before: always;
+}
+
+.titolo-registro {
+    font-size: 20pt;
+    font-weight: bold;
+    margin-bottom: 8mm;
+    border-bottom: 2px solid #333;
+    padding-bottom: 3mm;
+}
+
+.tabella-intenzioni {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+}
+
+.tabella-intenzioni th {
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    padding: 2mm;
+    text-align: left;
+    font-weight: bold;
+}
+
+.tabella-intenzioni td {
+    border: 1px solid #ccc;
+    padding: 2mm;
+    vertical-align: top;
+}
+
+.tabella-intenzioni tr:nth-child(even) td {
+    background-color: #fafafa;
+}
+
+.nessuna-intenzione {
+    font-style: italic;
+    color: #888;
+    padding: 5mm;
+}

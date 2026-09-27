@@ -181,3 +181,57 @@ def normalizza_data(valore: Any) -> date | None:
     if isinstance(valore, date):
         return valore
     return None
+
+
+# ======================================================================
+# FORMATTAZIONE DATE ITALIANE
+# ======================================================================
+
+MESI_ITALIANI = [
+    "gennaio",
+    "febbraio",
+    "marzo",
+    "aprile",
+    "maggio",
+    "giugno",
+    "luglio",
+    "agosto",
+    "settembre",
+    "ottobre",
+    "novembre",
+    "dicembre",
+]
+
+GIORNI_ITALIANI = [
+    "Lunedì",
+    "Martedì",
+    "Mercoledì",
+    "Giovedì",
+    "Venerdì",
+    "Sabato",
+    "Domenica",
+]
+
+
+def formatta_data_italiana(data: date) -> str:
+    """Formatta una data in italiano: '17 marzo 2027'.
+
+    Args:
+        data: data da formattare
+
+    Returns:
+        Stringa in formato 'gg mese aaaa'.
+    """
+    return f"{data.day} {MESI_ITALIANI[data.month - 1]} {data.year}"
+
+
+def nome_giorno_italiano(data: date) -> str:
+    """Restituisce il nome italiano del giorno della settimana.
+
+    Args:
+        data: data di riferimento
+
+    Returns:
+        Nome del giorno (es. 'Mercoledì').
+    """
+    return GIORNI_ITALIANI[data.weekday()]

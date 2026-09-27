@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro Intenzioni</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="pagina-registro">
+    <h1 class="titolo-registro">Registro Intenzioni di Messa</h1>
+
+    {% if intenzioni %}
+    <table class="tabella-intenzioni">
+        <thead>
+            <tr>
+                <th>N.</th>
+                <th>Data consegna</th>
+                <th>Intenzione</th>
+                <th>Data applicazione</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in intenzioni %}
+            <tr>
+                <td>{{ i.numero }}</td>
+                <td>{{ i.data_consegna }}</td>
+                <td>{{ i.testo }}</td>
+                <td>{{ i.data_applicazione or "" }}</td>
+                <td>{{ i.note }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="nessuna-intenzione">Nessuna intenzione registrata.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>
