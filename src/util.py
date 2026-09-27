@@ -49,3 +49,27 @@ def configura_logging(livello: int = logging.INFO) -> None:
         format=FORMATO_LOG,
         datefmt=FORMATO_DATA,
     )
+
+
+# ======================================================================
+# HELPER PER CELLE EXCEL
+# ======================================================================
+
+
+def valore_come_stringa(cella) -> str:
+    """Estrae il valore di una cella openpyxl come stringa.
+
+    Gestisce il caso di cella vuota (None) restituendo stringa vuota.
+    Utile per normalizzare valori di celle che potrebbero contenere
+    stringhe, numeri, date o None.
+
+    Args:
+        cella: cella openpyxl (con attributo .value)
+
+    Returns:
+        Stringa vuota se la cella è vuota, altrimenti str(valore).
+    """
+    valore = cella.value
+    if valore is None:
+        return ""
+    return str(valore)

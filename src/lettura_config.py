@@ -17,6 +17,9 @@ from datetime import date
 from pathlib import Path
 
 import yaml
+from openpyxl.worksheet.worksheet import Worksheet
+
+from util import valore_come_stringa
 
 logger = logging.getLogger(__name__)
 
@@ -250,3 +253,117 @@ def parse_orari(stringa: str) -> list[str]:
             )
 
     return orari_validi
+
+
+# ======================================================================
+# POSIZIONI FISSE NEL FOGLIO IMPOSTAZIONI
+# ======================================================================
+
+# Celle dei dati generali
+CELLA_ANNO = "B5"
+CELLA_NOME_PARROCCHIA = "B6"
+CELLA_CITTA = "B7"
+
+# Prima riga dei periodi e indici di colonna
+RIGA_INIZIO_PERIODI = 13
+COL_DAL = 1
+COL_AL = 2
+COL_FERIALI = 3
+COL_FESTIVI = 4
+
+
+# ======================================================================
+# LETTURA FOGLIO IMPOSTAZIONI
+# ======================================================================
+
+
+def leggi_foglio_impostazioni(ws: Worksheet) -> dict:
+    """Legge il foglio Impostazioni e restituisce i dati estratti.
+
+    Args:
+        ws: foglio di lavoro "Impostazioni"
+
+    Returns:
+        Dizionario con:
+        - anno: int
+        - nome_parrocchia: str
+        - citta: str
+        - periodi: list[dict] (ognuno con dal, al, orari_feriali, orari_festivi)
+
+    Raises:
+        ValueError: se le celle obbligatorie (anno, nome, città) sono vuote
+    """
+    # ------------------------------------------------------------------
+    # DATI GENERALI
+    # ------------------------------------------------------------------
+    anno = ws[CELLA_ANNO].value
+    if not isinstance(anno, int):
+        raise ValueError(
+            f"Impostazioni: cella {CELLA_ANNO} (Anno) deve essere un numero intero, "
+            f"trovato: {type(anno).__name__}"
+        )
+
+    nome_parrocchia = ws[CELLA_NOME_PARROCCHIA].value
+    if not nome_parrocchia or not isinstance(nome_parrocchia, str):
+        raise ValueError(f"Impostazioni: cella {CELLA_NOME_PARROCCHIA} (Nome parrocchia) è vuota")
+
+    citta = ws[CELLA_CITTA].value
+    if not citta or not isinstance(citta, str):
+        raise ValueError(f"Impostazioni: cella {CELLA_CITTA} (Città) è vuota")
+
+    # ------------------------------------------------------------------
+    # PERIODI
+    # ------------------------------------------------------------------
+    periodi: list[dict] = []
+
+    # Itera dalla prima riga periodi fino all'ultima riga con contenuto
+    ultima_riga = ws.max_row or RIGA_INIZIO_PERIODI
+    for riga in range(RIGA_INIZIO_PERIODI, ultima_riga + 1):
+        dal = ws.cell(row=riga, column=COL_DAL).value
+        al = ws.cell(row=riga, column=COL_AL).value
+
+        # Riga completamente vuota → ignora silenziosamente
+        if dal is None and al is None:
+            continue
+
+        # Riga parziale: uno dei due manca → warning e ignora
+        if dal is None or al is None:
+            logger.warning(
+                "Impostazioni, riga %d: 'Dal' o 'Al' mancante. Riga ignorata.",
+                riga,
+            )
+            continue
+
+        # Verifica che siano date native
+        if not isinstance(dal, date) or not isinstance(al, date):
+            logger.warning(
+                "Impostazioni, riga %d: 'Dal' o 'Al' non sono date valide "
+                "(trovato %s, %s). Riga ignorata.",
+                riga,
+                type(dal).__name__,
+                type(al).__name__,
+            )
+            continue
+
+        # Leggi orari
+        feriali_str = valore_come_stringa(ws.cell(row=riga, column=COL_FERIALI))
+        festivi_str = valore_come_stringa(ws.cell(row=riga, column=COL_FESTIVI))
+
+        periodi.append(
+            {
+                "dal": dal,
+                "al": al,
+                "orari_feriali": parse_orari(str(feriali_str)),
+                "orari_festivi": parse_orari(str(festivi_str)),
+            }
+        )
+
+    if not periodi:
+        logger.warning("Impostazioni: nessun periodo valido trovato nel foglio.")
+
+    return {
+        "anno": anno,
+        "nome_parrocchia": nome_parrocchia,
+        "citta": citta,
+        "periodi": periodi,
+    }
