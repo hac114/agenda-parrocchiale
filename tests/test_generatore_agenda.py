@@ -22,6 +22,8 @@ from generatore_agenda import (
     determina_tipo_giorno,
     festivita_del_giorno,
     festivo_fisso,
+    genera_agenda,
+    genera_agenda_da_profilo,
     intenzioni_del_giorno,
     matrimoni_del_giorno,
     note_del_giorno,
@@ -769,3 +771,132 @@ def test_note_del_giorno_multiple(config_con_dati: Config) -> None:
     assert len(note) == 2
     testi = {n["nota"] for n in note}
     assert testi == {"Mese mariano", "Corpus Domini"}
+
+
+# ======================================================================
+# TEST — genera_agenda
+# ======================================================================
+
+
+def test_genera_agenda_365_giorni() -> None:
+    """L'agenda 2027 ha 365 giorni."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+    assert len(calendario.giorni) == 365
+
+
+def test_genera_agenda_anno_corretto() -> None:
+    """L'anno del calendario è 2027."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+    assert calendario.anno == 2027
+
+
+def test_genera_agenda_tutti_con_orari() -> None:
+    """Tutti i giorni hanno almeno un orario."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    senza_orari = [g for g in calendario.giorni if not g.orari]
+    assert len(senza_orari) == 0, f"Giorni senza orari: {[g.data for g in senza_orari]}"
+
+
+def test_genera_agenda_ordine_cronologico() -> None:
+    """I giorni sono in ordine cronologico."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    for i in range(len(calendario.giorni) - 1):
+        assert calendario.giorni[i].data < calendario.giorni[i + 1].data
+
+
+def test_genera_agenda_primo_giorno_2027() -> None:
+    """Il primo giorno è il 1° gennaio 2027."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+    assert calendario.giorni[0].data == date(2027, 1, 1)
+
+
+def test_genera_agenda_ultimo_giorno_2027() -> None:
+    """L'ultimo giorno è il 31 dicembre 2027."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+    assert calendario.giorni[-1].data == date(2027, 12, 31)
+
+
+def test_genera_agenda_natale() -> None:
+    """Il 25 dicembre 2027 è Natale con 4 orari."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    natale = next(g for g in calendario.giorni if g.data == date(2027, 12, 25))
+    assert natale.tipo == "festivo"
+    assert natale.nome == "Natale"
+    assert len(natale.orari) == 4
+
+
+def test_genera_agenda_san_salvatore_particolare() -> None:
+    """Il 17 marzo 2027 è San Salvatore (particolare)."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    san_salvatore = next(g for g in calendario.giorni if g.data == date(2027, 3, 17))
+    assert san_salvatore.nome == "San Salvatore da Horta"
+    assert san_salvatore.particolare is True
+
+
+def test_genera_agenda_triduo_multigiorno() -> None:
+    """Il Triduo di San Salvatore copre 14-16 marzo."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    for giorno in [14, 15, 16]:
+        g = next(g for g in calendario.giorni if g.data == date(2027, 3, giorno))
+        assert g.nome == "Triduo di San Salvatore"
+        assert g.particolare is True
+
+
+def test_genera_agenda_assunta_senza_pomeriggio() -> None:
+    """Il 15 agosto 2027 (Assunta) non ha Messe pomeridiane."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    assunta = next(g for g in calendario.giorni if g.data == date(2027, 8, 15))
+    # Deve avere solo orari mattutini (< 14:00)
+    for orario in assunta.orari:
+        ore = int(orario.split(":")[0])
+        assert ore < 14, f"Orario pomeridiano trovato: {orario}"
+
+
+def test_genera_agenda_santo_stefano_orari_ridotti() -> None:
+    """Il 26 dicembre 2027 (Santo Stefano) ha orari ridotti."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    stefano = next(g for g in calendario.giorni if g.data == date(2027, 12, 26))
+    assert stefano.orari == ["10:00", "18:00"]
+
+
+def test_genera_agenda_maggio_7_messe() -> None:
+    """A maggio 2027 tutti i giorni hanno 7 Messe, tranne il 27 (Corpus Domini)."""
+    config = carica_config("san_pietro_in_silki")
+    calendario = genera_agenda(config)
+
+    maggio = [g for g in calendario.giorni if g.data.month == 5]
+    assert len(maggio) == 31
+
+    for g in maggio:
+        if g.data == date(2027, 5, 27):
+            # Corpus Domini: divieto pomeridiano → 5 orari (mattina)
+            assert (
+                len(g.orari) == 5
+            ), f"{g.data} (Corpus Domini) ha {len(g.orari)} orari invece di 5"
+        else:
+            assert len(g.orari) == 7, f"{g.data} ha {len(g.orari)} orari invece di 7"
+
+
+def test_genera_agenda_da_profilo() -> None:
+    """Il wrapper genera_agenda_da_profilo produce un calendario."""
+    calendario = genera_agenda_da_profilo("san_pietro_in_silki")
+    assert calendario.anno == 2027
+    assert len(calendario.giorni) == 365
