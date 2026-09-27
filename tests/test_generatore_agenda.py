@@ -7,8 +7,8 @@ from datetime import date
 import pytest
 
 from config import carica_config
-from dataclass_config import Config, Festa
-from generatore_agenda import determina_tipo_giorno, festivo_fisso
+from dataclass_config import Config, Festa, Periodo
+from generatore_agenda import determina_tipo_giorno, festivo_fisso, trova_periodo
 
 # ======================================================================
 # FIXTURE
@@ -112,3 +112,91 @@ def test_config_reale_san_salvatore_e_feriale() -> None:
     tipo, nome = determina_tipo_giorno(date(2027, 3, 17), config)
     assert tipo == "feriale"
     assert nome is None
+
+
+# ======================================================================
+# FIXTURE — Config con periodi
+# ======================================================================
+
+
+@pytest.fixture
+def config_con_periodi() -> Config:
+    """Config con 2 periodi per testare trova_periodo."""
+    return Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        periodi=[
+            Periodo(
+                dal=date(2027, 1, 1),
+                al=date(2027, 3, 31),
+                orari_feriali=["7:00", "10:00"],
+                orari_festivi=["8:30", "11:30"],
+            ),
+            Periodo(
+                dal=date(2027, 4, 1),
+                al=date(2027, 12, 31),
+                orari_feriali=["7:30", "11:00"],
+                orari_festivi=["9:00", "12:00"],
+            ),
+        ],
+    )
+
+
+# ======================================================================
+# TEST — trova_periodo
+# ======================================================================
+
+
+def test_trova_periodo_inverno(config_con_periodi: Config) -> None:
+    """Trova il primo periodo per una data di gennaio."""
+    p = trova_periodo(date(2027, 2, 15), config_con_periodi)
+    assert p is not None
+    assert p.dal == date(2027, 1, 1)
+    assert p.al == date(2027, 3, 31)
+
+
+def test_trova_periodo_estate(config_con_periodi: Config) -> None:
+    """Trova il secondo periodo per una data di luglio."""
+    p = trova_periodo(date(2027, 7, 15), config_con_periodi)
+    assert p is not None
+    assert p.dal == date(2027, 4, 1)
+    assert p.al == date(2027, 12, 31)
+
+
+def test_trova_periodo_confine(config_con_periodi: Config) -> None:
+    """Le date di confine sono incluse."""
+    p1 = trova_periodo(date(2027, 3, 31), config_con_periodi)
+    assert p1 is not None
+    assert p1.dal == date(2027, 1, 1)
+
+    p2 = trova_periodo(date(2027, 4, 1), config_con_periodi)
+    assert p2 is not None
+    assert p2.dal == date(2027, 4, 1)
+
+
+def test_trova_periodo_nessuno(config_minima: Config) -> None:
+    """Nessun periodo trovato → None."""
+    # config_minima non ha periodi
+    p = trova_periodo(date(2027, 6, 15), config_minima)
+    assert p is None
+
+
+def test_trova_periodo_config_reale_2027() -> None:
+    """Con la Config reale, trova il periodo giusto per diverse date."""
+    config = carica_config("san_pietro_in_silki")
+
+    # Ottobre 2027 = inverno
+    p = trova_periodo(date(2027, 10, 15), config)
+    assert p is not None
+    assert p.dal == date(2027, 10, 1)
+
+    # Maggio 2027 = mese mariano
+    p = trova_periodo(date(2027, 5, 15), config)
+    assert p is not None
+    assert p.dal == date(2027, 5, 1)
+    assert p.orari_feriali == ["6:15", "7:00", "8:30", "10:00", "11:30", "17:30", "18:30"]
+
+    # Luglio 2027 = estate
+    p = trova_periodo(date(2027, 7, 15), config)
+    assert p is not None
+    assert p.dal == date(2027, 7, 1)
