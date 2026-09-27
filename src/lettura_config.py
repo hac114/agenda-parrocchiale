@@ -940,7 +940,10 @@ def unisci_config(dati_yaml: dict, dati_excel: dict) -> Config:
 # ======================================================================
 
 
-def carica_config(profilo: str) -> Config:
+def carica_config(
+    profilo: str,
+    cartella_configs: Path | None = None,
+) -> Config:
     """Carica la configurazione completa di un profilo.
 
     Legge:
@@ -951,6 +954,8 @@ def carica_config(profilo: str) -> Config:
 
     Args:
         profilo: nome del profilo (es. "san_pietro_in_silki")
+        cartella_configs: percorso alla cartella "configs" (opzionale).
+            Se None, usa il default: <root_progetto>/configs
 
     Returns:
         Oggetto Config completo.
@@ -962,8 +967,11 @@ def carica_config(profilo: str) -> Config:
     # ------------------------------------------------------------------
     # Percorsi
     # ------------------------------------------------------------------
-    root_progetto = Path(__file__).resolve().parent.parent
-    profilo_dir = root_progetto / "configs" / profilo
+    if cartella_configs is None:
+        root_progetto = Path(__file__).resolve().parent.parent
+        cartella_configs = root_progetto / "configs"
+
+    profilo_dir = cartella_configs / profilo
 
     if not profilo_dir.exists():
         raise FileNotFoundError(f"Profilo non trovato: {profilo_dir}")
@@ -1008,6 +1016,9 @@ def carica_config(profilo: str) -> Config:
     note: list[dict] = []
     if "Note" in wb.sheetnames:
         note = leggi_foglio_note(wb["Note"])
+
+    # Chiudi il workbook (buona pratica)
+    wb.close()
 
     # Combina i dati Excel
     dati_excel = {

@@ -11,6 +11,7 @@ from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 from lettura_config import (
+    carica_config,
     leggi_foglio_impostazioni,
     leggi_foglio_intenzioni,
     leggi_foglio_matrimoni,
@@ -721,3 +722,38 @@ def test_unisci_config_periodi() -> None:
     assert len(config.periodi) == 1
     assert config.periodi[0].dal == date(2027, 1, 1)
     assert config.periodi[0].orari_feriali == ["7:00"]
+
+
+# ======================================================================
+# TEST — carica_config
+# ======================================================================
+
+
+def test_carica_config_profilo_inesistente(tmp_path: Path) -> None:
+    """Un profilo inesistente solleva FileNotFoundError."""
+    with pytest.raises(FileNotFoundError, match="Profilo non trovato"):
+        carica_config("profilo_inesistente", cartella_configs=tmp_path)
+
+
+def test_carica_config_yaml_mancante(tmp_path: Path) -> None:
+    """Un profilo senza regole.yaml solleva FileNotFoundError."""
+    profilo_dir = tmp_path / "test_profilo"
+    profilo_dir.mkdir()
+
+    with pytest.raises(FileNotFoundError, match="regole.yaml non trovato"):
+        carica_config("test_profilo", cartella_configs=tmp_path)
+
+
+def test_carica_config_excel_mancante(tmp_path: Path) -> None:
+    """Un profilo senza config.xlsx solleva FileNotFoundError."""
+    profilo_dir = tmp_path / "test_profilo"
+    profilo_dir.mkdir()
+
+    # Crea solo regole.yaml
+    (profilo_dir / "regole.yaml").write_text(
+        'nome_parrocchia: "Test"\ncitta: "Roma"\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(FileNotFoundError, match="config.xlsx non trovato"):
+        carica_config("test_profilo", cartella_configs=tmp_path)
