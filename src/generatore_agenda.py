@@ -144,3 +144,28 @@ def trova_periodo(data: date, config: Config) -> Periodo | None:
         data,
     )
     return None
+
+
+def orari_per_giorno(data: date, tipo: str, config: Config) -> list[str]:
+    """Restituisce gli orari delle Messe per un giorno.
+
+    Regola:
+    - Giorno feriale → orari_feriali del periodo attivo
+    - Domenica, festivo, solennità → orari_festivi del periodo attivo
+
+    Args:
+        data: data del giorno
+        tipo: tipo del giorno ("feriale" | "domenica" | "festivo" | "solennita")
+        config: Config con i periodi
+
+    Returns:
+        Lista di orari. Lista vuota se nessun periodo trovato.
+    """
+    periodo = trova_periodo(data, config)
+    if periodo is None:
+        return []
+
+    if tipo == "feriale":
+        return list(periodo.orari_feriali)
+    # Domenica, festivo, solennità → orari festivi
+    return list(periodo.orari_festivi)

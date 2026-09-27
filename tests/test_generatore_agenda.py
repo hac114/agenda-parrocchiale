@@ -8,7 +8,12 @@ import pytest
 
 from config import carica_config
 from dataclass_config import Config, Festa, Periodo
-from generatore_agenda import determina_tipo_giorno, festivo_fisso, trova_periodo
+from generatore_agenda import (
+    determina_tipo_giorno,
+    festivo_fisso,
+    orari_per_giorno,
+    trova_periodo,
+)
 
 # ======================================================================
 # FIXTURE
@@ -200,3 +205,89 @@ def test_trova_periodo_config_reale_2027() -> None:
     p = trova_periodo(date(2027, 7, 15), config)
     assert p is not None
     assert p.dal == date(2027, 7, 1)
+
+
+# ======================================================================
+# TEST — orari_per_giorno
+# ======================================================================
+
+
+def test_orari_per_giorno_feriale(config_con_periodi: Config) -> None:
+    """Un giorno feriale usa gli orari feriali del periodo."""
+    orari = orari_per_giorno(date(2027, 2, 15), "feriale", config_con_periodi)
+    assert orari == ["7:00", "10:00"]
+
+
+def test_orari_per_giorno_domenica(config_con_periodi: Config) -> None:
+    """Una domenica usa gli orari festivi del periodo."""
+    orari = orari_per_giorno(date(2027, 2, 15), "domenica", config_con_periodi)
+    assert orari == ["8:30", "11:30"]
+
+
+def test_orari_per_giorno_festivo(config_con_periodi: Config) -> None:
+    """Un festivo usa gli orari festivi del periodo."""
+    orari = orari_per_giorno(date(2027, 2, 15), "festivo", config_con_periodi)
+    assert orari == ["8:30", "11:30"]
+
+
+def test_orari_per_giorno_solennita(config_con_periodi: Config) -> None:
+    """Una solennità usa gli orari festivi del periodo."""
+    orari = orari_per_giorno(date(2027, 2, 15), "solennita", config_con_periodi)
+    assert orari == ["8:30", "11:30"]
+
+
+def test_orari_per_giorno_secondo_periodo(config_con_periodi: Config) -> None:
+    """Se la data è nel secondo periodo, usa i suoi orari."""
+    orari = orari_per_giorno(date(2027, 7, 15), "feriale", config_con_periodi)
+    assert orari == ["7:30", "11:00"]
+
+
+def test_orari_per_giorno_nessun_periodo(config_minima: Config) -> None:
+    """Nessun periodo trovato → lista vuota."""
+    # config_minima non ha periodi
+    orari = orari_per_giorno(date(2027, 6, 15), "feriale", config_minima)
+    assert orari == []
+
+
+def test_orari_per_giorno_non_modifica_originale(config_con_periodi: Config) -> None:
+    """La lista restituita è una copia, non l'originale."""
+    orari = orari_per_giorno(date(2027, 2, 15), "feriale", config_con_periodi)
+    orari.append("99:99")  # modifica la copia
+
+    # Gli orari originali del periodo non sono cambiati
+    assert config_con_periodi.periodi[0].orari_feriali == ["7:00", "10:00"]
+
+
+# ======================================================================
+# TEST INTEGRATIVI (con Config reale)
+# ======================================================================
+
+
+def test_orari_per_giorno_config_reale_inverno_feriale() -> None:
+    """Inverno, feriale → 3 orari."""
+    config = carica_config("san_pietro_in_silki")
+    orari = orari_per_giorno(date(2027, 10, 15), "feriale", config)
+    assert orari == ["7:00", "10:00", "18:00"]
+
+
+def test_orari_per_giorno_config_reale_inverno_domenica() -> None:
+    """Inverno, domenica → 4 orari."""
+    config = carica_config("san_pietro_in_silki")
+    orari = orari_per_giorno(date(2027, 10, 17), "domenica", config)
+    assert orari == ["8:30", "10:00", "11:30", "18:00"]
+
+
+def test_orari_per_giorno_config_reale_maggio() -> None:
+    """Maggio → 7 orari (mese mariano)."""
+    config = carica_config("san_pietro_in_silki")
+    orari = orari_per_giorno(date(2027, 5, 15), "feriale", config)
+    assert len(orari) == 7
+    assert orari[0] == "6:15"
+    assert orari[-1] == "18:30"
+
+
+def test_orari_per_giorno_config_reale_estate_festivo() -> None:
+    """Luglio, festivo → orari con 21:00."""
+    config = carica_config("san_pietro_in_silki")
+    orari = orari_per_giorno(date(2027, 7, 15), "festivo", config)
+    assert "21:00" in orari
