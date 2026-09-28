@@ -37,7 +37,9 @@ configs/*/config.xlsx
 !configs/_template/config.xlsx
 
 # Backup delle configurazioni (contengono dati personali!)
-configs/*/.backup/
+# Ignora tutto il contenuto, ma mantieni il .gitkeep per far esistere la cartella
+configs/*/.backup/*
+!configs/*/.backup/.gitkeep
 
 # PDF generati (contengono dati personali)
 output/*.pdf
