@@ -2,24 +2,214 @@
 
 Generatore automatico di agende liturgiche per parrocchie e santuari.
 
-Produce un PDF impaginato (formato tipografico) partendo da un file Excel
-compilato dall'utente + regole liturgiche configurabili in YAML.
+Produce un **PDF impaginato per la tipografia** (A4 verticale) partendo da:
+- Un file **Excel** compilato dall'utente (dati annuali: orari, intenzioni, matrimoni)
+- Un file **YAML** con le regole liturgiche (feste, ricorrenze, divieti)
+
+L'agenda è **multi-profilo**: ogni parrocchia ha la sua configurazione.
+
+---
 
 ## Caratteristiche
 
-- Calcolo automatico del calendario liturgico (Pasqua, feste mobili)
-- Orari stagionali configurabili (inverno, estate, maggio, ecc.)
-- Divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
-- Ricorrenze proprie del santuario (es. San Salvatore da Horta)
-- Registro intenzioni di Messa
-- Output PDF pronto per la tipografia (A4 verticale, fronte/retro)
-- Multi-profilo: una configurazione per ogni parrocchia
+- ✅ Calcolo automatico del calendario liturgico (Pasqua, feste mobili)
+- ✅ Orari stagionali configurabili (inverno, estate, maggio, ecc.)
+- ✅ Divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
+- ✅ Ricorrenze proprie del santuario (es. San Salvatore da Horta, Triduo)
+- ✅ Nove mercoledì di San Salvatore (calcolo automatico)
+- ✅ Festa del Voto con slittamento automatico se coincide con Corpus Domini
+- ✅ Registro intenzioni di Messa
+- ✅ Spazio per matrimoni dell'anno successivo
+- ✅ Output PDF pronto per la tipografia (A4 verticale)
+- ✅ Sistema di raccolta warning con riepilogo finale
 
-## Installazione
+---
+
+## Requisiti
+
+### Software necessario
+
+| Sistema | Requisito |
+|---|---|
+| **Windows** | Python 3.12+ (consigliato 3.13), Microsoft Excel o LibreOffice |
+| **Linux** | Python 3.12+, LibreOffice |
+| **macOS** | Python 3.12+, LibreOffice |
+
+### Librerie di sistema (Linux)
+
+Per WeasyPrint (generazione PDF) servono alcune librerie di sistema:
 
 ```bash
-git clone https://github.com/<tuo-utente>/agenda-parrocchiale.git
-cd agenda-parrocchiale
+sudo apt install libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 libffi-dev shared-mime-info -y
+```
+## Installazione
+
+### 1. Clona il repository
+    git clone https://github.com/<tuo-utente>/agenda-parrocchiale.git
+    cd agenda-parrocchiale
+
+### 2. Crea l'ambiente virtuale
+#### Linux / macOS:
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```    
+#### Windows (PowerShell):
+```Powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+#### Windows (Prompt dei comandi):
+```cmd
+python -m venv .venv
+.venv\Scripts\activate.bat
+```
+
+### 3. Installa le dipendenze
+```pip
+pip install --upgrade pip
 pip install -r requirements.txt
+```    
+
+## Utilizzo
+Primo avvio — Genera la configurazione
+Il primo passo è creare il file config.xlsx (Excel) per la tua parrocchia.
+
+### Linux:
+```bash
+./scripts/genera_agenda.sh san_pietro_in_silki 2027
+```
+
+### Windows:
+```cmd
+scripts\genera_agenda.bat san_pietro_in_silki 2027
+```
+### Lo script fa tutto automaticamente:
+1. Genera il file configs/<profilo>/config.xlsx
+2. Calcola il calendario liturgico per l'anno
+3. Produce il PDF output/Agenda_2027.pdf
+
+### Compilare il file Excel
+Apri configs/<profilo>/config.xlsx con Excel o LibreOffice e compila i 4 fogli:
+
+| Foglio | Cosa contiene |
+|---|---|
+| **Impostazioni** | Anno, nome parrocchia, città, periodi stagionali |
+| **Intenzioni** | Registro delle intenzioni di Messa |
+| **Matrimoni** | Prenotazioni matrimoni per l'anno successivo |
+| **Note** | Annotazioni libere (triduo, mese mariano, ecc.) |
+
+Le celle GIALLE sono compilabili. Le altre sono protette.
+
+### Rigenerare il PDF
+Dopo aver compilato l'Excel, rigenera il PDF:
+
+### Linux:
+```bash
+./scripts/genera_agenda.sh san_pietro_in_silki 2027
+```
+### Windows (cmd):
+```cmd
+scripts\genera_agenda.bat san_pietro_in_silki 2027
+```
+**Attenzione: chiudi Excel/LibreOffice prima di rigenerare il PDF.**
+
+## ⚠️ Risoluzione problemi comuni
+Il nome della parrocchia non si aggiorna in Excel
+Causa: Excel o LibreOffice tiene in memoria una versione precedente del file.
+
+### Soluzione:
+#### LibreOffice:
+1. Chiudi completamente LibreOffice (non solo il file)
+2. Verifica che non ci siano processi attivi:
+### Linux:            
+```bash
+pkill soffice o killall soffice.bin
+```
+3. Riapri il file
+
+#### Windows:
+1. Apri Task Manager → cerca "soffice" → Termina
+2. Riapri il file
+    
+#### Microsoft Excel:
+1. Chiudi completamente Excel
+2. Verifica che non ci siano processi attivi:
+Windows: Task Manager → cerca "EXCEL.EXE" → Termina
+3. Riapri il file
+
+**Verifica:** il file Excel su disco è corretto? Apri un terminale e controlla:
+
+```bash
+python -c "
+import sys; sys.path.insert(0, 'src')
+from openpyxl import load_workbook
+wb = load_workbook('configs/san_pietro_in_silki/config.xlsx')
+print(wb['Impostazioni']['B6'].value)
+"
+```
+
+**Se stampa il nome corretto, il problema è solo la cache dell'editor.**
+
+### WeasyPrint non si installa su Linux
+**Errore tipico: OSError: cannot load library 'libgobject-2.0-0'.**
+
+#### Soluzione:
+```bash
+sudo apt install libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 libffi-dev shared-mime-info -y
+```
+#### Poi riprova:
+```pip
+pip install -r requirements.txt
+```
+### Il PDF generato contiene errori
+Controlla i warning emessi durante la generazione. Lo script mostra un riepilogo:
+
+```text
+⚠️  ATTENZIONE: 3 problemi rilevati durante la lettura
+Vuoi comunque procedere? [y/N]:
+```
+**Rispondi n per correggere, y per procedere comunque.**
+
+agenda-parrocchiale/
+├── configs/                    # Una cartella per parrocchia
+│   ├── _template/              # Modello vuoto
+│   └── nome_parrocchia/        # Profilo reale
+│       ├── config.xlsx         # Excel (dati annuali)
+│       └── regole.yaml         # YAML (regole stabili)
+├── docs/                       # Documentazione
+│   ├── GUIDA_UTENTE.md
+│   └── ARCHITETTURA.md
+├── output/                     # PDF generati
+├── scripts/                    # Launcher .sh / .bat
+├── src/                        # Codice Python
+├── templates/                  # Template HTML/CSS
+├── tests/                      # Test pytest
+├── requirements.txt
+└── README.md
+
+Documentazione
+1. Guida utente — come compilare l'agenda (per il frate responsabile)
+2. Architettura — scelte tecniche e struttura del codice
+
+Sviluppo
+Test
+bash
+    pytest tests/ -v
+
+Coverage
+bash
+    pytest tests/ --cov=src --cov-report=term-missing
+
+Qualità del codice
+bash
+    black src/ tests/          # formattazione
+    isort src/ tests/          # ordinamento import
+    mypy src/                  # type checking
+    flake8 src/ tests/         # linting
+
+Licenza
+Vedi LICENSE.
+
+Contatti
+Per problemi o domande: apri una issue su GitHub.
