@@ -45,14 +45,14 @@ CARTELLA_OUTPUT = ROOT_PROGETTO / "output"
 # ======================================================================
 
 
-def _configura_jinja() -> Environment:
+def configura_jinja() -> Environment:
     """Configura l'ambiente Jinja2 per il rendering dei template.
 
     Returns:
         Environment configurato con il FileSystemLoader puntato
         alla cartella templates/.
     """
-    env = Environment(
+    env: Environment = Environment(
         loader=FileSystemLoader(str(CARTELLA_TEMPLATES)),
         autoescape=select_autoescape(["html", "xml"]),
         trim_blocks=True,
@@ -135,7 +135,7 @@ def renderizza_registro_intenzioni(config: Config, env: Environment) -> str:
 # ======================================================================
 
 
-def _leggi_css() -> str:
+def leggi_css() -> str:
     """Legge il CSS da templates/style.css.
 
     Returns:
@@ -150,7 +150,7 @@ def _leggi_css() -> str:
     return percorso_css.read_text(encoding="utf-8")
 
 
-def _assembla_html(config: Config, calendario: CalendarioAgenda, env: Environment) -> str:
+def assembla_html(config: Config, calendario: CalendarioAgenda, env: Environment) -> str:
     """Assembla l'HTML completo dell'agenda.
 
     Ordine:
@@ -167,23 +167,23 @@ def _assembla_html(config: Config, calendario: CalendarioAgenda, env: Environmen
         HTML completo come stringa.
     """
     # CSS inline
-    css = _leggi_css()
+    css = leggi_css()
 
     # Copertina
     html_copertina = renderizza_copertina(config, env)
 
     # Estrai il body della copertina (senza <head>)
-    copertina_body = _estrai_body(html_copertina)
+    copertina_body = estrai_body(html_copertina)
 
     # Pagine giorno
     pagine_giorni: list[str] = []
     for giorno in calendario.giorni:
         html_giorno = renderizza_giorno(giorno, config, env)
-        pagine_giorni.append(_estrai_body(html_giorno))
+        pagine_giorni.append(estrai_body(html_giorno))
 
     # Registro intenzioni
     html_registro = renderizza_registro_intenzioni(config, env)
-    registro_body = _estrai_body(html_registro)
+    registro_body = estrai_body(html_registro)
 
     # Assembla tutto in un unico documento
     html_completo = f"""<!DOCTYPE html>
@@ -205,7 +205,7 @@ def _assembla_html(config: Config, calendario: CalendarioAgenda, env: Environmen
     return html_completo
 
 
-def _estrai_body(html: str) -> str:
+def estrai_body(html: str) -> str:
     """Estrae il contenuto del <body> da un HTML completo.
 
     Args:
@@ -245,11 +245,11 @@ def genera_pdf(
         percorso_output = CARTELLA_OUTPUT / f"Agenda_{config.anno}.pdf"
 
     # Configura Jinja2
-    env = _configura_jinja()
+    env = configura_jinja()
 
     # Assembla HTML
     logger.info("Assemblaggio HTML per l'anno %d...", config.anno)
-    html = _assembla_html(config, calendario, env)
+    html = assembla_html(config, calendario, env)
 
     # Genera PDF
     logger.info("Generazione PDF in %s...", percorso_output)
