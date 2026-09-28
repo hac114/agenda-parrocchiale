@@ -1,7 +1,8 @@
-=====================================================================
+# Informazioni Consolidate — Agenda Santuario 2027
+**Documento unico con tutte le risposte ai 3 questionari.**
+---
 INFORMAZIONI CONSOLIDATE — AGENDA SANTUARIO 2027
 Documento unico con tutte le risposte ai 3 questionari
-=====================================================================
 
 ---------------------------------------------------------------------
 1. CONTESTO TECNICO
@@ -120,34 +121,34 @@ Nota: il divieto riguarda SOLO il pomeriggio, la mattina si celebra.
 ---------------------------------------------------------------------
 8. CELEBRAZIONI PARTICOLARI DEL SANTUARIO (2027)
 ---------------------------------------------------------------------
-1 gennaio        Solennità della Madre di Dio
-6 gennaio        Solennità dell'Epifania
-14-16 marzo      Triduo San Salvatore
-17 e 18 marzo    Festa San Salvatore
-19 marzo         Solennità San Giuseppe
-1 maggio         Inaugurazione mese mariano
-9 maggio         Festa Beata Vergine delle Grazie
-Ultima domenica  Festa del Voto (slitta a 1^ dom. giugno se
-di maggio        coincide con Corpus Domini → nel 2027 slitta)
-2 agosto         Solennità Perdono di Assisi
-11 agosto        Solennità Santa Chiara
-15 agosto        Solennità Assunta (no messa pomeriggio)
-25 agosto        Memoria San Ludovico
-1-7 settembre    Ottavario Natività BVM
-8 settembre      Festa Natività della BVMaria
-28 settembre     Memoria Beato Bernardino da Feltre
+- 1 gennaio        Solennità della Madre di Dio
+- 6 gennaio        Solennità dell'Epifania
+- 14-16 marzo      Triduo San Salvatore
+- 17 e 18 marzo    Festa San Salvatore
+- 19 marzo         Solennità San Giuseppe
+- 1 maggio         Inaugurazione mese mariano
+- 9 maggio         Festa Beata Vergine delle Grazie
+- Ultima domenica  Festa del Voto (slitta a 1^ dom. giugno se
+- di maggio        coincide con Corpus Domini → nel 2027 slitta)
+- 2 agosto         Solennità Perdono di Assisi
+- 11 agosto        Solennità Santa Chiara
+- 15 agosto        Solennità Assunta (no messa pomeriggio)
+- 25 agosto        Memoria San Ludovico
+- 1-7 settembre    Ottavario Natività BVM
+- 8 settembre      Festa Natività della BVMaria
+- 28 settembre     Memoria Beato Bernardino da Feltre
                  (NON si celebra se cade di domenica)
-1-3 ottobre      Triduo San Francesco
-4 ottobre        Solennità San Francesco
-31 ottobre       Notte dei Santuari
-1 novembre       Solennità Tutti i Santi
-2 novembre       Commemorazione defunti
-29 nov - 7 dic   Novena dell'Immacolata
-6 dicembre       San Nicola (no messa pomeriggio)
-8 dicembre       Solennità Immacolata Concezione
-15-23 dicembre   Novena di Natale
-25 dicembre      Solennità Natale
-26 dicembre      Festa Santo Stefano
+- 1-3 ottobre      Triduo San Francesco
+- 4 ottobre        Solennità San Francesco
+- 31 ottobre       Notte dei Santuari
+- 1 novembre       Solennità Tutti i Santi
+- 2 novembre       Commemorazione defunti
+- 29 nov - 7 dic   Novena dell'Immacolata
+- 6 dicembre       San Nicola (no messa pomeriggio)
+- 8 dicembre       Solennità Immacolata Concezione
+- 15-23 dicembre   Novena di Natale
+- 25 dicembre      Solennità Natale
+- 26 dicembre      Festa Santo Stefano
                  (messe SOLO alle 10:00 e 18:00)
 
 Nelle Solennità le messe seguono l'orario della domenica.
@@ -195,14 +196,14 @@ Nelle Solennità le messe seguono l'orario della domenica.
 ---------------------------------------------------------------------
 13. AUTOMAZIONE DESIDERATA
 ---------------------------------------------------------------------
-Cambiando solo l'anno (es. 2027 → 2028), deve aggiornare:
-    * date e giorni della settimana
-    * Pasqua e feste mobili
-    * periodo stagionale (orari estate/inverno)
-    * maggio con 7 Messe
-    * divieti pomeridiani
-    * Triduo e 9 mercoledì di San Salvatore
-    * generazione PDF impaginato
+- Cambiando solo l'anno (es. 2027 → 2028), deve aggiornare:
+   - date e giorni della settimana
+   - Pasqua e feste mobili
+   - periodo stagionale (orari estate/inverno)
+   - maggio con 7 Messe
+   - divieti pomeridiani
+   - Triduo e 9 mercoledì di San Salvatore
+   - generazione PDF impaginato
 - Strumento scelto: EXCEL + PYTHON
 - Utente vuole CAPIRE come funziona
 - Preferisce semplicità d'uso
@@ -224,6 +225,6 @@ Cambiando solo l'anno (es. 2027 → 2028), deve aggiornare:
   con Corpus Domini" (nel 2027: 30 maggio = Corpus Domini)
 - Spazio matrimoni 2028: in fondo all'agenda
 
-=====================================================================
+
 FINE DOCUMENTO — 27/09/2026
-=====================================================================
+

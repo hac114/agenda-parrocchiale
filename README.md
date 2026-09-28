@@ -45,9 +45,10 @@ sudo apt install libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 
 ## Installazione
 
 ### 1. Clona il repository
-    git clone https://github.com/<tuo-utente>/agenda-parrocchiale.git
-    cd agenda-parrocchiale
-
+```bash
+git clone https://github.com/hac114/agenda-parrocchiale.git
+cd agenda-parrocchiale
+```
 ### 2. Crea l'ambiente virtuale
 #### Linux / macOS:
 ```bash
@@ -122,7 +123,7 @@ Causa: Excel o LibreOffice tiene in memoria una versione precedente del file.
 #### LibreOffice:
 1. Chiudi completamente LibreOffice (non solo il file)
 2. Verifica che non ci siano processi attivi:
-### Linux:            
+#### Linux:            
 ```bash
 pkill soffice o killall soffice.bin
 ```
@@ -171,45 +172,95 @@ Vuoi comunque procedere? [y/N]:
 ```
 **Rispondi n per correggere, y per procedere comunque.**
 
+## Struttura del progetto
+
+```
 agenda-parrocchiale/
-├── configs/                    # Una cartella per parrocchia
-│   ├── _template/              # Modello vuoto
-│   └── nome_parrocchia/        # Profilo reale
-│       ├── config.xlsx         # Excel (dati annuali)
-│       └── regole.yaml         # YAML (regole stabili)
-├── docs/                       # Documentazione
-│   ├── GUIDA_UTENTE.md
-│   └── ARCHITETTURA.md
-├── output/                     # PDF generati
-├── scripts/                    # Launcher .sh / .bat
-├── src/                        # Codice Python
-├── templates/                  # Template HTML/CSS
-├── tests/                      # Test pytest
-├── requirements.txt
-└── README.md
+├── configs/                       # Una cartella per parrocchia
+│   ├── _template/                 # Modello vuoto (da copiare)
+│   │   ├── .backup/               # Backup automatici
+│   │   ├── config.xlsx            # Excel (dati annuali)
+│   │   └── regole.yaml            # YAML (regole stabili)
+│   └── san_pietro_in_silki/       # Profilo reale
+│       ├── .backup/
+│       ├── config.xlsx
+│       └── regole.yaml
+│
+├── docs/                          # Documentazione
+│   ├── ARCHITETTURA.md            # Scelte tecniche
+│   ├── GUIDA_UTENTE.md            # Per il frate responsabile
+│   ├── INFO_CONSOLIDATE.md        # Riepilogo requisiti
+│   └── README.md                  # Indice docs
+│
+├── output/                        # PDF generati
+│   ├── Agenda_2027.pdf            # (ignorato da Git)
+│   └── .gitkeep
+│
+├── scripts/                       # Launcher per l'utente finale
+│   ├── genera_agenda.bat          # Per Windows
+│   └── genera_agenda.sh           # Per Linux/macOS
+│
+├── src/                           # Codice Python
+│   ├── calcolo_liturgico.py       # Pasqua, feste mobili
+│   ├── config.py                  # carica_config, unisci_config
+│   ├── crea_config_template.py    # Generatore config.xlsx
+│   ├── dataclass_config.py        # Dataclass condivise
+│   ├── fogli_excel.py             # Creazione 4 fogli Excel
+│   ├── generatore_agenda.py       # Calendario giorno per giorno
+│   ├── generatore_pdf.py          # HTML → PDF (WeasyPrint)
+│   ├── lettura_excel.py           # Lettura config.xlsx
+│   ├── lettura_yaml.py            # Lettura regole.yaml
+│   ├── stili.py                   # Stili Excel (colori, font)
+│   └── util.py                    # Utility (logging, formattazione)
+│
+├── templates/                     # Template HTML/CSS per PDF
+│   ├── agenda.html                # Pagina giorno
+│   ├── copertina.html             # Copertina
+│   ├── registro_intenzioni.html   # Registro intenzioni
+│   └── style.css                  # Stile A4
+│
+├── tests/                         # Test pytest
+│   ├── test_calcolo_liturgico.py
+│   ├── test_config.py
+│   ├── test_dataclass_config.py
+│   ├── test_fogli_excel.py
+│   ├── test_generatore_agenda.py
+│   ├── test_generatore_pdf.py
+│   ├── test_lettura_excel.py
+│   ├── test_lettura_yaml.py
+│   ├── test_stili.py
+│   └── test_util.py
+│
+├── .gitignore
+├── conftest.py                    # Configurazione pytest
+├── LICENSE
+├── pyproject.toml
+├── README.md
+└── requirements.txt
+```
 
-Documentazione
-1. Guida utente — come compilare l'agenda (per il frate responsabile)
-2. Architettura — scelte tecniche e struttura del codice
+## Documentazione
+1. **Guida utente** — come compilare l'agenda (per il frate responsabile)
+2. **Architettura** — scelte tecniche e struttura del codice
 
-Sviluppo
-Test
-bash
-    pytest tests/ -v
-
-Coverage
-bash
-    pytest tests/ --cov=src --cov-report=term-missing
-
-Qualità del codice
-bash
-    black src/ tests/          # formattazione
-    isort src/ tests/          # ordinamento import
-    mypy src/                  # type checking
-    flake8 src/ tests/         # linting
-
-Licenza
+#### Sviluppo Test
+```bash
+pytest tests/ -v
+```
+#### Coverage
+```bash
+pytest tests/ --cov=src --cov-report=term-missing
+```
+#### Qualità del codice
+```bash
+black src/ tests/          # formattazione
+isort src/ tests/          # ordinamento import
+mypy src/                  # type checking
+flake8 src/ tests/         # linting
+```
+## Licenza
 Vedi LICENSE.
 
-Contatti
-Per problemi o domande: apri una issue su GitHub.
+## Contatti
+
+Per problemi o domande: [apri una issue](https://github.com/hac114/agenda-parrocchiale/issues) su GitHub.
