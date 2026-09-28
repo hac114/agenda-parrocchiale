@@ -4,7 +4,14 @@ from __future__ import annotations
 
 import logging
 
-from util import WarningCollector, valore_come_stringa
+import pytest
+
+from util import (
+    WarningCollector,
+    configura_logging,
+    mostra_riepilogo_warning,
+    valore_come_stringa,
+)
 
 # ======================================================================
 # TEST — WarningCollector
@@ -95,3 +102,68 @@ def test_valore_come_stringa_float() -> None:
     """Float → stringa del float."""
     cella = CellaFinta(3.14)
     assert valore_come_stringa(cella) == "3.14"
+
+
+# ======================================================================
+# TEST — configura_logging
+# ======================================================================
+
+
+def test_configura_logging_restituisce_collector() -> None:
+    """configura_logging restituisce un WarningCollector."""
+    collector = configura_logging()
+    assert isinstance(collector, WarningCollector)
+
+
+def test_configura_logging_aggiunge_handler() -> None:
+    """configura_logging aggiunge il collector al logger root."""
+    collector = configura_logging()
+
+    # Emette un warning per verificare che il collector lo catturi
+    logger = logging.getLogger("test_configura_logging")
+    logger.warning("Test warning")
+
+    assert collector.conta_warning() >= 1
+
+
+# ======================================================================
+# TEST — mostra_riepilogo_warning
+# ======================================================================
+
+
+def test_mostra_riepilogo_senza_warning() -> None:
+    """Se non ci sono warning, restituisce True senza chiedere nulla."""
+    collector = WarningCollector()
+    assert mostra_riepilogo_warning(collector) is True
+
+
+def test_mostra_riepilogo_con_warning_yes(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Con warning e risposta 'y' → True."""
+    collector = WarningCollector()
+    collector.warnings.append("Test warning")
+
+    # Simula input dell'utente: "y"
+    monkeypatch.setattr("builtins.input", lambda _: "y")
+
+    assert mostra_riepilogo_warning(collector) is True
+
+
+def test_mostra_riepilogo_con_warning_no(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Con warning e risposta 'n' → False."""
+    collector = WarningCollector()
+    collector.warnings.append("Test warning")
+
+    # Simula input dell'utente: "n"
+    monkeypatch.setattr("builtins.input", lambda _: "n")
+
+    assert mostra_riepilogo_warning(collector) is False
+
+
+def test_mostra_riepilogo_con_warning_si(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Con warning e risposta 'sì' → True."""
+    collector = WarningCollector()
+    collector.warnings.append("Test warning")
+
+    monkeypatch.setattr("builtins.input", lambda _: "sì")
+
+    assert mostra_riepilogo_warning(collector) is True
