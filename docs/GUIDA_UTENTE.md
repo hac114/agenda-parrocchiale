@@ -32,7 +32,7 @@ formato PDF, pronto per essere mandato in tipografia.
 - Rispetta i divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
 - Inserisce le ricorrenze proprie (Triduo San Salvatore, Nove Mercoledì)
 - Compila il registro delle intenzioni di Messa
-- - Aggiunge in fondo una pagina dedicata alle prenotazioni dei matrimoni degli anni successivi
+- Aggiunge in fondo una pagina dedicata alle prenotazioni dei matrimoni degli anni successivi
 
 **Cosa devi fare tu:**
 - Compilare un file Excel con gli orari, le intenzioni, i matrimoni
