@@ -25,6 +25,7 @@ from datetime import date, timedelta
 from calcolo_liturgico import calcola_corpus_domini, calcola_tutte_date_mobili
 from config import carica_config
 from dataclass_config import Config, Intenzione, Matrimonio, Periodo, Ricorrenza
+from util import formatta_data_italiana
 
 logger = logging.getLogger(__name__)
 
@@ -601,3 +602,43 @@ def genera_agenda_da_profilo(profilo: str) -> CalendarioAgenda:
     """
     config = carica_config(profilo)
     return genera_agenda(config)
+
+
+def matrimoni_futuri(config: Config) -> list[dict]:
+    """Restituisce i matrimoni prenotati per gli anni successivi.
+
+    Filtra `config.matrimoni_prenotati` tenendo solo quelli con anno
+    strettamente maggiore dell'anno dell'agenda (config.anno).
+
+    Ogni matrimonio è restituito come dict con i campi:
+    - data: date
+    - data_formattata: str (formato italiano, es. "15 giugno 2028")
+    - ora: str
+    - nome_sposi: str
+
+    Args:
+        config: Config con anno e matrimoni_prenotati
+
+    Returns:
+        Lista di dict ordinati per data crescente.
+    """
+    anno_agenda = config.anno
+    futuri: list[dict] = []
+
+    for m in config.matrimoni_prenotati:
+        if m.data is None:
+            continue
+        if m.data.year > anno_agenda:
+            futuri.append(
+                {
+                    "data": m.data,
+                    "data_formattata": formatta_data_italiana(m.data),
+                    "ora": m.ora,
+                    "nome_sposi": m.nome_sposi,
+                }
+            )
+
+    # Ordina per data crescente
+    futuri.sort(key=lambda x: x["data"])
+
+    return futuri

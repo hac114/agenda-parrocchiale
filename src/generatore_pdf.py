@@ -185,23 +185,28 @@ def assembla_html(config: Config, calendario: CalendarioAgenda, env: Environment
     html_registro = renderizza_registro_intenzioni(config, env)
     registro_body = estrai_body(html_registro)
 
+    # Matrimoni futuri
+    html_matrimoni = renderizza_matrimoni_futuri(config, env)
+    matrimoni_body = estrai_body(html_matrimoni)
+
     # Assembla tutto in un unico documento
     html_completo = f"""<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title>Agenda {config.nome_parrocchia} {config.anno}</title>
-    <style>
-{css}
-    </style>
-</head>
-<body>
-{copertina_body}
-{"".join(pagine_giorni)}
-{registro_body}
-</body>
-</html>
-"""
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Agenda {config.nome_parrocchia} {config.anno}</title>
+        <style>
+    {css}
+        </style>
+    </head>
+    <body>
+    {copertina_body}
+    {"".join(pagine_giorni)}
+    {registro_body}
+    {matrimoni_body}
+    </body>
+    </html>
+    """
     return html_completo
 
 
@@ -274,3 +279,26 @@ def genera_pdf_da_profilo(profilo: str) -> Path:
     config = carica_config(profilo)
     calendario = genera_agenda(config)
     return genera_pdf(config, calendario)
+
+
+def renderizza_matrimoni_futuri(config: Config, env: Environment) -> str:
+    """Renderizza il template delle prenotazioni matrimoni future.
+
+    Args:
+        config: Config con anno e matrimoni_prenotati
+        env: Environment Jinja2 configurato
+
+    Returns:
+        HTML della pagina matrimoni futuri.
+    """
+    from generatore_agenda import matrimoni_futuri
+
+    anno_successivo = config.anno + 1
+    matrimoni = matrimoni_futuri(config)
+
+    template = env.get_template("matrimoni_futuri.html")
+    return template.render(
+        anno_successivo=anno_successivo,
+        matrimoni=matrimoni,
+        nome_parrocchia=config.nome_parrocchia,
+    )

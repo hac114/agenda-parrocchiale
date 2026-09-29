@@ -32,7 +32,7 @@ formato PDF, pronto per essere mandato in tipografia.
 - Rispetta i divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
 - Inserisce le ricorrenze proprie (Triduo San Salvatore, Nove Mercoledì)
 - Compila il registro delle intenzioni di Messa
-- Lascia spazio per i matrimoni dell'anno successivo
+- - Aggiunge in fondo una pagina dedicata alle prenotazioni dei matrimoni degli anni successivi
 
 **Cosa devi fare tu:**
 - Compilare un file Excel con gli orari, le intenzioni, i matrimoni
@@ -204,8 +204,21 @@ Per ogni intenzione di Messa:
 **Nota: la colonna N. si numera automaticamente.**
 
 ### 5.4 — Compilare il foglio "Matrimoni"
-Solo per i matrimoni dell'anno successivo (per esempio, se stai facendo
-l'agenda 2027, qui ci vanno i matrimoni del 2028).
+
+Qui puoi inserire **tutti i matrimoni che vuoi**, sia dell'anno corrente
+dell'agenda, sia degli anni successivi.
+
+**Come vengono usati nel PDF:**
+
+| Data del matrimonio | Dove appare nel PDF |
+|---|---|
+| Nell'anno dell'agenda (es. 2027) | Nel **giorno specifico** del calendario |
+| Negli anni successivi (es. 2028, 2029) | Nella **pagina finale** "Prenotazioni Matrimoni" |
+
+**Esempio:** se stai facendo l'agenda 2027 e inserisci un matrimonio
+del 15/06/2027, apparirà nel giorno 15 giugno 2027.
+Se inserisci un matrimonio del 10/09/2028, apparirà nella pagina finale
+dedicata alle prenotazioni future.
 
 | Colonna | Cosa scrivere |
 |---|---|
@@ -214,6 +227,9 @@ l'agenda 2027, qui ci vanno i matrimoni del 2028).
 | **Nome sposi** | Nomi completi |
 | **Contatti** | Telefono o email |
 | **Note** | Eventuali annotazioni |
+
+**Nota:** nella pagina finale "Prenotazioni Matrimoni" compaiono solo
+**data, ora e nome sposi** (i contatti e le note restano interni).
 
 ### 5.5 — Compilare il foglio "Note"
 Annotazioni libere, per esempio:
@@ -243,8 +259,13 @@ C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\output\Agenda_2027.pdf
 
 5. Apri il PDF con doppio clic per verificare che sia tutto a posto
 
-Se ci sono errori, il programma mostra un riepilogo tipo:
+**Cosa contiene il PDF (in ordine):**
+1. **Copertina** (nome parrocchia, città, anno)
+2. **365 pagine giorno** (una per ogni giorno dell'anno)
+3. **Registro intenzioni** (elenco di tutte le intenzioni)
+4. **Prenotazioni Matrimoni** (pagina finale con i matrimoni degli anni successivi)
 
+5. Se ci sono errori, il programma mostra un riepilogo tipo:
 ```text
 ⚠️  ATTENZIONE: 3 problemi rilevati durante la lettura
 ...

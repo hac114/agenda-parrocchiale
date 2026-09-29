@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrimoni {{ anno_successivo }}</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="pagina-matrimoni-futuri">
+    <h1 class="titolo-matrimoni">Prenotazioni Matrimoni {{ anno_successivo }}</h1>
+
+    {% if matrimoni %}
+    <table class="tabella-matrimoni">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Ora</th>
+                <th>Nome sposi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in matrimoni %}
+            <tr>
+                <td>{{ m.data_formattata }}</td>
+                <td>{{ m.ora }}</td>
+                <td>{{ m.nome_sposi }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="nessun-matrimonio">Nessun matrimonio prenotato per il {{ anno_successivo }}.</p>
+    {% endif %}
+
+    <div class="spazio-manuale">
+        <h2>Note</h2>
+        <!-- Spazio vuoto per scrivere a mano -->
+    </div>
+</div>
+
+</body>
+</html>

@@ -19,7 +19,7 @@ L'agenda è **multi-profilo**: ogni parrocchia ha la sua configurazione.
 - ✅ Nove mercoledì di San Salvatore (calcolo automatico)
 - ✅ Festa del Voto con slittamento automatico se coincide con Corpus Domini
 - ✅ Registro intenzioni di Messa
-- ✅ Spazio per matrimoni dell'anno successivo
+- ✅ Pagina dedicata alle prenotazioni matrimoni degli anni successivi
 - ✅ Output PDF pronto per la tipografia (A4 verticale)
 - ✅ Sistema di raccolta warning con riepilogo finale
 
@@ -217,6 +217,7 @@ agenda-parrocchiale/
 │   ├── agenda.html                # Pagina giorno
 │   ├── copertina.html             # Copertina
 │   ├── registro_intenzioni.html   # Registro intenzioni
+│   ├── matrimoni_futuri.html      # Prenotazioni matrimoni anno successivo
 │   └── style.css                  # Stile A4
 │
 ├── tests/                         # Test pytest
