@@ -285,9 +285,13 @@ def main() -> None:
         )
         print(f"✅ Profilo generato: {percorso_profilo}")
 
-    # --- Riepilogo warning finale ---
-    # (Per ora il collector è sempre vuoto perché nessuna funzione di questo
-    #  script emette warning. Ma il pattern è coerente con gli altri script.)
+        # --- Riepilogo warning finale ---
+        # (Per ora il collector è sempre vuoto perché nessuna funzione di questo
+        #  script emette warning. Ma il pattern è coerente con gli altri script.)
     if not mostra_riepilogo_warning(collector):
         print("⏹️  Operazione annullata dall'utente.")
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
