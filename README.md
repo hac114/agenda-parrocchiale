@@ -184,10 +184,12 @@ agenda-parrocchiale/
 │   └── san_pietro_in_silki/       # Profilo reale
 │       ├── .backup/
 │       ├── config.xlsx
+│       ├── LEGGIMI.txt            # Istruzioni rapide
 │       └── regole.yaml
 │
 ├── docs/                          # Documentazione
 │   ├── ARCHITETTURA.md            # Scelte tecniche
+│   ├── GUIDA_RAPIDA.md            # Da stampare e tenere accanto al PC
 │   ├── GUIDA_UTENTE.md            # Per il frate responsabile
 │   ├── INFO_CONSOLIDATE.md        # Riepilogo requisiti
 │   └── README.md                  # Indice docs

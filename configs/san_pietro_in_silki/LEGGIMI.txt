@@ -1,0 +1,77 @@
+====================================================================
+  AGENDA DEL SANTUARIO — ISTRUZIONI RAPIDE
+====================================================================
+
+Questo file ti spiega come preparare l'agenda annuale in 3 passi.
+
+--------------------------------------------------------------------
+I 3 PASSI ANNUALI
+--------------------------------------------------------------------
+
+1) COMPILA IL FILE EXCEL
+   Apri: config.xlsx (questo file è nella stessa cartella)
+
+   Compila SOLO le celle GIALLE nei 4 fogli:
+   - Impostazioni  → Anno, nome parrocchia, città, orari stagionali
+   - Intenzioni    → le intenzioni di Messa ricevute
+   - Matrimoni     → i matrimoni prenotati (anno corrente e successivi)
+   - Note          → annotazioni libere (maggio, triduo, eventi)
+
+   ⚠️  Le celle NON gialle sono protette. Non provare a modificarle.
+
+2) SALVA E CHIUDI EXCEL
+   Premi Ctrl+S per salvare.
+
+   ⚠️  IMPORTANTE: chiudi COMPLETAMENTE Excel (o LibreOffice) prima
+   di andare al passo 3. Se resta aperto, il PDF userà i dati vecchi.
+
+3) GENERA IL PDF
+   Vai nella cartella:  ..\..\scripts\
+   Doppio clic su:      genera_agenda.bat
+
+   Attendi 30-60 secondi.
+   Il PDF appare in:    ..\..\output\Agenda_20XX.pdf
+
+--------------------------------------------------------------------
+LE 5 REGOLE D'ORO
+--------------------------------------------------------------------
+
+1. Modifica SOLO le celle GIALLE.
+2. Chiudi Excel prima di generare il PDF.
+3. Un giorno = una riga nel foglio Intenzioni.
+4. I matrimoni: la data decide dove appaiono.
+   - Nell'anno dell'agenda    → nel giorno specifico
+   - Negli anni successivi    → nella pagina finale "Prenotazioni"
+5. Non cancellare le colonne. Non rinominare i fogli.
+
+--------------------------------------------------------------------
+COSA FARE SE QUALCOSA NON FUNZIONA
+--------------------------------------------------------------------
+
+❌ Il nome della parrocchia non si aggiorna in Excel
+   → Chiudi Excel/LibreOffice e riapri il file.
+   → Se ancora non funziona, riavvia il PC.
+
+❌ Il PDF non si genera
+   → Controlla che Excel sia CHIUSO.
+   → Controlla che i campi Anno, Nome, Città siano compilati.
+   → Leggi l'ultimo errore nella finestra nera e mandalo al supporto.
+
+❌ Ho sbagliato qualcosa e voglio tornare indietro
+   → Vai nella cartella .backup\
+   → Trovi i backup automatici con data e ora.
+   → Copia il file desiderato e rinominalo in config.xlsx
+
+--------------------------------------------------------------------
+SUPPORTO
+--------------------------------------------------------------------
+
+Maurizio Chieruzzi
+maurizio.chieruzzi@gmail.com
+
+Quando chiedi aiuto, invia:
+- Uno screenshot dell'errore
+- Cosa stavi facendo
+- Che giorno/ora era
+
+====================================================================
