@@ -359,6 +359,22 @@ rm -rf ~/.config/libreoffice/4/user/registrymodifications.xcu
 
 Poi riapri il file.
 
+#### ⚠️ Soluzione definitiva per LibreOffice (Linux)
+
+Se **nessuna** delle procedure sopra risolve, prova ad aprire il file con
+l'opzione `--norestore`:
+
+```bash
+libreoffice --norestore configs/san_pietro_in_silki/config.xlsx
+```
+
+**Cosa fa `--norestore`:** impedisce a LibreOffice di ricaricare
+l'ultima sessione, forzando una **lettura pulita dal disco** del file.
+
+**Se funziona**, significa che LibreOffice teneva in memoria una sessione
+vecchia. Da ora in poi il file si aprirà correttamente anche senza
+`--norestore`, ma se il problema si ripresenta, usa lo stesso comando.
+
 ### 7.2 Python non è riconosciuto come comando
 Causa:
 Python non è stato aggiunto al PATH durante l'installazione.

@@ -135,6 +135,16 @@ libreoffice --norestore configs/san_pietro_in_silki/config.xlsx
 
 L'opzione `--norestore` forza LibreOffice a leggere il file dal disco (bypassa la cache di sessione).
 
+**Se il problema si ripresenta in futuro (Linux):**
+
+Usa sempre l'apertura con `--norestore`:
+
+```bash
+libreoffice --norestore configs/san_pietro_in_silki/config.xlsx
+```
+
+Questo bypassa completamente la sessione precedente di LibreOffice.
+
 **Verifica che il file su disco sia corretto:**
 
 ```bash

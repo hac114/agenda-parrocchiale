@@ -39,9 +39,14 @@ else
     exit 1
 fi
 
-# STEP 1: Genera/aggiorna config.xlsx
-echo ">>> STEP 1/3: Generazione config.xlsx"
-python src/crea_config_template.py --profilo "$PROFILO" --anno "$ANNO" --force
+# STEP 1: Genera config.xlsx solo se non esiste
+echo ">>> STEP 1/3: Verifica config.xlsx"
+if [ -f "configs/$PROFILO/config.xlsx" ]; then
+    echo "    ✅ config.xlsx esiste già, salto la generazione"
+else
+    echo "    ⚙️  config.xlsx non trovato, lo genero"
+    python src/crea_config_template.py --profilo "$PROFILO" --anno "$ANNO"
+fi
 echo
 
 # STEP 2: Genera PDF

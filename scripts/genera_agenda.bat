@@ -47,9 +47,14 @@ if exist ".venv\Scripts\activate.bat" (
 )
 
 REM STEP 1: Genera/aggiorna config.xlsx
-echo ^>^>^> STEP 1/3: Generazione config.xlsx
-python src\crea_config_template.py --profilo %PROFILO% --anno %ANNO% --force
-if errorlevel 1 goto :errore
+echo ^>^>^> STEP 1/3: Verifica config.xlsx
+if exist "configs\%PROFILO%\config.xlsx" (
+    echo     [OK] config.xlsx esiste gia', salto la generazione
+) else (
+    echo     [ATTENZIONE] config.xlsx non trovato, lo genero
+    python src\crea_config_template.py --profilo %PROFILO% --anno %ANNO%
+    if errorlevel 1 goto :errore
+)
 echo.
 
 REM STEP 2: Genera PDF

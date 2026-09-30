@@ -129,13 +129,35 @@ python -c "from openpyxl import load_workbook; wb = load_workbook('configs/san_p
 - Se stampa `Nome: San Pietro in Silki` → il file è OK, era solo la cache dell'editor
 - Se stampa un nome vuoto o sbagliato → il problema è nel file o nel codice, contatta il supporto
 
-#### Se ancora non funziona (Linux)
+#### Soluzione definitiva per LibreOffice (Linux)
+
+Se anche cancellare la cache non funziona, apri il file con:
+
+```bash
+libreoffice --norestore configs/san_pietro_in_silki/config.xlsx
+```
+
+L'opzione `--norestore` impedisce a LibreOffice di ricaricare l'ultima
+sessione e **forza la lettura pulita dal disco**.
+
+#### Altri comandi utili
 
 Cancella la cache di LibreOffice:
 
 ```bash
 rm -rf ~/.config/libreoffice/4/user/backup
 rm -rf ~/.config/libreoffice/4/user/registrymodifications.xcu
+```
+
+Verifica che il file su disco contenga il nome corretto:
+
+```bash
+python -c "
+from openpyxl import load_workbook
+wb = load_workbook('configs/san_pietro_in_silki/config.xlsx')
+ws = wb['Impostazioni']
+print('Nome:', ws['B6'].value)
+"
 ```
 
 Poi riapri il file.
