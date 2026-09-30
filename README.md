@@ -116,41 +116,50 @@ scripts\genera_agenda.bat san_pietro_in_silki 2027
 **Attenzione: chiudi Excel/LibreOffice prima di rigenerare il PDF.**
 
 ## ⚠️ Risoluzione problemi comuni
-Il nome della parrocchia non si aggiorna in Excel
-Causa: Excel o LibreOffice tiene in memoria una versione precedente del file.
+### Il nome della parrocchia non si aggiorna in Excel
 
-### Soluzione:
-#### LibreOffice:
-1. Chiudi completamente LibreOffice (non solo il file)
-2. Verifica che non ci siano processi attivi:
-#### Linux:            
+**Causa:** Excel o LibreOffice tiene in memoria una versione precedente del file, anche dopo averlo chiuso.
+
+**Soluzione rapida:**
+
+**Windows:**
+1. Chiudi **tutte** le finestre di Excel/LibreOffice
+2. `Ctrl+Shift+Esc` → Task Manager → cerca `EXCEL.EXE` o `soffice` → Termina attività
+3. Riapri il file
+
+**Linux:**
 ```bash
-pkill soffice o killall soffice.bin
+pkill soffice
+libreoffice --norestore configs/san_pietro_in_silki/config.xlsx
 ```
-3. Riapri il file
 
-#### Windows:
-1. Apri Task Manager → cerca "soffice" → Termina
-2. Riapri il file
-    
-#### Microsoft Excel:
-1. Chiudi completamente Excel
-2. Verifica che non ci siano processi attivi:
-Windows: Task Manager → cerca "EXCEL.EXE" → Termina
-3. Riapri il file
+L'opzione `--norestore` forza LibreOffice a leggere il file dal disco (bypassa la cache di sessione).
 
-**Verifica:** il file Excel su disco è corretto? Apri un terminale e controlla:
+**Verifica che il file su disco sia corretto:**
 
 ```bash
 python -c "
-import sys; sys.path.insert(0, 'src')
 from openpyxl import load_workbook
 wb = load_workbook('configs/san_pietro_in_silki/config.xlsx')
-print(wb['Impostazioni']['B6'].value)
+ws = wb['Impostazioni']
+print('Anno:', ws['B5'].value)
+print('Nome:', ws['B6'].value)
+print('Città:', ws['B7'].value)
 "
 ```
 
-**Se stampa il nome corretto, il problema è solo la cache dell'editor.**
+- **Se stampa il nome corretto** → il file è OK, era solo la cache dell'editor
+- **Se stampa un nome vuoto o sbagliato** → contatta il supporto
+
+**Se il problema persiste (Linux):**
+
+Cancella la cache di LibreOffice:
+```bash
+rm -rf ~/.config/libreoffice/4/user/backup
+rm -rf ~/.config/libreoffice/4/user/registrymodifications.xcu
+```
+
+Poi riapri il file.
 
 ### WeasyPrint non si installa su Linux
 **Errore tipico: OSError: cannot load library 'libgobject-2.0-0'.**

@@ -276,13 +276,88 @@ Vuoi comunque procedere? [y/N]:
 
 ## 7. Problemi comuni
 ### 7.1 Il nome della parrocchia non si aggiorna
-Causa:
-Excel/LibreOffice tiene in memoria una versione vecchia.
 
-Soluzione:
-1. Chiudi completamente Excel/LibreOffice
-2. Verifica che non ci siano processi attivi (Ctrl+Shift+Esc → Task Manager)
-3. Riapri il file
+**Causa:** Excel/LibreOffice tiene in memoria una versione vecchia del file.
+Anche se lo chiudi con la X, il processo resta attivo in background.
+
+#### Procedura completa (Windows)
+
+**Passo 1 — Chiudi TUTTE le finestre di Excel/LibreOffice**
+
+Non basta chiudere il file. Devi chiudere **l'applicazione intera**.
+
+**Passo 2 — Verifica che non ci siano processi attivi**
+
+Apri il **Task Manager** con `Ctrl+Shift+Esc`:
+1. Cerca nella lista:
+   - `EXCEL.EXE` (se usi Microsoft Excel)
+   - `soffice.bin` o `soffice.exe` (se usi LibreOffice)
+2. Se li trovi, clicca con il tasto destro → **Termina attività**
+
+**Passo 3 — Verifica che il file su disco sia corretto**
+
+Apri il **Prompt dei comandi** e digita:
+
+```cmd
+cd %USERPROFILE%\Documents\agenda-parrocchiale
+python -c "from openpyxl import load_workbook; wb = load_workbook('configs/san_pietro_in_silki/config.xlsx'); ws = wb['Impostazioni']; print('Nome:', ws['B6'].value)"
+```
+
+**Cosa aspettarti:** `Nome: San Pietro in Silki` (o il nome corretto).
+
+- **Se stampa il nome giusto** → il file su disco è OK, era solo la cache di Excel.
+- **Se stampa un nome sbagliato o vuoto** → il problema è nel file o nel codice.
+
+**Passo 4 — Riapri il file**
+
+Doppio clic su `configs/san_pietro_in_silki/config.xlsx`.
+Ora dovresti vedere il nome aggiornato.
+
+#### Procedura completa (Linux)
+
+**Passo 1 — Chiudi tutte le finestre di LibreOffice**
+
+**Passo 2 — Termina i processi attivi**
+
+```bash
+pkill soffice
+```
+
+**Verifica** che non ci siano più processi:
+```bash
+pgrep -a soffice
+```
+**Cosa aspettarti:** nessun output.
+
+**Passo 3 — Apri LibreOffice forzando la lettura da disco**
+
+```bash
+libreoffice --norestore configs/san_pietro_in_silki/config.xlsx
+```
+
+L'opzione `--norestore` impedisce a LibreOffice di ricaricare l'ultima sessione e **forza la lettura pulita dal disco**.
+
+**Passo 4 — Se il problema persiste, verifica il file**
+
+```bash
+python -c "
+from openpyxl import load_workbook
+wb = load_workbook('configs/san_pietro_in_silki/config.xlsx')
+ws = wb['Impostazioni']
+print('B5 (Anno):', ws['B5'].value)
+print('B6 (Nome):', ws['B6'].value)
+print('B7 (Città):', ws['B7'].value)
+"
+```
+
+Se il file su disco è corretto, ma LibreOffice mostra il nome vecchio → cancella la cartella di configurazione di LibreOffice:
+
+```bash
+rm -rf ~/.config/libreoffice/4/user/backup
+rm -rf ~/.config/libreoffice/4/user/registrymodifications.xcu
+```
+
+Poi riapri il file.
 
 ### 7.2 Python non è riconosciuto come comando
 Causa:

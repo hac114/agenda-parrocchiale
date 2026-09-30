@@ -94,14 +94,51 @@ Totale: **~368 pagine**
 
 ### ❌ Il nome della parrocchia non si aggiorna in Excel
 
-**Causa:** Excel/LibreOffice tiene in memoria la versione vecchia.
+**Causa:** Excel/LibreOffice tiene in memoria la versione vecchia, anche dopo aver chiuso il file.
 
-**Soluzione:**
-1. Chiudi **completamente** Excel/LibreOffice
-2. Verifica processi attivi:
-   - Windows: Task Manager → cerca "EXCEL.EXE" o "soffice" → Termina
-   - Linux: `pkill soffice`
+#### Procedura rapida
+
+**Windows:**
+1. Chiudi **tutte** le finestre di Excel/LibreOffice
+2. `Ctrl+Shift+Esc` → Task Manager → cerca `EXCEL.EXE` o `soffice` → Termina attività
 3. Riapri il file
+
+**Linux:**
+```bash
+pkill soffice
+libreoffice --norestore configs/san_pietro_in_silki/config.xlsx
+```
+
+#### Se il problema persiste — verifica il file
+
+Il file su disco contiene il nome corretto? Apri il Prompt dei comandi (o il terminale):
+
+**Windows:**
+```cmd
+cd %USERPROFILE%\Documents\agenda-parrocchiale
+python -c "from openpyxl import load_workbook; wb = load_workbook('configs/san_pietro_in_silki/config.xlsx'); ws = wb['Impostazioni']; print('Nome:', ws['B6'].value)"
+```
+
+**Linux:**
+```bash
+cd ~/Developer/Python/progetti/agenda-parrocchiale
+python -c "from openpyxl import load_workbook; wb = load_workbook('configs/san_pietro_in_silki/config.xlsx'); ws = wb['Impostazioni']; print('Nome:', ws['B6'].value)"
+```
+
+**Cosa aspettarti:**
+- Se stampa `Nome: San Pietro in Silki` → il file è OK, era solo la cache dell'editor
+- Se stampa un nome vuoto o sbagliato → il problema è nel file o nel codice, contatta il supporto
+
+#### Se ancora non funziona (Linux)
+
+Cancella la cache di LibreOffice:
+
+```bash
+rm -rf ~/.config/libreoffice/4/user/backup
+rm -rf ~/.config/libreoffice/4/user/registrymodifications.xcu
+```
+
+Poi riapri il file.
 
 ### ❌ Il PDF non si genera
 
