@@ -287,6 +287,21 @@ Esempio:
 | `python-dateutil` | >= 2.9.0 | Utility date |
 | `pytz` | >= 2024.1 | Fusi orari |
 
+### Dipendenze di sistema
+
+WeasyPrint non è "puro Python": richiede librerie di sistema (Pango, Cairo, GDK-PixBuf).
+
+| Sistema | Dipendenza | Come installarla |
+|---|---|---|
+| **Windows** | **GTK 3 Runtime** | Download: https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases |
+| **Linux** | `libpango`, `libcairo2`, `libgdk-pixbuf`, `libffi` | `sudo apt install libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libgdk-pixbuf-2.0-0 libffi-dev shared-mime-info` |
+| **macOS** | (installate automaticamente via Homebrew) | — |
+
+**⚠️ Nota Windows:** GTK 3 Runtime va installato **separatamente** (non è in `requirements.txt`).
+Senza GTK 3, il PDF non viene generato.
+
+### Sviluppo
+
 ### Sviluppo
 
 | Libreria | Versione | Scopo |

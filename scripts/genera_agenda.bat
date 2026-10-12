@@ -23,10 +23,7 @@ set "PROFILO=%~1"
 if "%PROFILO%"=="" set "PROFILO=san_pietro_in_silki"
 
 set "ANNO=%~2"
-if "%ANNO%"=="" (
-    for /f "tokens=2 delims==" %%i in ('wmic os get localdatetime /value') do set "LD=%%i"
-    set "ANNO=%LD:~0,4%"
-)
+if "%ANNO%"=="" set "ANNO=2027"
 
 echo ======================================================================
 echo   GENERAZIONE AGENDA

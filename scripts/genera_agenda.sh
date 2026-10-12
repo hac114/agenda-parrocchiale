@@ -20,7 +20,7 @@ cd "$PROGETTO_DIR"
 
 # Argomenti
 PROFILO="${1:-san_pietro_in_silki}"
-ANNO="${2:-$(date +%Y)}"
+ANNO="${2:-2027}"
 
 echo "======================================================================"
 echo "  GENERAZIONE AGENDA"

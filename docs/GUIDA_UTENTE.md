@@ -100,7 +100,47 @@ git --version
 ```
 **Deve rispondere git version 2.xx.x.**
 
-### 3.3 — Scaricare il progetto
+### 3.3 — Installare GTK 3 Runtime (OBBLIGATORIO per Windows)
+
+**⚠️ Questo passaggio è obbligatorio.** Senza GTK 3, il PDF non si genera.
+
+1. Vai su: **https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases**
+2. Cerca l'ultima release (in alto, la più recente)
+3. Scarica il file: `gtk3-runtime-x.xx.x-xxxx-xx-xx-ts-win64.exe`
+   
+   ⚠️ Deve essere **win64** (a 64 bit, come Python)
+
+4. **Doppio clic** sul file scaricato
+5. **Spunta** la casella: **"Set up PATH environment variable to include GTK+"**
+6. Clicca **"Install"**
+7. Al termine, **riavvia il PC** (fondamentale per aggiornare il PATH)
+
+**Verifica:** apri il Prompt dei comandi e digita:
+
+```cmd
+where libgobject-2.0-0.dll
+```
+
+**Cosa aspettarti:**
+```
+C:\Program Files\GTK3-Runtime Win64\bin\libgobject-2.0-0.dll
+```
+
+Se il comando non restituisce nulla, GTK 3 non è installato o non è nel PATH.
+
+**Se dopo il riavvio il problema persiste**, esegui questo comando dal
+Prompt dei comandi **come amministratore**:
+
+```cmd
+cd "C:\Program Files\GTK3-Runtime Win64\bin"
+copy gobject-2.0-0.dll libgobject-2.0-0.dll
+```
+
+Questo crea una copia del file con il nome che WeasyPrint cerca.
+
+**Poi riavvia e riprova.**
+
+### 3.4 — Scaricare il progetto
 1. Apri il Prompt dei comandi (tasto Windows → cmd → Invio)
 2. Digita:
 ```cmd
@@ -110,7 +150,7 @@ git clone https://github.com/hac114/agenda-parrocchiale.git
 3. Attendi il download (~10 MB, 30 secondi)
 4. Verifica che sia presente la cartella C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\
 
-### 3.4 — Installare le dipendenze
+### 3.5 — Installare le dipendenze
 Sempre dal Prompt dei comandi:
 ```cmd
 cd %USERPROFILE%\Documents\agenda-parrocchiale
@@ -135,7 +175,7 @@ dopo l'installazione, il prompt mostra (.venv) all'inizio:
 ```cmd
 (.venv) C:\Users\...\agenda-parrocchiale>
 ```
-### 3.5 — Installare LibreOffice (se non hai Excel)
+### 3.6 — Installare LibreOffice (se non hai Excel)
 1. Vai su: https://it.libreoffice.org/download/download/
 2. Clicca "Scarica"
 3. Installa come un qualsiasi programma Windows

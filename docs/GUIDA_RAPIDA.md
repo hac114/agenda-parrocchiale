@@ -7,6 +7,18 @@ Da tenere stampato accanto al PC.
 
 ---
 
+## ⚠️ Requisito importante (Windows)
+
+Su **Windows** è obbligatorio installare **GTK 3 Runtime** per generare il PDF.
+Senza di esso, il launcher fallirà con un errore tipo
+`cannot load library 'libgobject-2.0-0'`.
+
+**Download:** https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
+
+Vedi la [Guida Utente](GUIDA_UTENTE.md#32-bis--installare-gtk-3-runtime-obbligatorio-per-windows) per le istruzioni dettagliate.
+
+---
+
 ## I 3 passi annuali
 
 | # | Cosa fare | Dove |

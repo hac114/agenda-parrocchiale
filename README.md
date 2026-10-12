@@ -31,9 +31,22 @@ L'agenda è **multi-profilo**: ogni parrocchia ha la sua configurazione.
 
 | Sistema | Requisito |
 |---|---|
-| **Windows** | Python 3.12+ (consigliato 3.13), Microsoft Excel o LibreOffice |
+| **Windows** | Python 3.12+ (consigliato 3.13), Microsoft Excel o LibreOffice, **GTK 3 Runtime** |
 | **Linux** | Python 3.12+, LibreOffice |
 | **macOS** | Python 3.12+, LibreOffice |
+
+### ⚠️ Nota per Windows: GTK 3 Runtime
+
+Su **Windows** è obbligatorio installare anche **GTK 3 Runtime**.
+WeasyPrint (la libreria che genera il PDF) dipende dalle librerie di
+sistema di GTK 3, che non sono incluse di default in Windows.
+
+**Download:** https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
+
+Scarica l'ultima versione per **win64**, installa spuntando
+**"Set up PATH environment variable to include GTK+"** e riavvia il PC.
+
+**Senza GTK 3, il PDF NON viene generato.**
 
 ### Librerie di sistema (Linux)
 
