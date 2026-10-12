@@ -109,7 +109,7 @@ Comportamento:
 7. RICORRENZE PROPRIE DEL SANTUARIO
 ---------------------------------------------------------------------
 
-7.1 SAN SALVATORE DA HORTA — 17 marzo (festa principale)
+7.1 SAN SALVATORE DA HORTA — 18 marzo (festa principale)
 
 7.2 TRIDUO DI PREPARAZIONE — 14, 15, 16 marzo
 - Iniziative variabili (Messa, vespro, dopo vespro)
@@ -119,7 +119,7 @@ Comportamento:
 
 7.3 "MERCOLEDÌ DI SAN SALVATORE"
 - 9 mercoledì consecutivi che precedono il Triduo
-- Il mercoledì precedente al 14 marzo è il 9°
+- Il mercoledì precedente al 15 marzo è il 9°
 - Il 1° è 8 settimane prima del 9°
 - Orario fisso: 18:00 (messa serale)
 - AUTOMATIZZABILE
@@ -129,8 +129,8 @@ Comportamento:
 ---------------------------------------------------------------------
 - 1 gennaio        Solennità della Madre di Dio
 - 6 gennaio        Solennità dell'Epifania
-- 14-16 marzo      Triduo San Salvatore
-- 17 e 18 marzo    Festa San Salvatore
+- 15-17 marzo      Triduo San Salvatore
+- 18 marzo         Festa San Salvatore
 - 19 marzo         Solennità San Giuseppe
 - 1 maggio         Inaugurazione mese mariano
 - 9 maggio         Festa Beata Vergine delle Grazie

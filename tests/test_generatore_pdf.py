@@ -125,6 +125,10 @@ def test_renderizza_giorno_contiene_orari(config_minima: Config, env_jinja: Envi
     assert "7:00" in html
     assert "10:00" in html
     assert "18:00" in html
+    # Verifica che sia presente la tabella messe
+    assert "tabella-messe" in html
+    assert "Intenzioni" in html
+    assert "Firma" in html
 
 
 def test_renderizza_giorno_senza_festivita(config_minima: Config, env_jinja: Environment) -> None:
@@ -139,8 +143,15 @@ def test_renderizza_giorno_senza_festivita(config_minima: Config, env_jinja: Env
     assert 'class="festivita"' not in html
 
 
-def test_renderizza_giorno_con_intenzioni(config_minima: Config, env_jinja: Environment) -> None:
-    """Il giorno con intenzioni mostra la sezione."""
+def test_renderizza_giorno_con_sezione_intenzioni(
+    config_minima: Config, env_jinja: Environment
+) -> None:
+    """Il giorno mostra la tabella intenzioni di applicazione (vuota).
+
+    Nota: nel nuovo layout le intenzioni del giorno non sono più
+    visualizzate come sezione separata, ma c'è la tabella
+    "Intenzioni di applicazione" con 3 righe vuote.
+    """
     giorno = GiornoAgenda(
         data=date(2027, 6, 15),
         tipo="feriale",
@@ -150,7 +161,10 @@ def test_renderizza_giorno_con_intenzioni(config_minima: Config, env_jinja: Envi
         ],
     )
     html = renderizza_giorno(giorno, config_minima, env_jinja)
-    assert "Per la pace" in html
+    # Verifica che ci sia la tabella intenzioni
+    assert "tabella-intenzioni" in html
+    assert "Luogo della celebrazione" in html
+    assert "Intenzione" in html
 
 
 # ======================================================================

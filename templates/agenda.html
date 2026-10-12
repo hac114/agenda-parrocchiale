@@ -9,6 +9,8 @@
 
 <!-- PAGINA GIORNO -->
 <div class="pagina-giorno">
+
+    <!-- INTESTAZIONE -->
     <header class="intestazione">
         <div class="data">{{ data_formattata }}</div>
         <div class="giorno-settimana">{{ giorno_settimana }}</div>
@@ -20,31 +22,56 @@
     </div>
     {% endif %}
 
-    <div class="messe">
-        {% for orario in orari %}
-        <div class="messa">
-            <div class="orario">{{ orario }}</div>
-            <div class="spazio-intenzione">
-                <!-- Spazio vuoto per scrivere a mano il nome del defunto -->
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+    <!-- TABELLA 1: MESSE -->
+    <table class="tabella-messe">
+        <thead>
+            <tr>
+                <th class="col-ora">Ora</th>
+                <th class="col-defunti">Intenzioni</th>
+                <th class="col-firma">Firma</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for riga in righe_messe %}
+            <tr class="riga-messa {% if riga.righe_extra > 1 %}riga-extra{% endif %}">
+                <td class="col-ora">{{ riga.orario }}</td>
+                <td class="col-defunti">
+                    {% for i in range(riga.righe_extra) %}
+                    <div class="riga-defunto"></div>
+                    {% endfor %}
+                </td>
+                <td class="col-firma">
+                    {% for i in range(riga.righe_extra) %}
+                    <div class="riga-firma"></div>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    {% if intenzioni %}
-    <div class="intenzioni">
-        <h3>Intenzioni</h3>
-        {% for i in intenzioni %}
-        <div class="intenzione">
-            <span class="numero">{{ i.numero }}.</span>
-            <span class="testo">{{ i.testo }}</span>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+    <!-- TABELLA 2: INTENZIONI APPLICAZIONE -->
+    <table class="tabella-intenzioni-registro">
+        <thead>
+            <tr>
+                <th class="col-luogo">Luogo della celebrazione</th>
+                <th class="col-intenzione">Intenzione</th>
+                <th class="col-firma">Firma</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(3) %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     {% if matrimoni %}
-    <div class="matrimoni">
+    <div class="sezione-matrimoni">
         <h3>Matrimoni</h3>
         {% for m in matrimoni %}
         <div class="matrimonio">
@@ -56,13 +83,30 @@
     {% endif %}
 
     {% if note %}
-    <div class="note">
+    <div class="sezione-note">
         <h3>Note</h3>
         {% for n in note %}
         <div class="nota">{{ n.nota }}</div>
         {% endfor %}
     </div>
     {% endif %}
+
+    <!-- SPAZIO INIZIATIVE -->
+    <div class="spazio-iniziative">
+        <h3>Altre iniziative / Note</h3>
+        <div class="righe-iniziative">
+            {% for i in range(4) %}
+            <div class="riga-iniziativa"></div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- SPAZIO LIBERO PER ANNOTAZIONI -->
+    <div class="spazio-annotazioni-libere">
+        <h3>Annotazioni libere</h3>
+        <div class="area-libera"></div>
+    </div>
+
 </div>
 
 </body>

@@ -40,6 +40,13 @@ ROOT_PROGETTO = Path(__file__).resolve().parent.parent
 CARTELLA_TEMPLATES = ROOT_PROGETTO / "templates"
 CARTELLA_OUTPUT = ROOT_PROGETTO / "output"
 
+# Configurazione righe extra (in futuro dal YAML)
+RIGHE_EXTRA_DEFAULT = {
+    "18:00": 3,
+    "19:00": 3,
+    "21:00": 3,
+}
+
 # ======================================================================
 # CONFIGURAZIONE JINJA2
 # ======================================================================
@@ -84,6 +91,26 @@ def renderizza_copertina(config: Config, env: Environment) -> str:
     )
 
 
+def _prepara_righe_messe(orari: list[str]) -> list[dict]:
+    """Prepara le righe della tabella messe con eventuali righe extra.
+
+    Args:
+        orari: lista di orari (es. ["7:00", "10:00", "18:00"])
+
+    Returns:
+        Lista di dict con "orario" e "righe_extra".
+    """
+    righe = []
+    for orario in orari:
+        righe.append(
+            {
+                "orario": orario,
+                "righe_extra": RIGHE_EXTRA_DEFAULT.get(orario, 1),
+            }
+        )
+    return righe
+
+
 def renderizza_giorno(
     giorno: GiornoAgenda,
     config: Config,
@@ -100,12 +127,12 @@ def renderizza_giorno(
         HTML del giorno.
     """
     template = env.get_template("agenda.html")
+    righe_messe = _prepara_righe_messe(giorno.orari)
     return template.render(
         data_formattata=formatta_data_italiana(giorno.data),
         giorno_settimana=nome_giorno_italiano(giorno.data),
         nome_festivita=giorno.nome,
-        orari=giorno.orari,
-        intenzioni=giorno.intenzioni,
+        righe_messe=righe_messe,
         matrimoni=giorno.matrimoni,
         note=giorno.note,
         anno=config.anno,

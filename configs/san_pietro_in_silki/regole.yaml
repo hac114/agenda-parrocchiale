@@ -44,14 +44,15 @@ divieti_pomeridiani:
 # --- Ricorrenze proprie del santuario ---
 ricorrenze_proprie:
   - nome: "Triduo di San Salvatore"
-    data: { mese: 3, giorno: 14, durata_giorni: 3 }
+    data: { mese: 3, giorno: 15, durata_giorni: 3 }
     tipo: "triduo"
     compilazione: "manuale"
-    nota: "Iniziative variabili (messa, vespro, dopo vespro)"
+    nota: "Iniziative variabili (messa, vespro, dopo vespro). Date: 15-16-17 marzo"
 
   - nome: "San Salvatore da Horta"
-    data: { mese: 3, giorno: 17 }
-    durata_giorni: 2  # 17 e 18 marzo
+    data: { mese: 3, giorno: 18 }
+    durata_giorni: 1
+    nota: "Festa del santuario. Data: 18 marzo"
 
   - nome: "Inaugurazione mese mariano"
     data: { mese: 5, giorno: 1 }
@@ -84,7 +85,7 @@ ricorrenze_proprie:
 nove_mercoledi:
   attivo: true
   orario: "18:00"
-  regola: "9 mercoledì che precedono il 14 marzo"
+  regola: "9 mercoledì che precedono il 15 marzo"
 
 # --- Celebrazioni mobili (dipendono dalla Pasqua) ---
 # Ogni voce ha un "tipo" che indica al codice Python come calcolare la data.

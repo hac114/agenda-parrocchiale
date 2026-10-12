@@ -35,15 +35,15 @@ divieti_pomeridiani:
 # --- Ricorrenze proprie della parrocchia (NON annuali) ---
 ricorrenze_proprie: []
   # Esempio:
+  # - nome: "Triduo di San Salvatore"
+  #   data: { mese: 3, giorno: 15, durata_giorni: 3 }
+  #   tipo: "triduo"
+  #   compilazione: "manuale"
+  #   nota: "Date: 15-16-17 marzo"
   # - nome: "San Salvatore da Horta"
-  #   data: { mese: 3, giorno: 17 }
-  #   durata_giorni: 2
-  #   triduo:
-  #     giorni_prima: 3
-  #     compilazione: "manuale"
-  #   nove_mercoledi:
-  #     attivo: true
-  #     orario: "18:00"
+  #   data: { mese: 3, giorno: 18 }
+  #   durata_giorni: 1
+  #   nota: "Festa del santuario. Data: 18 marzo"
 
 # --- Nove mercoledì (opzionale) ---
 nove_mercoledi:

@@ -127,10 +127,10 @@ def test_config_reale_natale() -> None:
 
 
 def test_config_reale_san_salvatore_e_feriale() -> None:
-    """San Salvatore (17 marzo) è feriale (è ricorrenza propria, non festivo fisso)."""
+    """San Salvatore (18 marzo) è feriale (è ricorrenza propria, non festivo fisso)."""
     config = carica_config("san_pietro_in_silki")
-    # 17 marzo 2027 = mercoledì
-    tipo, nome = determina_tipo_giorno(date(2027, 3, 17), config)
+    # 18 marzo 2027 = giovedì
+    tipo, nome = determina_tipo_giorno(date(2027, 3, 18), config)
     assert tipo == "feriale"
     assert nome is None
 
@@ -508,14 +508,14 @@ def config_con_ricorrenze() -> Config:
         ricorrenze_proprie=[
             Ricorrenza(
                 nome="Triduo di San Salvatore",
-                data_inizio=date(2027, 3, 14),
-                data_fine=date(2027, 3, 16),
+                data_inizio=date(2027, 3, 15),
+                data_fine=date(2027, 3, 17),
                 tipo="triduo",
             ),
             Ricorrenza(
                 nome="San Salvatore da Horta",
-                data_inizio=date(2027, 3, 17),
-                data_fine=date(2027, 3, 18),
+                data_inizio=date(2027, 3, 18),
+                data_fine=None,
             ),
         ],
     )
@@ -528,7 +528,7 @@ def config_con_ricorrenze() -> Config:
 
 def test_festivita_ricorrenza_singola(config_con_ricorrenze: Config) -> None:
     """Una ricorrenza di un giorno è riconosciuta."""
-    info = festivita_del_giorno(date(2027, 3, 17), config_con_ricorrenze, {})
+    info = festivita_del_giorno(date(2027, 3, 18), config_con_ricorrenze, {})
     assert info["nome"] == "San Salvatore da Horta"
     assert info["particolare"] is True
     assert info["tipo_override"] is None
@@ -536,7 +536,7 @@ def test_festivita_ricorrenza_singola(config_con_ricorrenze: Config) -> None:
 
 def test_festivita_ricorrenza_multigiorno(config_con_ricorrenze: Config) -> None:
     """Una ricorrenza multi-giorno copre tutti i giorni."""
-    for giorno in [14, 15, 16]:
+    for giorno in [15, 16, 17]:
         info = festivita_del_giorno(date(2027, 3, giorno), config_con_ricorrenze, {})
         assert info["nome"] == "Triduo di San Salvatore"
         assert info["particolare"] is True
@@ -563,9 +563,9 @@ def test_festivita_giorno_qualunque(config_minima: Config) -> None:
 def test_festivita_priorita_ricorrenza(config_con_ricorrenze: Config) -> None:
     """Se una data è sia ricorrenza sia mobile, vince la ricorrenza."""
     # Configura date_mobili con una data fittizia che coincide con la ricorrenza
-    date_mobili = {"pasqua": date(2027, 3, 17)}  # coincide con San Salvatore
+    date_mobili = {"pasqua": date(2027, 3, 18)}  # coincide con San Salvatore
 
-    info = festivita_del_giorno(date(2027, 3, 17), config_con_ricorrenze, date_mobili)
+    info = festivita_del_giorno(date(2027, 3, 18), config_con_ricorrenze, date_mobili)
     # La ricorrenza ha priorità
     assert info["nome"] == "San Salvatore da Horta"
     assert info["particolare"] is True
@@ -601,21 +601,21 @@ def test_festivita_mobili_config_reale_festa_voto() -> None:
 
 
 def test_festivita_config_reale_san_salvatore() -> None:
-    """San Salvatore 2027 (17 marzo) è ricorrenza propria."""
+    """San Salvatore 2027 (18 marzo) è ricorrenza propria."""
     config = carica_config("san_pietro_in_silki")
     date_mobili = calcola_tutte_date_mobili(2027)
 
-    info = festivita_del_giorno(date(2027, 3, 17), config, date_mobili)
+    info = festivita_del_giorno(date(2027, 3, 18), config, date_mobili)
     assert info["nome"] == "San Salvatore da Horta"
     assert info["particolare"] is True
 
 
 def test_festivita_config_reale_triduo_san_salvatore() -> None:
-    """Triduo San Salvatore 2027 (14-16 marzo)."""
+    """Triduo San Salvatore 2027 (15-17 marzo)."""
     config = carica_config("san_pietro_in_silki")
     date_mobili = calcola_tutte_date_mobili(2027)
 
-    for giorno in [14, 15, 16]:
+    for giorno in [15, 16, 17]:
         info = festivita_del_giorno(date(2027, 3, giorno), config, date_mobili)
         assert info["nome"] == "Triduo di San Salvatore"
         assert info["particolare"] is True
@@ -665,7 +665,7 @@ def config_con_dati() -> Config:
             ),
         ],
         note_annuali=[
-            {"dal": date(2027, 3, 14), "al": date(2027, 3, 16), "nota": "Triduo"},
+            {"dal": date(2027, 3, 15), "al": date(2027, 3, 17), "nota": "Triduo"},
             {"dal": date(2027, 5, 1), "al": date(2027, 5, 31), "nota": "Mese mariano"},
             {"dal": date(2027, 5, 30), "al": date(2027, 5, 30), "nota": "Corpus Domini"},
         ],
@@ -740,27 +740,27 @@ def test_matrimoni_del_giorno_nessuno(config_con_dati: Config) -> None:
 
 def test_note_del_giorno_inizio_intervallo(config_con_dati: Config) -> None:
     """Trova la nota all'inizio dell'intervallo."""
-    note = note_del_giorno(date(2027, 3, 14), config_con_dati)
+    note = note_del_giorno(date(2027, 3, 15), config_con_dati)
     assert len(note) == 1
     assert note[0]["nota"] == "Triduo"
 
 
 def test_note_del_giorno_meta_intervallo(config_con_dati: Config) -> None:
     """Trova la nota a metà dell'intervallo."""
-    note = note_del_giorno(date(2027, 3, 15), config_con_dati)
+    note = note_del_giorno(date(2027, 3, 16), config_con_dati)
     assert len(note) == 1
     assert note[0]["nota"] == "Triduo"
 
 
 def test_note_del_giorno_fine_intervallo(config_con_dati: Config) -> None:
     """Trova la nota alla fine dell'intervallo."""
-    note = note_del_giorno(date(2027, 3, 16), config_con_dati)
+    note = note_del_giorno(date(2027, 3, 17), config_con_dati)
     assert len(note) == 1
 
 
 def test_note_del_giorno_fuori_intervallo(config_con_dati: Config) -> None:
     """Nessuna nota fuori dall'intervallo."""
-    note = note_del_giorno(date(2027, 3, 17), config_con_dati)
+    note = note_del_giorno(date(2027, 3, 18), config_con_dati)
     assert note == []
 
 
@@ -836,21 +836,21 @@ def test_genera_agenda_natale() -> None:
 
 
 def test_genera_agenda_san_salvatore_particolare() -> None:
-    """Il 17 marzo 2027 è San Salvatore (particolare)."""
+    """Il 18 marzo 2027 è San Salvatore (particolare)."""
     config = carica_config("san_pietro_in_silki")
     calendario = genera_agenda(config)
 
-    san_salvatore = next(g for g in calendario.giorni if g.data == date(2027, 3, 17))
+    san_salvatore = next(g for g in calendario.giorni if g.data == date(2027, 3, 18))
     assert san_salvatore.nome == "San Salvatore da Horta"
     assert san_salvatore.particolare is True
 
 
 def test_genera_agenda_triduo_multigiorno() -> None:
-    """Il Triduo di San Salvatore copre 14-16 marzo."""
+    """Il Triduo di San Salvatore copre 15-17 marzo."""
     config = carica_config("san_pietro_in_silki")
     calendario = genera_agenda(config)
 
-    for giorno in [14, 15, 16]:
+    for giorno in [15, 16, 17]:
         g = next(g for g in calendario.giorni if g.data == date(2027, 3, giorno))
         assert g.nome == "Triduo di San Salvatore"
         assert g.particolare is True

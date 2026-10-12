@@ -325,13 +325,13 @@ def calcola_nove_mercoledi(anno: int) -> list[date]:
     """Calcola i 9 mercoledì che precedono il Triduo di San Salvatore.
 
     Regola (interpretazione del santuario):
-    - Il 9° mercoledì è il mercoledì immediatamente PRIMA del 14 marzo.
+    - Il 9° mercoledì è il mercoledì immediatamente PRIMA del 15 marzo.
     - Il 1° mercoledì è 8 settimane prima del 9° (= 9° - 56 giorni).
     - Tutti i mercoledì sono consecutivi (7 giorni di distanza).
 
     Note:
-        - Il Triduo è fisso dal 14 al 16 marzo (non dipende dal giorno).
-        - Se il 14 marzo cade di mercoledì, il 9° mercoledì è il 7 marzo
+        - Il Triduo è fisso dal 15 al 17 marzo (non dipende dal giorno).
+        - Se il 15 marzo cade di mercoledì, il 9° mercoledì è l'8 marzo
           (il mercoledì precedente, perché la regola dice "che precedono").
 
     Args:
@@ -347,15 +347,15 @@ def calcola_nove_mercoledi(anno: int) -> list[date]:
          date(2027, 2, 3), date(2027, 2, 10), date(2027, 2, 17),
          date(2027, 2, 24), date(2027, 3, 3), date(2027, 3, 10)]
     """
-    triduo_inizio = date(anno, 3, 14)
+    triduo_inizio = date(anno, 3, 15)
 
-    # Trova il mercoledì immediatamente prima del 14 marzo
+    # Trova il mercoledì immediatamente prima del 15 marzo
     # weekday: lunedì=0, martedì=1, ..., domenica=6
     # Mercoledì: weekday = 2
-    # Se il 14 marzo è mercoledì, vogliamo il mercoledì precedente (7 giorni prima)
+    # Se il 15 marzo è mercoledì, vogliamo il mercoledì precedente (7 giorni prima)
     giorni_indietro = (triduo_inizio.weekday() - 2) % 7
     if giorni_indietro == 0:
-        # Il 14 marzo è mercoledì → usa il mercoledì precedente
+        # Il 15 marzo è mercoledì → usa il mercoledì precedente
         giorni_indietro = 7
 
     nono_mercoledi = triduo_inizio - timedelta(days=giorni_indietro)

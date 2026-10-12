@@ -413,9 +413,9 @@ def test_nove_mercoledi_sono_consecutivi() -> None:
 
 
 def test_nove_mercoledi_prima_del_triduo() -> None:
-    """Il 9° mercoledì è prima del 14 marzo (Triduo)."""
+    """Il 9° mercoledì è prima del 15 marzo (Triduo)."""
     for anno in range(2024, 2034):
-        triduo_inizio = date(anno, 3, 14)
+        triduo_inizio = date(anno, 3, 15)
         nono = calcola_nove_mercoledi(anno)[-1]
         assert nono < triduo_inizio
         # Al massimo 7 giorni prima
@@ -423,25 +423,22 @@ def test_nove_mercoledi_prima_del_triduo() -> None:
 
 
 def test_nove_mercoledi_2028() -> None:
-    """I 9 mercoledì di San Salvatore 2028 (14 marzo = martedì)."""
+    """I 9 mercoledì di San Salvatore 2028 (15 marzo = mercoledì)."""
     mercoledi = calcola_nove_mercoledi(2028)
-    # 14 marzo 2028 = martedì, quindi il 9° mercoledì è l'8 marzo
+    # 15 marzo 2028 = mercoledì, quindi il 9° mercoledì è l'8 marzo
+    # (il mercoledì PRECEDENTE al 15 marzo)
     assert mercoledi[-1] == date(2028, 3, 8)
     # Il 1° è 8 settimane prima
     assert mercoledi[0] == date(2028, 1, 12)
 
 
-def test_nove_mercoledi_14_marzo_mercoledi() -> None:
-    """Se il 14 marzo è mercoledì, il 9° è il mercoledì precedente (7 marzo).
-
-    Caso speciale: 2029 (14 marzo è mercoledì).
-    """
-    # Verifica che 14 marzo 2029 sia effettivamente mercoledì
-    assert date(2029, 3, 14).weekday() == 2
-
+def test_nove_mercoledi_2029() -> None:
+    """I 9 mercoledì di San Salvatore 2029 (15 marzo = giovedì)."""
     mercoledi = calcola_nove_mercoledi(2029)
-    # Il 9° deve essere il 7 marzo (non il 14)
-    assert mercoledi[-1] == date(2029, 3, 7)
+    # 15 marzo 2029 = giovedì, quindi il 9° mercoledì è il 14 marzo
+    assert mercoledi[-1] == date(2029, 3, 14)
+    # Il 1° è 8 settimane prima
+    assert mercoledi[0] == date(2029, 1, 17)
 
 
 # ======================================================================
