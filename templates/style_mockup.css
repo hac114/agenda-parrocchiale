@@ -1,0 +1,245 @@
+/* =====================================================================
+   STILE MOCKUP — Nuovo layout pagina giorno
+   Una pagina = un giorno (spaziosa)
+   ===================================================================== */
+
+/* --- Impostazioni pagina A4 --- */
+@page {
+    size: A4;
+    margin: 12mm 12mm 12mm 12mm;
+
+    @bottom-center {
+        content: counter(page);
+        font-family: "Times New Roman", serif;
+        font-size: 9pt;
+        color: #666;
+    }
+}
+
+/* --- Reset di base --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Times New Roman", Georgia, serif;
+    font-size: 11pt;
+    color: #000;
+    line-height: 1.3;
+}
+
+/* =====================================================================
+   PAGINA GIORNO
+   ===================================================================== */
+
+.pagina-giorno {
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* --- Intestazione --- */
+.intestazione {
+    border-bottom: 2px solid #333;
+    padding-bottom: 3mm;
+    margin-bottom: 4mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.data {
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+.giorno-settimana {
+    font-size: 12pt;
+    font-style: italic;
+    color: #555;
+}
+
+/* --- Festività --- */
+.festivita {
+    background-color: #f0f0f0;
+    border-left: 4px solid #333;
+    padding: 2mm 4mm;
+    margin-bottom: 4mm;
+}
+
+.nome-festivita {
+    font-size: 12pt;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* =====================================================================
+   TABELLA 1 — MESSE
+   ===================================================================== */
+
+.tabella-messe {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 5mm;
+}
+
+.tabella-messe th {
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    padding: 2mm;
+    text-align: center;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.tabella-messe td {
+    border: 1px solid #ccc;
+    padding: 2mm;
+    vertical-align: top;
+}
+
+.tabella-messe .col-ora {
+    width: 20mm;
+    text-align: center;
+    font-size: 13pt;
+    font-weight: bold;
+    background-color: #fafafa;
+}
+
+.tabella-messe .col-defunti {
+    width: 45%;
+}
+
+.tabella-messe .col-firma {
+    width: 35%;
+}
+
+/* --- Riga normale: 8mm altezza --- */
+.riga-messa {
+    min-height: 10mm;
+}
+
+.riga-messa .riga-defunto {
+    height: 10mm;
+    border-bottom: 1px dotted #ccc;
+}
+
+.riga-messa .riga-defunto:last-child {
+    border-bottom: none;
+}
+
+.riga-messa .riga-firma {
+    height: 10mm;
+    border-bottom: 1px dotted #ccc;
+}
+
+.riga-messa .riga-firma:last-child {
+    border-bottom: none;
+}
+
+/* --- Riga con extra (es. 18:00 con 3 righe) --- */
+.riga-extra {
+    min-height: 30mm;
+}
+
+.riga-extra .riga-defunto {
+    height: 10mm;
+}
+
+.riga-extra .riga-firma {
+    height: 10mm;
+}
+
+/* =====================================================================
+   TABELLA 2 — INTENZIONI
+   ===================================================================== */
+
+.tabella-intenzioni {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 5mm;
+}
+
+.tabella-intenzioni th {
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    padding: 2mm;
+    text-align: center;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.tabella-intenzioni td {
+    border: 1px solid #ccc;
+    padding: 2mm;
+    vertical-align: top;
+    height: 10mm;
+}
+
+.tabella-intenzioni .col-luogo {
+    width: 35%;
+}
+
+.tabella-intenzioni .col-intenzione {
+    width: 40%;
+}
+
+.tabella-intenzioni .col-firma {
+    width: 25%;
+}
+
+/* =====================================================================
+   SPAZIO INIZIATIVE
+   ===================================================================== */
+
+.spazio-iniziative {
+    margin-top: auto;
+    border-top: 1px dashed #999;
+    padding-top: 3mm;
+}
+
+.spazio-iniziative h3 {
+    font-size: 11pt;
+    font-weight: bold;
+    margin-bottom: 2mm;
+    color: #555;
+}
+
+.righe-iniziative {
+    display: flex;
+    flex-direction: column;
+}
+
+.riga-iniziativa {
+    height: 8mm;
+    border-bottom: 1px dotted #ccc;
+}
+
+.riga-iniziativa:last-child {
+    border-bottom: none;
+}
+
+/* =====================================================================
+   SPAZIO ANNOTAZIONI LIBERE
+   ===================================================================== */
+
+.spazio-annotazioni-libere {
+    margin-top: 4mm;
+    border-top: 1px dashed #999;
+    padding-top: 3mm;
+}
+
+.spazio-annotazioni-libere h3 {
+    font-size: 11pt;
+    font-weight: bold;
+    margin-bottom: 2mm;
+    color: #555;
+}
+
+.area-libera {
+    min-height: 30mm;
+    border: 1px dotted #ccc;
+}

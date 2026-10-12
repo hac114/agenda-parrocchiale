@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Mockup Layout — {{ data_formattata }}</title>
+    <link rel="stylesheet" href="style_mockup.css">
+</head>
+<body>
+
+<!-- PAGINA GIORNO -->
+<div class="pagina-giorno">
+
+    <!-- INTESTAZIONE -->
+    <header class="intestazione">
+        <div class="data">{{ data_formattata }}</div>
+        <div class="giorno-settimana">{{ giorno_settimana }}</div>
+    </header>
+
+    {% if nome_festivita %}
+    <div class="festivita">
+        <span class="nome-festivita">{{ nome_festivita }}</span>
+    </div>
+    {% endif %}
+
+    <!-- TABELLA 1: MESSE -->
+    <table class="tabella-messe">
+        <thead>
+            <tr>
+                <th class="col-ora">Ora</th>
+                <th class="col-defunti">Intenzioni</th>
+                <th class="col-firma">Firma</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for riga in righe_messe %}
+            <tr class="riga-messa {% if riga.righe_extra %}riga-extra{% endif %}">
+                <td class="col-ora">{{ riga.orario }}</td>
+                <td class="col-defunti">
+                    {% for i in range(riga.righe_extra or 1) %}
+                    <div class="riga-defunto"></div>
+                    {% endfor %}
+                </td>
+                <td class="col-firma">
+                    {% for i in range(riga.righe_extra or 1) %}
+                    <div class="riga-firma"></div>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- TABELLA 2: INTENZIONI -->
+    <table class="tabella-intenzioni">
+        <thead>
+            <tr>
+                <th class="col-luogo">Luogo della celebrazione</th>
+                <th class="col-intenzione">Intenzione</th>
+                <th class="col-firma">Firma</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(3) %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<!-- SPAZIO INIZIATIVE -->
+<div class="spazio-iniziative">
+    <h3>Altre iniziative / Note</h3>
+    <div class="righe-iniziative">
+        {% for i in range(4) %}
+        <div class="riga-iniziativa"></div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- SPAZIO LIBERO PER ANNOTAZIONI -->
+<div class="spazio-annotazioni-libere">
+    <h3>Annotazioni libere</h3>
+    <div class="area-libera"></div>
+</div>
+
+</div>
+
+</body>
+</html>
