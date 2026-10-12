@@ -95,9 +95,15 @@ Nota: il divieto riguarda SOLO il pomeriggio, la mattina si celebra.
 - NON si celebrano nel mese di maggio
 - Devono comparire nell'agenda stampata CON ORARIO
 - Contenuto: data, ora, nome sposi (quello che vedi in agenda)
-- Posizione: ULTIMA PAGINA dell'agenda
-- In fondo: SPAZIO PER PRENOTARE MATRIMONI DEL 2028
-- Nell'agenda stampata: nome sposi + data + ora
+- Posizione: in fondo all'agenda (dopo il registro intenzioni)
+
+Struttura finale (aggiornata):
+- Tabella MATRIMONI 2027: sintesi, con i matrimoni già fissati
+- Tabella MATRIMONI 2028: vuota, da compilare a mano
+
+Comportamento:
+- I matrimoni 2027 compaiono ANCHE nel giorno specifico del calendario
+- I matrimoni 2028 compaiono solo nella tabella finale
 
 ---------------------------------------------------------------------
 7. RICORRENZE PROPRIE DEL SANTUARIO
@@ -225,6 +231,95 @@ Nelle Solennità le messe seguono l'orario della domenica.
   con Corpus Domini" (nel 2027: 30 maggio = Corpus Domini)
 - Spazio matrimoni 2028: in fondo all'agenda
 
+---------------------------------------------------------------------
+16. LAYOUT PAGINA GIORNO (dal questionario di feedback)
+---------------------------------------------------------------------
+Struttura di ogni pagina giorno:
 
-FINE DOCUMENTO — 27/09/2026
+TABELLA 1 — Messe del giorno:
+- Colonna 1: Ora della Messa
+- Colonna 2: Spazio per segnare i defunti (3 righe per Messa)
+- Colonna 3: Spazio per firmare il registro
+- Altezza righe: TRIPLO spazio rispetto allo standard
+- La Messa delle 18:00 ha 3 righe extra per 3 intenzioni
+
+TABELLA 2 — Intenzioni di applicazione:
+- Colonna 1: Luogo della celebrazione
+- Colonna 2: Intenzione
+- Colonna 3: Firma del frate
+
+SPAZIO FINALE — Altre iniziative:
+- Spazio in fondo alla pagina per annotare iniziative libere
+
+Configurazione (YAML):
+- righe_extra per orario (es. "18:00": 3)
+
+Altro:
+- Una pagina = un giorno (anche se il PDF diventa lungo)
+- No pagina vuota tra i giorni
+- Spazio triplo per scrittura a penna
+
+---------------------------------------------------------------------
+17. DETTAGLI LITURGICI SPECIFICI (dal questionario)
+---------------------------------------------------------------------
+Giovedì Santo:
+- Mattino: Messa Crismale
+- Pomeriggio: Messa in Coena Domini
+
+Venerdì Santo:
+- NO intenzioni di Messa (non c'è Messa)
+- Sì: Via Crucis
+- Sì: Celebrazione della Passione del Signore
+
+Sabato Santo:
+- Solo Messa della notte (in genere ore 23:00)
+
+Lunedì dell'Angelo:
+- Solo 2 messe: 10:00 e 18:00
+
+Domenica della Divina Misericordia:
+- Domenica successiva alla Pasqua
+
+Ascensione: 6ª domenica dopo Pasqua
+Pentecoste: 7ª domenica dopo Pasqua
+SS. Trinità: 8ª domenica dopo Pasqua
+Corpus Domini: 9ª domenica dopo Pasqua
+
+NB: Se il Corpus Domini cade nell'ultima domenica di maggio
+(come nel 2027), la Festa del Voto slitta alla prima domenica
+di giugno con orari:
+- Sabato precedente: 7:00 / 10:00 / 17:00
+- Domenica: 8:30 / 10:00 / 11:30 (no pomeriggio)
+
+---------------------------------------------------------------------
+18. MATRIMONI — AGGIORNAMENTO (integrazione WhatsApp)
+---------------------------------------------------------------------
+Nell'agenda 2027 vanno riportati:
+1. I MATRIMONI 2027 già fissati (con data, ora, nome sposi)
+2. Una tabella da compilare per i MATRIMONI 2028 (richiesti durante 2027)
+
+Struttura finale del PDF:
+- ...giorni dell'anno...
+- Registro intenzioni
+- TABELLA MATRIMONI 2027 (sintesi, "colpo d'occhio")
+- TABELLA MATRIMONI 2028 (da compilare a mano)
+
+Requisito aggiuntivo:
+- I matrimoni 2027 vanno riportati AUTOMATICAMENTE nella pagina
+  del giorno in cui sono stabiliti
+- I matrimoni 2028 NO (solo nella tabella finale)
+
+Nota: questo sostituisce/estende la sezione 6.
+
+---------------------------------------------------------------------
+19. PRIORITÀ DI IMPLEMENTAZIONE (dal questionario)
+---------------------------------------------------------------------
+1. Spazio per scrivere a penna (PRIORITÀ 1)
+2. Date matrimoni precompilate (sì, eviterebbe errori)
+3. Santi di ogni giorno (NO, va bene come ora)
+4. Tendine Excel (NO, preferisce scrivere libero)
+
+Vuole vedere un PDF di prova prima della stampa finale: SÌ, SEMPRE.
+
+FINE DOCUMENTO — 12/10/2026
 
