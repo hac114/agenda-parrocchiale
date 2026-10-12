@@ -64,7 +64,9 @@ ricorrenze_proprie:
     data: { tipo: "ultima_domenica_maggio" }
     slitta_se_corpus_domini: true
     slitta_a: "prima_domenica_giugno"
-    nota: "Se coincide con Corpus Domini, slitta alla prima domenica di giugno"
+    orari_speciali_sabato: [ "7:00", "10:00", "17:00" ]
+    orari_speciali_domenica: [ "8:30", "10:00", "11:30" ]
+    nota: "Se coincide con Corpus Domini, slitta alla prima domenica di giugno. Il sabato precedente e la domenica hanno orari speciali"
 
   - nome: "Ottavario Natività BVM"
     data: { mese: 9, giorno_da: 1, giorno_a: 7 }
@@ -92,11 +94,14 @@ nove_mercoledi:
 celebrazioni_mobili:
   - { nome: "Mercoledì delle Ceneri", tipo: "pasqua_meno_46" }
   - { nome: "Domenica delle Palme", tipo: "pasqua_meno_7" }
-  - { nome: "Lunedì dell'Angelo", tipo: "pasqua_piu_1" }
+  - { nome: "Lunedì dell'Angelo", tipo: "pasqua_piu_1", orari_speciali: ["10:00", "18:00"] }
+  - { nome: "Giovedì Santo", tipo: "pasqua_meno_3", orari_speciali: ["10:00", "18:00"], nota: "Messa Crismale 10:00 (cattedrale), Coena Domini 18:00. Intenzioni solo per la Coena Domini" }
+  - { nome: "Venerdì Santo", tipo: "pasqua_meno_2", no_messe: true, nota: "Celebrazione della Passione del Signore e Via Crucis" }
+  - { nome: "Sabato Santo", tipo: "pasqua_meno_1", orari_speciali: ["23:00"], nota: "Solo Veglia Pasquale (giorno aneucaristico)" }
   - { nome: "Ascensione", tipo: "pasqua_piu_39" }
   - { nome: "Pentecoste", tipo: "pasqua_piu_49" }
   - { nome: "Santissima Trinità", tipo: "pasqua_piu_56" }
-  - { nome: "Corpus Domini", tipo: "pasqua_piu_60" }
+  - { nome: "Corpus Domini", tipo: "pasqua_piu_60", nota: "Processione dalla cattedrale. No Messa pomeridiana" }
   - { nome: "5 domeniche di Quaresima", tipo: "domeniche_quaresima" }
   - { nome: "4 domeniche di Avvento", tipo: "domeniche_avvento" }
   - { nome: "Settimana Santa", tipo: "settimana_santa" }

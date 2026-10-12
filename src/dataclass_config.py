@@ -53,6 +53,9 @@ class Festa:
         tipo: "fissa" | "mobile" | "speciale"
         salta_se_domenica: se True, la festa non si celebra se cade di domenica
         orari_ridotti: orari alternativi (opzionale), es. ["10:00", "18:00"]
+        orari_speciali: orari speciali che sostituiscono quelli standard
+        no_messe: se True, la festa non ha Messe (es. Venerdì Santo)
+        nota: nota informativa opzionale (es. "Processione dalla cattedrale")
     """
 
     nome: str
@@ -61,6 +64,9 @@ class Festa:
     tipo: str = "fissa"
     salta_se_domenica: bool = False
     orari_ridotti: list[str] | None = None
+    orari_speciali: list[str] | None = None
+    no_messe: bool = False
+    nota: str = ""
 
 
 @dataclass
@@ -74,6 +80,8 @@ class Ricorrenza:
         tipo: "semplice" | "triduo" | "novena" | "ottavario"
         compilazione: "manuale" se va compilata a mano in agenda
         nota: nota informativa opzionale
+        orari_speciali_sabato: orari speciali per il sabato precedente
+        orari_speciali_domenica: orari speciali per la domenica
     """
 
     nome: str
@@ -82,6 +90,8 @@ class Ricorrenza:
     tipo: str = "semplice"
     compilazione: str = "auto"
     nota: str = ""
+    orari_speciali_sabato: list[str] | None = None
+    orari_speciali_domenica: list[str] | None = None
 
 
 @dataclass
@@ -154,7 +164,7 @@ class Config:
     divieti_pomeridiani_fissi: list[Festa] = field(default_factory=list)
     divieti_pomeridiani_mobili: list[dict] = field(default_factory=list)
     ricorrenze_proprie: list[Ricorrenza] = field(default_factory=list)
-    celebrazioni_mobili: list[str] = field(default_factory=list)
+    celebrazioni_mobili: list[Festa] = field(default_factory=list)
     giorni_accorpati: list[dict] = field(default_factory=list)
     nove_mercoledi: dict = field(default_factory=dict)
     matrimoni_config: dict = field(default_factory=dict)

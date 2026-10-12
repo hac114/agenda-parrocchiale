@@ -23,6 +23,11 @@ from pathlib import Path
 
 from openpyxl import load_workbook
 
+from calcolo_liturgico import (
+    calcola_corpus_domini,
+    calcola_prima_domenica_giugno,
+    calcola_ultima_domenica_maggio,
+)
 from dataclass_config import (
     Config,
     Festa,
@@ -56,6 +61,9 @@ def _festa_da_dict(dati: dict) -> Festa:
         tipo=dati.get("tipo", "fissa"),
         salta_se_domenica=dati.get("salta_se_domenica", False),
         orari_ridotti=dati.get("orari_ridotti"),
+        orari_speciali=dati.get("orari_speciali"),
+        no_messe=dati.get("no_messe", False),
+        nota=dati.get("nota", ""),
     )
 
 
@@ -81,6 +89,8 @@ def _ricorrenza_da_dict(dati: dict, anno: int) -> Ricorrenza | None:
             tipo=dati.get("tipo", "semplice"),
             compilazione=dati.get("compilazione", "auto"),
             nota=dati.get("nota", ""),
+            orari_speciali_sabato=dati.get("orari_speciali_sabato"),
+            orari_speciali_domenica=dati.get("orari_speciali_domenica"),
         )
 
     # Caso 2: intervallo (giorno_da + giorno_a, stesso mese o mese_a)
@@ -96,16 +106,52 @@ def _ricorrenza_da_dict(dati: dict, anno: int) -> Ricorrenza | None:
             tipo=dati.get("tipo", "semplice"),
             compilazione=dati.get("compilazione", "auto"),
             nota=dati.get("nota", ""),
+            orari_speciali_sabato=dati.get("orari_speciali_sabato"),
+            orari_speciali_domenica=dati.get("orari_speciali_domenica"),
         )
 
-    # Caso 3: tipo speciale (es. ultima_domenica_maggio) → per ora None
+    # Caso 3: tipo speciale (es. ultima_domenica_maggio)
     if "tipo" in data_spec:
-        logger.info(
-            "Ricorrenza '%s' con tipo speciale '%s' non ancora supportata. Ignorata.",
-            nome,
-            data_spec["tipo"],
+        tipo_data = data_spec["tipo"]
+
+        # Calcola data in base al tipo
+        if tipo_data == "ultima_domenica_maggio":
+            data_inizio = calcola_ultima_domenica_maggio(anno)
+        elif tipo_data == "prima_domenica_giugno":
+            data_inizio = calcola_prima_domenica_giugno(anno)
+        else:
+            logger.warning(
+                "Ricorrenza '%s' con tipo speciale '%s' non supportato. Ignorata.",
+                nome,
+                tipo_data,
+            )
+            return None
+
+        # Applica slittamento se necessario
+        slitta = dati.get("slitta_se_corpus_domini", False)
+        if slitta and tipo_data == "ultima_domenica_maggio":
+            corpus_domini = calcola_corpus_domini(anno)
+            # La domenica del Corpus Domini = giovedì + 3 giorni
+            domenica_corpus = corpus_domini + timedelta(days=3)
+            if data_inizio == domenica_corpus:
+                logger.info(
+                    "Ricorrenza '%s': slitta a prima domenica di giugno "
+                    "(coincide con domenica del Corpus Domini %s)",
+                    nome,
+                    domenica_corpus,
+                )
+                data_inizio = calcola_prima_domenica_giugno(anno)
+
+        return Ricorrenza(
+            nome=nome,
+            data_inizio=data_inizio,
+            data_fine=None,
+            tipo=dati.get("tipo", "semplice"),
+            compilazione=dati.get("compilazione", "auto"),
+            nota=dati.get("nota", ""),
+            orari_speciali_sabato=dati.get("orari_speciali_sabato"),
+            orari_speciali_domenica=dati.get("orari_speciali_domenica"),
         )
-        return None
 
     logger.warning(
         "Ricorrenza '%s' ha un formato data non riconosciuto. Ignorata.",
@@ -220,7 +266,7 @@ def unisci_config(dati_yaml: dict, dati_excel: dict) -> Config:
         divieti_pomeridiani_fissi=divieti_fissi,
         divieti_pomeridiani_mobili=divieti_mobili,
         ricorrenze_proprie=ricorrenze,
-        celebrazioni_mobili=dati_yaml.get("celebrazioni_mobili", []),
+        celebrazioni_mobili=[_festa_da_dict(c) for c in dati_yaml.get("celebrazioni_mobili", [])],
         giorni_accorpati=dati_yaml.get("giorni_accorpati", []),
         nove_mercoledi=dati_yaml.get("nove_mercoledi", {}),
         matrimoni_config=dati_yaml.get("matrimoni", {}),
