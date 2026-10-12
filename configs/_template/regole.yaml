@@ -107,3 +107,14 @@ intenzioni:
   numero_feriale_mattina: 1
   numero_festivo: 1
   scrittura: "manuale"
+
+# --- Layout pagina giorno ---
+layout:
+  # Righe di default per ogni Messa
+  righe_default: 1
+  # Orari con righe extra (permettono di scrivere più intenzioni)
+  # Es. "18:00": 3 → la Messa delle 18:00 ha 3 righe per le intenzioni
+  righe_extra:
+    "18:00": 3
+    "19:00": 3
+    "21:00": 3

@@ -27,6 +27,7 @@ from dataclass_config import (
     Config,
     Festa,
     Intenzione,
+    Layout,
     Matrimonio,
     Periodo,
     Ricorrenza,
@@ -198,12 +199,22 @@ def unisci_config(dati_yaml: dict, dati_excel: dict) -> Config:
     ]
 
     # ------------------------------------------------------------------
+    # Layout (da YAML)
+    # ------------------------------------------------------------------
+    layout_data = dati_yaml.get("layout", {})
+    layout = Layout(
+        righe_default=layout_data.get("righe_default", 1),
+        righe_extra=layout_data.get("righe_extra", {}),
+    )
+
+    # ------------------------------------------------------------------
     # Costruisci Config
     # ------------------------------------------------------------------
     return Config(
         # Da YAML
         nome_parrocchia=nome_parrocchia,
         citta=citta,
+        layout=layout,
         festivi_fissi=festivi_fissi,
         eccezioni_festivi=eccezioni_festivi,
         divieti_pomeridiani_fissi=divieti_fissi,
@@ -315,6 +326,15 @@ def carica_config(
         "matrimoni": matrimoni,
         "note": note,
     }
+
+    # ------------------------------------------------------------------
+    # Layout (da YAML)
+    # ------------------------------------------------------------------
+    layout_data = dati_yaml.get("layout", {})
+    layout = Layout(
+        righe_default=layout_data.get("righe_default", 1),
+        righe_extra=layout_data.get("righe_extra", {}),
+    )
 
     # ------------------------------------------------------------------
     # Unione

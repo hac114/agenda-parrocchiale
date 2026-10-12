@@ -125,6 +125,19 @@ class Matrimonio:
 
 
 @dataclass
+class Layout:
+    """Configurazione del layout di pagina giorno.
+
+    Attributes:
+        righe_default: numero di righe di default per ogni Messa
+        righe_extra: dict orario → numero righe (es. {"18:00": 3})
+    """
+
+    righe_default: int = 1
+    righe_extra: dict[str, int] = field(default_factory=dict)
+
+
+@dataclass
 class Config:
     """Struttura finale unificata.
 
@@ -135,6 +148,7 @@ class Config:
     # --- Da YAML (regole stabili) ---
     nome_parrocchia: str
     citta: str
+    layout: Layout = field(default_factory=Layout)
     festivi_fissi: list[Festa] = field(default_factory=list)
     eccezioni_festivi: list[Festa] = field(default_factory=list)
     divieti_pomeridiani_fissi: list[Festa] = field(default_factory=list)

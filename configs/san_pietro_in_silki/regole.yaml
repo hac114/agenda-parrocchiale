@@ -131,3 +131,9 @@ intenzioni:
   numero_feriale_mattina: 1
   numero_festivo: 1
   scrittura: "manuale"
+
+# --- Layout pagina giorno ---
+layout:
+  righe_default: 1
+  righe_extra:
+    "18:00": 3
