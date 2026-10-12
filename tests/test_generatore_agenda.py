@@ -793,12 +793,23 @@ def test_genera_agenda_anno_corretto() -> None:
 
 
 def test_genera_agenda_tutti_con_orari() -> None:
-    """Tutti i giorni hanno almeno un orario."""
+    """Tutti i giorni hanno almeno un orario, TRANNE quelli con no_messe=True.
+
+    Nella fattispecie: il Venerdì Santo non ha Messe (solo Celebrazione
+    della Passione). È l'unico giorno senza orari nel 2027.
+    """
     config = carica_config("san_pietro_in_silki")
     calendario = genera_agenda(config)
 
+    # Data del Venerdì Santo 2027 (verificata dal calendario liturgico)
+    venerdi_santo = date(2027, 3, 26)
+
     senza_orari = [g for g in calendario.giorni if not g.orari]
-    assert len(senza_orari) == 0, f"Giorni senza orari: {[g.data for g in senza_orari]}"
+    # Solo il Venerdì Santo può essere senza orari
+    for g in senza_orari:
+        assert (
+            g.data == venerdi_santo
+        ), f"Giorno inatteso senza orari: {g.data} (atteso solo {venerdi_santo})"
 
 
 def test_genera_agenda_ordine_cronologico() -> None:
