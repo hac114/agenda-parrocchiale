@@ -24,7 +24,14 @@ from datetime import date, timedelta
 
 from calcolo_liturgico import calcola_corpus_domini, calcola_tutte_date_mobili
 from config import carica_config
-from dataclass_config import Config, Intenzione, Matrimonio, Periodo, Ricorrenza
+from dataclass_config import (
+    Config,
+    Festa,
+    Intenzione,
+    Matrimonio,
+    Periodo,
+    Ricorrenza,
+)
 from util import formatta_data_italiana
 
 logger = logging.getLogger(__name__)
@@ -47,6 +54,7 @@ class GiornoAgenda:
         intenzioni: lista di intenzioni di Messa applicate in questo giorno
         matrimoni: lista di matrimoni previsti in questo giorno
         note: lista di note (dict con "dal", "al", "nota")
+        nota_liturgica: nota liturgica della celebrazione (es. "Processione dalla cattedrale")
     """
 
     data: date
@@ -57,6 +65,7 @@ class GiornoAgenda:
     intenzioni: list[Intenzione] = field(default_factory=list)
     matrimoni: list[Matrimonio] = field(default_factory=list)
     note: list[dict] = field(default_factory=list)
+    nota_liturgica: str = ""
 
 
 @dataclass
@@ -329,6 +338,125 @@ def applica_divieti_pomeridiani(data: date, orari: list[str], config: Config) ->
     return orari_mattina
 
 
+def applica_orari_speciali(
+    data: date,
+    orari: list[str],
+    config: Config,
+    date_mobili: dict[str, date | list[date]],
+) -> tuple[list[str], str]:
+    """Applica gli orari speciali di celebrazioni mobili o ricorrenze proprie.
+
+    Priorità (dalla più alta):
+    1. Celebrazioni mobili con no_messe=True → lista vuota
+    2. Celebrazioni mobili con orari_speciali → sostituiscono gli orari
+    3. Ricorrenze proprie con orari_speciali_sabato (il sabato precedente)
+    4. Ricorrenze proprie con orari_speciali_domenica (la domenica)
+
+    Args:
+        data: data del giorno
+        orari: orari calcolati finora
+        config: Config con celebrazioni_mobili e ricorrenze_proprie
+        date_mobili: dizionario date mobili
+
+    Returns:
+        Tupla (orari_finali, nota_liturgica).
+    """
+    # 1. Celebrazioni mobili
+    for celebrazione in config.celebrazioni_mobili:
+        data_celebrazione = _data_celebrazione_mobile(celebrazione, config.anno, date_mobili)
+        if data_celebrazione is None or data_celebrazione != data:
+            continue
+
+        if celebrazione.no_messe:
+            logger.info(
+                "Celebrazione '%s' (%s): no Messe.",
+                celebrazione.nome,
+                data,
+            )
+            return [], celebrazione.nota
+
+        if celebrazione.orari_speciali:
+            logger.info(
+                "Celebrazione '%s' (%s): orari speciali %s.",
+                celebrazione.nome,
+                data,
+                celebrazione.orari_speciali,
+            )
+            return list(celebrazione.orari_speciali), celebrazione.nota
+
+    # 2. Ricorrenze proprie (Festa del Voto, ecc.)
+    for ricorrenza in config.ricorrenze_proprie:
+        # Domenica della ricorrenza
+        if ricorrenza.orari_speciali_domenica and data == ricorrenza.data_inizio:
+            logger.info(
+                "Ricorrenza '%s' (%s): orari domenica %s.",
+                ricorrenza.nome,
+                data,
+                ricorrenza.orari_speciali_domenica,
+            )
+            return list(ricorrenza.orari_speciali_domenica), ricorrenza.nota
+
+        # Sabato precedente
+        if ricorrenza.orari_speciali_sabato:
+            sabato = ricorrenza.data_inizio - timedelta(days=1)
+            if data == sabato:
+                logger.info(
+                    "Ricorrenza '%s' (%s): orari sabato %s.",
+                    ricorrenza.nome,
+                    data,
+                    ricorrenza.orari_speciali_sabato,
+                )
+                return list(ricorrenza.orari_speciali_sabato), ricorrenza.nota
+
+    return orari, ""
+
+
+def _data_celebrazione_mobile(
+    celebrazione: Festa,
+    anno: int,
+    date_mobili: dict[str, date | list[date]],
+) -> date | None:
+    """Restituisce la data di una celebrazione mobile, se determinabile.
+
+    Args:
+        celebrazione: la Festa (celebrazione mobile)
+        anno: anno di riferimento
+        date_mobili: dizionario date mobili
+
+    Returns:
+        La data della celebrazione, o None se non determinabile.
+    """
+    tipo = celebrazione.tipo
+
+    # Se il tipo è già una data diretta in date_mobili
+    if tipo in date_mobili:
+        valore = date_mobili[tipo]
+        if isinstance(valore, date):
+            return valore
+        return None
+
+    # Tipi speciali: pasqua_meno_N, pasqua_piu_N
+    if tipo.startswith("pasqua_meno_"):
+        try:
+            giorni = int(tipo.replace("pasqua_meno_", ""))
+            pasqua = date_mobili.get("pasqua")
+            if isinstance(pasqua, date):
+                return pasqua - timedelta(days=giorni)
+        except ValueError:
+            pass
+
+    if tipo.startswith("pasqua_piu_"):
+        try:
+            giorni = int(tipo.replace("pasqua_piu_", ""))
+            pasqua = date_mobili.get("pasqua")
+            if isinstance(pasqua, date):
+                return pasqua + timedelta(days=giorni)
+        except ValueError:
+            pass
+
+    return None
+
+
 def _ricorrenza_per_data(data: date, config: Config) -> Ricorrenza | None:
     """Trova la ricorrenza propria attiva in una data.
 
@@ -570,7 +698,10 @@ def _crea_giorno_agenda(
     # 6. Applica divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
     orari = applica_divieti_pomeridiani(data, orari, config)
 
-    # 7. Collega dati
+    # 7. Applica orari speciali (celebrazioni mobili + ricorrenze proprie)
+    orari, nota_liturgica = applica_orari_speciali(data, orari, config, date_mobili)
+
+    # 8. Collega dati
     intenzioni = intenzioni_del_giorno(data, config)
     matrimoni = matrimoni_del_giorno(data, config)
     note = note_del_giorno(data, config)
@@ -584,6 +715,7 @@ def _crea_giorno_agenda(
         intenzioni=intenzioni,
         matrimoni=matrimoni,
         note=note,
+        nota_liturgica=nota_liturgica,
     )
 
 

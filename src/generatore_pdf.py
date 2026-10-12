@@ -127,6 +127,7 @@ def renderizza_giorno(
         data_formattata=formatta_data_italiana(giorno.data),
         giorno_settimana=nome_giorno_italiano(giorno.data),
         nome_festivita=giorno.nome,
+        nota_liturgica=giorno.nota_liturgica,
         righe_messe=righe_messe,
         matrimoni=giorno.matrimoni,
         note=giorno.note,

@@ -442,3 +442,17 @@ body {
     margin-bottom: 5mm;
     color: #555;
 }
+
+/* =====================================================================
+   NOTA LITURGICA
+   ===================================================================== */
+
+.nota-liturgica {
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+    padding: 2mm 4mm;
+    margin-bottom: 4mm;
+    font-size: 10pt;
+    font-style: italic;
+    color: #5d4e00;
+}
