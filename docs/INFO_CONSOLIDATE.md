@@ -321,5 +321,50 @@ Nota: questo sostituisce/estende la sezione 6.
 
 Vuole vedere un PDF di prova prima della stampa finale: SÌ, SEMPRE.
 
+
+---------------------------------------------------------------------
+20. DETTAGLI LITURGICI (dal questionario del 12/10/2026)
+---------------------------------------------------------------------
+Giovedì Santo:
+- Messa Crismale ore 10:00 (in cattedrale)
+- Messa in Coena Domini ore 18:00
+- Intenzioni: solo per la Coena Domini (fino a 5)
+
+Venerdì Santo:
+- NO Messa
+- Celebrazione della Passione del Signore + Via Crucis
+- NO intenzioni
+
+Sabato Santo:
+- Giorno "aneucaristico"
+- Solo Veglia Pasquale ore 23:00
+- NO altre celebrazioni durante il giorno
+
+Lunedì dell'Angelo:
+- Solo 2 Messe: 10:00 e 18:00 (orari speciali)
+
+Domenica della Divina Misericordia:
+- Nessuna celebrazione speciale
+
+Festa del Voto 2027 (6 giugno, slittata):
+- Sabato precedente (5 giugno): 7:00 / 10:00 / 17:00
+- Domenica (6 giugno): 8:30 / 10:00 / 11:30 (no pomeriggio)
+
+Corpus Domini 2027 (27 maggio):
+- NO Messa pomeridiana (divieto già gestito)
+- Processione a partire dalla cattedrale (nota in agenda)
+
+Altre celebrazioni: nessuna
+
+Configurabili dal YAML: SÌ
+
+---------------------------------------------------------------------
+21. LAYOUT CONFIGURABILE DAL YAML
+---------------------------------------------------------------------
+Sezione `layout` in regole.yaml:
+- righe_default: numero righe di default per ogni Messa (1)
+- righe_extra: dict orario → righe extra
+  Es. San Pietro: {"18:00": 3} → la Messa delle 18:00 ha 3 righe
+
 FINE DOCUMENTO — 12/10/2026
 

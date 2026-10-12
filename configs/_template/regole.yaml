@@ -34,7 +34,13 @@ divieti_pomeridiani:
 
 # --- Ricorrenze proprie della parrocchia (NON annuali) ---
 ricorrenze_proprie: []
-  # Esempio:
+  # Campi opzionali per ricorrenze con orari speciali:
+  #   - orari_speciali_sabato: orari del sabato precedente
+  #   - orari_speciali_domenica: orari della domenica
+  #   - slitta_se_corpus_domini: True se la ricorrenza slitta quando
+  #     coincide con la domenica del Corpus Domini
+  #
+  # Esempi:
   # - nome: "Triduo di San Salvatore"
   #   data: { mese: 3, giorno: 15, durata_giorni: 3 }
   #   tipo: "triduo"
@@ -44,6 +50,12 @@ ricorrenze_proprie: []
   #   data: { mese: 3, giorno: 18 }
   #   durata_giorni: 1
   #   nota: "Festa del santuario. Data: 18 marzo"
+  # - nome: "Festa del Voto"
+  #   data: { tipo: "ultima_domenica_maggio" }
+  #   slitta_se_corpus_domini: true
+  #   orari_speciali_sabato: ["7:00", "10:00", "17:00"]
+  #   orari_speciali_domenica: ["8:30", "10:00", "11:30"]
+  #   nota: "Se coincide con Corpus Domini, slitta alla prima domenica di giugno"
 
 # --- Nove mercoledì (opzionale) ---
 nove_mercoledi:
@@ -63,10 +75,18 @@ nove_mercoledi:
 #   - settimana_santa          → la Settimana Santa (da Palme a Sabato)
 #   - triduo_pasquale          → Triduo Pasquale (Giovedì-Venerdì-Sabato)
 celebrazioni_mobili: []
+  # Ogni voce ha un "tipo" che indica al codice Python come calcolare la data.
+  # Campi opzionali:
+  #   - orari_speciali: lista di orari che sostituiscono quelli standard
+  #   - no_messe: True se non si celebra la Messa (es. Venerdì Santo)
+  #   - nota: testo informativo che appare in agenda
   # Esempi:
   # - { nome: "Mercoledì delle Ceneri", tipo: "pasqua_meno_46" }
   # - { nome: "Domenica delle Palme", tipo: "pasqua_meno_7" }
-  # - { nome: "Lunedì dell'Angelo", tipo: "pasqua_piu_1" }
+  # - { nome: "Lunedì dell'Angelo", tipo: "pasqua_piu_1", orari_speciali: ["10:00", "18:00"] }
+  # - { nome: "Giovedì Santo", tipo: "pasqua_meno_3", orari_speciali: ["10:00", "18:00"] }
+  # - { nome: "Venerdì Santo", tipo: "pasqua_meno_2", no_messe: true, nota: "Celebrazione Passione" }
+  # - { nome: "Sabato Santo", tipo: "pasqua_meno_1", orari_speciali: ["23:00"] }
   # - { nome: "Ascensione", tipo: "pasqua_piu_39" }
   # - { nome: "Pentecoste", tipo: "pasqua_piu_49" }
   # - { nome: "Santissima Trinità", tipo: "pasqua_piu_56" }
