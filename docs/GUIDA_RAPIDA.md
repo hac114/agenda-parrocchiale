@@ -94,11 +94,17 @@ Il PDF appare in: `output/Agenda_<anno>.pdf`
 ## Cosa contiene il PDF
 
 1. **Copertina**
-2. **365 pagine giorno** (una per giorno)
+2. **365 pagine giorno** (una per giorno, con tabella Messe + tabella Intenzioni + spazi annotazioni)
 3. **Registro intenzioni**
 4. **Prenotazioni Matrimoni** (anni successivi)
 
-Totale: **~368 pagine**
+Ogni pagina giorno contiene:
+- Data, giorno settimana, festività
+- Note liturgiche (se presenti)
+- Tabella Messe (Ora / Intenzioni / Firma)
+- Tabella Intenzioni di applicazione
+- Spazio "Altre iniziative / Note"
+- Spazio "Annotazioni libere"
 
 ---
 

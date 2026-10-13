@@ -271,6 +271,31 @@ dedicata alle prenotazioni future.
 **Nota:** nella pagina finale "Prenotazioni Matrimoni" compaiono solo
 **data, ora e nome sposi** (i contatti e le note restano interni).
 
+**⚠️ IMPORTANTE — Date precompilate:**
+
+Il file Excel è **già precompilato** con i sabati dell'anno corrente
+e dell'anno successivo (escluso maggio).
+
+Per ogni sabato, troverai la data già scritta. Devi solo compilare:
+- **Ora** del matrimonio
+- **Nome sposi**
+- **Contatti** (opzionale)
+- **Note** (opzionale)
+
+**Non devi scrivere le date** — sono già state inserite dal programma.
+Questo ti evita di sbagliare data.
+
+**Esempio:**
+
+| Data | Ora | Nome sposi | Contatti | Note |
+|---|---|---|---|---|
+| 02/01/2027 | 15:30 | Mario Rossi e Anna Bianchi | 333-1111111 | (vuoto) |
+| 09/01/2027 |  |  |  | (vuoto) |
+| 16/01/2027 | 11:00 | Luca Verdi e Sara Neri | 333-2222222 | (vuoto) |
+
+Se un sabato non ha matrimoni, lascia le celle vuote.
+Il programma ignora le righe non compilate.
+
 ### 5.5 — Compilare il foglio "Note"
 Annotazioni libere, per esempio:
 - Programma del mese mariano (maggio)
@@ -301,9 +326,16 @@ C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\output\Agenda_2027.pdf
 
 **Cosa contiene il PDF (in ordine):**
 1. **Copertina** (nome parrocchia, città, anno)
-2. **365 pagine giorno** (una per ogni giorno dell'anno)
+2. **365 pagine giorno** (una per ogni giorno dell'anno), con:
+   - Data e giorno della settimana
+   - Festività (se presente)
+   - Note liturgiche (riquadro giallo) — es. Giovedì Santo, Venerdì Santo
+   - Tabella Messe: Ora | Intenzioni (3 righe) | Firma
+   - Tabella Intenzioni di applicazione: Luogo | Intenzione | Firma
+   - Sezione "Altre iniziative / Note"
+   - Sezione "Annotazioni libere"
 3. **Registro intenzioni** (elenco di tutte le intenzioni)
-4. **Prenotazioni Matrimoni** (pagina finale con i matrimoni degli anni successivi)
+4. **Prenotazioni Matrimoni** (pagina finale)
 
 5. Se ci sono errori, il programma mostra un riepilogo tipo:
 ```text
