@@ -150,7 +150,7 @@ def crea_config(
 
     crea_foglio_impostazioni(wb, anno, nome_parrocchia, citta)
     crea_foglio_intenzioni(wb)
-    crea_foglio_matrimoni(wb)
+    crea_foglio_matrimoni(wb, anno=anno)
     crea_foglio_note(wb)
 
     destinazione.mkdir(parents=True, exist_ok=True)

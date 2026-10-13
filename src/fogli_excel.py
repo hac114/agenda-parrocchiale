@@ -15,12 +15,11 @@ Ogni funzione crea un foglio nel Workbook passato come parametro.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Protection
 from openpyxl.worksheet.datavalidation import DataValidation
-from openpyxl.worksheet.worksheet import Worksheet
 
 from stili import (
     BORDO_SOTTILE,
@@ -335,16 +334,26 @@ def crea_foglio_intenzioni(wb: Workbook, righe: int = 400) -> None:
 # ======================================================================
 
 
-def crea_foglio_matrimoni(wb: Workbook, righe: int = 100) -> None:
+def crea_foglio_matrimoni(
+    wb: Workbook,
+    anno: int,
+    righe: int = 200,
+) -> None:
     """Crea il foglio Matrimoni.
 
-    Contiene le prenotazioni dei matrimoni per l'anno successivo.
+    Contiene le prenotazioni dei matrimoni per l'anno corrente e successivo.
     Colonne:
     - A: Data (data, compilabile)
     - B: Ora (ora nativa HH:MM, compilabile)
     - C: Nome sposi (testo libero, compilabile)
     - D: Contatti (testo libero, compilabile)
     - E: Note (testo libero, compilabile)
+
+    Precompilazione:
+    Le prime righe sono precompilate con TUTTI i SABATI dell'anno
+    corrente e dell'anno successivo (escluso maggio), perché al
+    santuario i matrimoni si celebrano solo il sabato e non a maggio.
+    Questo copre le prenotazioni che scavalcano l'anno.
 
     Nota: nell'agenda stampata i matrimoni compaiono in fondo (ultima pagina)
     con data, ora e nome sposi, come richiesto dal santuario.
@@ -377,17 +386,32 @@ def crea_foglio_matrimoni(wb: Workbook, righe: int = 100) -> None:
     ws.row_dimensions[1].height = 30
 
     # ------------------------------------------------------------------
+    # CALCOLO SABATI (anno corrente + anno successivo, escluso maggio)
+    # ------------------------------------------------------------------
+    sabati_anno_corrente = _calcola_sabati_anno(anno)
+    sabati_anno_successivo = _calcola_sabati_anno(anno + 1)
+    sabati = sabati_anno_corrente + sabati_anno_successivo
+
+    # ------------------------------------------------------------------
     # RIGHE DATI
     # ------------------------------------------------------------------
     for r in range(2, righe + 2):
+        # Calcola l'indice del sabato da precompilare (se c'è)
+        indice_sabato = r - 2
+        data_sabato: date | None = None
+        if indice_sabato < len(sabati):
+            data_sabato = sabati[indice_sabato]
+
         for c in range(1, 6):
             cella = ws.cell(row=r, column=c)
             cella.fill = FILL_GIALLO
             cella.border = BORDO_SOTTILE
             cella.alignment = Alignment(horizontal="left", vertical="center")
             if c == 1:
-                # Colonna Data
+                # Colonna Data → precompilata col sabato
                 cella.number_format = "DD/MM/YYYY"
+                if data_sabato is not None:
+                    cella.value = data_sabato
             elif c == 2:
                 # Colonna Ora → formato ora nativo
                 cella.number_format = "HH:MM"
@@ -417,6 +441,30 @@ def crea_foglio_matrimoni(wb: Workbook, righe: int = 100) -> None:
 
     ws.freeze_panes = "A2"
     ws.sheet_view.showGridLines = False
+
+
+def _calcola_sabati_anno(anno: int) -> list[date]:
+    """Calcola tutti i sabati di un anno, escluso il mese di maggio.
+
+    Al santuario i matrimoni si celebrano solo il sabato e mai a maggio.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Lista di date (tutti i sabati dell'anno tranne quelli di maggio).
+    """
+    sabati: list[date] = []
+    corrente = date(anno, 1, 1)
+    fine = date(anno, 12, 31)
+
+    while corrente <= fine:
+        # weekday: 0 = lunedì, ..., 5 = sabato, 6 = domenica
+        if corrente.weekday() == 5 and corrente.month != 5:
+            sabati.append(corrente)
+        corrente += timedelta(days=1)
+
+    return sabati
 
 
 # ======================================================================
