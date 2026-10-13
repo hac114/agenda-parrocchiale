@@ -1066,3 +1066,122 @@ def test_parsing_celebrazioni_mobili_orari_speciali() -> None:
     assert venerdi_santo is not None
     assert venerdi_santo.no_messe is True
     assert venerdi_santo.orari_speciali is None
+
+
+# ======================================================================
+# TEST — edge case: orario malformato in applica_divieti_pomeridiani
+# ======================================================================
+
+
+def test_divieto_con_orario_malformato() -> None:
+    """Un orario malformato viene mantenuto con un warning.
+
+    Questo test copre la diramazione difensiva: se per qualche motivo
+    un orario non è nel formato "HH:MM", viene tenuto così com'è.
+    """
+    config = carica_config("san_pietro_in_silki")
+    orari = ["8:30", "orario_strano", "18:00"]
+
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
+
+    # "orario_strano" è mantenuto, "18:00" rimosso (pomeriggio)
+    assert "orario_strano" in risultato
+    assert "8:30" in risultato
+    assert "18:00" not in risultato
+
+
+# ======================================================================
+# TEST — edge case: tipo celebrazione non riconosciuto
+# ======================================================================
+
+
+def test_data_celebrazione_mobile_tipo_non_riconosciuto() -> None:
+    """Un tipo non riconosciuto restituisce None."""
+    from dataclass_config import Festa
+    from generatore_agenda import _data_celebrazione_mobile
+
+    celebrazione = Festa(nome="Test", tipo="tipo_inventato")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    risultato = _data_celebrazione_mobile(celebrazione, 2027, date_mobili)
+    assert risultato is None
+
+
+def test_data_celebrazione_mobile_tipo_lista_restituisce_none() -> None:
+    """Se il tipo punta a una lista (es. domeniche_quaresima), restituisce None."""
+    from dataclass_config import Festa
+    from generatore_agenda import _data_celebrazione_mobile
+
+    celebrazione = Festa(nome="Test", tipo="domeniche_quaresima")
+    date_mobili = calcola_tutte_date_mobili(2027)
+
+    risultato = _data_celebrazione_mobile(celebrazione, 2027, date_mobili)
+    assert risultato is None
+
+
+# ======================================================================
+# TEST — matrimoni_futuri
+# ======================================================================
+
+
+def test_matrimoni_futuri_nessuno() -> None:
+    """Se non ci sono matrimoni futuri, la lista è vuota."""
+    from dataclass_config import Config, Matrimonio
+    from generatore_agenda import matrimoni_futuri
+
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2027,
+        matrimoni_prenotati=[
+            Matrimonio(
+                data=date(2027, 6, 12),
+                ora="15:30",
+                nome_sposi="Maria Rossi e Luca Bianchi",
+            ),
+        ],
+    )
+    assert matrimoni_futuri(config) == []
+
+
+def test_matrimoni_futuri_uno() -> None:
+    """Un matrimonio del 2028 è classificato come futuro."""
+    from dataclass_config import Config, Matrimonio
+    from generatore_agenda import matrimoni_futuri
+
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2027,
+        matrimoni_prenotati=[
+            Matrimonio(
+                data=date(2028, 9, 10),
+                ora="11:00",
+                nome_sposi="Luca Verdi e Sara Neri",
+            ),
+        ],
+    )
+    futuri = matrimoni_futuri(config)
+    assert len(futuri) == 1
+    assert futuri[0]["nome_sposi"] == "Luca Verdi e Sara Neri"
+    assert futuri[0]["ora"] == "11:00"
+
+
+def test_matrimoni_futuri_ignora_senza_data() -> None:
+    """Un matrimonio senza data viene ignorato."""
+    from dataclass_config import Config, Matrimonio
+    from generatore_agenda import matrimoni_futuri
+
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2027,
+        matrimoni_prenotati=[
+            Matrimonio(
+                data=None,
+                ora="11:00",
+                nome_sposi="Senza data",
+            ),
+        ],
+    )
+    assert matrimoni_futuri(config) == []
