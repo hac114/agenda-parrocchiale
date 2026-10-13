@@ -294,7 +294,9 @@ def _e_divieto_pomeridiano(data: date, config: Config) -> bool:
     return False
 
 
-def applica_divieti_pomeridiani(data: date, orari: list[str], config: Config) -> list[str]:
+def applica_divieti_pomeridiani(
+    data: date, orari: list[str], config: Config
+) -> tuple[list[str], str]:
     """Rimuove le Messe pomeridiane nei giorni con divieto.
 
     Nei giorni con divieto pomeridiano (Assunta, San Nicola, Corpus Domini)
@@ -306,10 +308,15 @@ def applica_divieti_pomeridiani(data: date, orari: list[str], config: Config) ->
         config: Config con i divieti
 
     Returns:
-        Lista di orari dopo l'applicazione dei divieti.
+        Tupla (orari_finali, nota):
+        - orari_finali: lista di orari dopo l'applicazione dei divieti
+        - nota: nota associata al divieto (stringa vuota se non presente)
     """
+    # Ricava la nota dal divieto (se presente)
+    nota = _nota_divieto_pomeridiano(data, config)
+
     if not _e_divieto_pomeridiano(data, config):
-        return orari
+        return orari, nota
 
     orari_mattina: list[str] = []
     for orario in orari:
@@ -335,7 +342,7 @@ def applica_divieti_pomeridiani(data: date, orari: list[str], config: Config) ->
                 orario,
             )
 
-    return orari_mattina
+    return orari_mattina, nota
 
 
 def applica_orari_speciali(
@@ -696,10 +703,13 @@ def _crea_giorno_agenda(
     orari = applica_eccezioni_orari(data, orari, config)
 
     # 6. Applica divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
-    orari = applica_divieti_pomeridiani(data, orari, config)
+    orari, nota_divieto = applica_divieti_pomeridiani(data, orari, config)
 
     # 7. Applica orari speciali (celebrazioni mobili + ricorrenze proprie)
-    orari, nota_liturgica = applica_orari_speciali(data, orari, config, date_mobili)
+    orari, nota_speciale = applica_orari_speciali(data, orari, config, date_mobili)
+
+    # La nota speciale vince su quella del divieto (se presente)
+    nota_liturgica = nota_speciale or nota_divieto
 
     # 8. Collega dati
     intenzioni = intenzioni_del_giorno(data, config)
@@ -774,3 +784,29 @@ def matrimoni_futuri(config: Config) -> list[dict]:
     futuri.sort(key=lambda x: x["data"])
 
     return futuri
+
+
+def _nota_divieto_pomeridiano(data: date, config: Config) -> str:
+    """Restituisce la nota associata a un divieto pomeridiano, se presente.
+
+    Args:
+        data: data del giorno
+        config: Config con i divieti
+
+    Returns:
+        La nota (stringa vuota se non c'è).
+    """
+    # Divieti fissi
+    for divieto in config.divieti_pomeridiani_fissi:
+        if divieto.mese == data.month and divieto.giorno == data.day:
+            return str(divieto.nota)
+
+    # Divieti mobili
+    for divieto in config.divieti_pomeridiani_mobili:
+        tipo = divieto.get("tipo")
+        if tipo == "corpus_domini":
+            corpus_domini = calcola_corpus_domini(data.year)
+            if data == corpus_domini:
+                return str(divieto.get("nota", ""))
+
+    return ""

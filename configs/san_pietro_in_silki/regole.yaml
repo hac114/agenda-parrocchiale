@@ -39,7 +39,7 @@ divieti_pomeridiani:
     - { mese: 8,  giorno: 15, nome: "Assunta" }
     - { mese: 12, giorno: 6,  nome: "San Nicola" }
   mobili:
-    - { tipo: "corpus_domini", nome: "Corpus Domini" }
+    - { tipo: "corpus_domini", nome: "Corpus Domini", nota: "Processione dalla cattedrale" }
 
 # --- Ricorrenze proprie del santuario ---
 ricorrenze_proprie:

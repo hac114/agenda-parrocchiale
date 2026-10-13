@@ -425,7 +425,7 @@ def test_divieto_assunta() -> None:
     """Assunta (15 agosto) rimuove orari pomeridiani."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "18:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
     assert risultato == ["8:30", "10:00", "11:30"]
 
 
@@ -433,7 +433,7 @@ def test_divieto_san_nicola() -> None:
     """San Nicola (6 dicembre) rimuove orari pomeridiani."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "18:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 12, 6), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 12, 6), orari, config)
     assert risultato == ["8:30", "10:00", "11:30"]
 
 
@@ -441,7 +441,7 @@ def test_divieto_corpus_domini_2027() -> None:
     """Corpus Domini 2027 (27 maggio) rimuove orari pomeridiani."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "18:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 5, 27), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 5, 27), orari, config)
     assert risultato == ["8:30", "10:00", "11:30"]
 
 
@@ -449,7 +449,7 @@ def test_divieto_corpus_domini_2028() -> None:
     """Corpus Domini 2028 (15 giugno) rimuove orari pomeridiani."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "19:00"]
-    risultato = applica_divieti_pomeridiani(date(2028, 6, 15), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2028, 6, 15), orari, config)
     assert risultato == ["8:30", "10:00", "11:30"]
 
 
@@ -457,7 +457,7 @@ def test_no_divieto_natale() -> None:
     """Natale non ha divieto pomeridiano."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "18:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 12, 25), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 12, 25), orari, config)
     assert risultato == orari
 
 
@@ -465,7 +465,7 @@ def test_no_divieto_giorno_feriale() -> None:
     """Un giorno feriale normale non ha divieto."""
     config = carica_config("san_pietro_in_silki")
     orari = ["7:00", "10:00", "18:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 10, 15), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 10, 15), orari, config)
     assert risultato == orari
 
 
@@ -473,7 +473,7 @@ def test_divieto_orario_mattina_invariato() -> None:
     """Un orario mattutino (7:00) non viene toccato."""
     config = carica_config("san_pietro_in_silki")
     orari = ["7:00", "10:00", "13:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
     assert risultato == ["7:00", "10:00", "13:00"]  # 13:00 < 14:00 → mattina
 
 
@@ -481,7 +481,7 @@ def test_divieto_13_ora_e_mattina() -> None:
     """L'orario 13:00 è considerato mattina (< 14:00)."""
     config = carica_config("san_pietro_in_silki")
     orari = ["13:00", "14:00", "18:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
     assert risultato == ["13:00"]
 
 
@@ -489,7 +489,7 @@ def test_divieto_restituisce_copia() -> None:
     """La lista restituita è una copia, non l'originale."""
     config = carica_config("san_pietro_in_silki")
     orari_originali = ["8:30", "10:00", "18:00"]
-    risultato = applica_divieti_pomeridiani(date(2027, 8, 15), orari_originali, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 8, 15), orari_originali, config)
     risultato.append("99:99")
     assert orari_originali == ["8:30", "10:00", "18:00"]
 

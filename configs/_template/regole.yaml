@@ -25,12 +25,14 @@ eccezioni_festivi: []
   # - { mese: 12, giorno: 26, nome: "Santo Stefano", orari_ridotti: ["10:00", "18:00"] }
 
 # --- Divieti pomeridiani (solo mattina) ---
+# Campo opzionale:
+#   - nota: testo informativo che appare in agenda (es. processione)
 divieti_pomeridiani:
   fissi:
     - { mese: 8,  giorno: 15, nome: "Assunta" }
     - { mese: 12, giorno: 6,  nome: "San Nicola" }
   mobili:
-    - { tipo: "corpus_domini", nome: "Corpus Domini" }
+    - { tipo: "corpus_domini", nome: "Corpus Domini", nota: "Processione dalla cattedrale" }
 
 # --- Ricorrenze proprie della parrocchia (NON annuali) ---
 ricorrenze_proprie: []
