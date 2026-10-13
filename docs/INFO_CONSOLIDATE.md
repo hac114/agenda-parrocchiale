@@ -436,9 +436,9 @@ Esempi:
 - ✅ Fase 1 (Layout pagina giorno) - COMPLETATA
 - ✅ Fase 2 (Dettagli liturgici) - COMPLETATA
 - ✅ Layout configurabile da YAML - COMPLETATO
-- ⏳ Fase 3 (Date sabati precompilate in Excel) - DA FARE
-- ⏳ Documentazione utente aggiornata - DA FARE
-- ⏳ Test su Windows - DA FARE
+- ✅ Fase 3 (Date sabati precompilate in Excel)
+- ✅ Documentazione utente aggiornata
+- ✅ Test su Windows
 
 FINE DOCUMENTO — 13/10/2026
 
