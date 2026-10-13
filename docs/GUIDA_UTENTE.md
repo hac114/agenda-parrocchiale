@@ -509,6 +509,59 @@ su una **chiavetta USB** o su **Google Drive**.
 - ❌ Cartella configs\
 - ✅ Solo il PDF in output\Agenda_2027.pdf
 
+---
+
+## 9. Aggiornare l'applicazione
+
+Di tanto in tanto, il programma viene aggiornato con nuove funzionalità
+o correzioni. Puoi aggiornare la tua copia facilmente.
+
+### Prima volta (solo una volta)
+
+Apri il **Prompt dei comandi** (tasto Windows → digita `cmd` → Invio) e digita:
+
+```cmd
+cd %USERPROFILE%\Documents\agenda-parrocchiale
+git pull
+```
+
+Da ora in poi, il comando `git pull` scaricherà automaticamente tutte le novità.
+
+### Aggiornamenti futuri (facile)
+
+Abbiamo preparato uno **script automatico**. Basta:
+
+1. Vai in `C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\scripts\`
+2. **Doppio clic** su `aggiorna.bat`
+3. Attendi che finisca (30 secondi)
+4. **Poi** doppio clic su `genera_agenda.bat` per rigenerare il PDF
+
+**Cosa fa `aggiorna.bat`:**
+- Scarica le novità da GitHub
+- Aggiorna le librerie Python (se necessario)
+- **NON tocca i tuoi dati** (config.xlsx, intenzioni, ecc.)
+
+### Cosa fare in caso di errore
+
+Se `aggiorna.bat` mostra un errore:
+
+1. **Verifica la connessione Internet**
+2. **Chiudi Excel/LibreOffice** se sono aperti
+3. Riprova
+4. Se persiste, contatta il supporto con uno **screenshot dell'errore**
+
+### Riepilogo dei 2 file `.bat`
+
+| File | Quando usarlo |
+|---|---|
+| **`aggiorna.bat`** | Quando vuoi scaricare le novità dal programma |
+| **`genera_agenda.bat`** | Sempre, per generare il PDF dopo aver compilato Excel |
+
+**Workflow tipico:**
+1. (Facoltativo) Doppio clic su `aggiorna.bat` (una volta al mese o quando serve)
+2. Compila `config.xlsx` con i dati dell'anno
+3. Doppio clic su `genera_agenda.bat` per generare il PDF
+
 ## Supporto
 Per problemi tecnici, contatta Maurizio Chieruzzi con:
 - Screenshot dell'errore

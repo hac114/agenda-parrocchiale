@@ -24,6 +24,7 @@ L'agenda è **multi-profilo**: ogni parrocchia ha la sua configurazione.
 - ✅ Orari speciali configurabili (Giovedì Santo, Venerdì Santo, Sabato Santo, Festa del Voto)
 - ✅ Note liturgiche in agenda (riquadro evidenziato)
 - ✅ Layout pagina giorno configurabile da YAML (righe extra per orari)
+- ✅ Script di aggiornamento automatico (`aggiorna.bat`)
 - ✅ Output PDF pronto per la tipografia (A4 verticale)
 - ✅ Sistema di raccolta warning con riepilogo finale
 
@@ -236,8 +237,9 @@ agenda-parrocchiale/
 │
 ├── scripts/                       # Launcher per l'utente finale
 │   ├── genera_agenda.bat          # Per Windows
-│   └── genera_agenda.sh           # Per Linux/macOS
-│   └── genera_mockup.py           # Genera il PDF di prova del layout
+│   ├── genera_agenda.sh           # Per Linux/macOS
+│   ├── aggiorna.bat               # Aggiorna l'app da GitHub (Windows)
+│   └── genera_mockup.py           # Genera PDF di prova del layout
 │
 ├── src/                           # Codice Python
 │   ├── calcolo_liturgico.py       # Pasqua, feste mobili

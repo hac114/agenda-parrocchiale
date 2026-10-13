@@ -31,6 +31,19 @@ Il PDF appare in: `output/Agenda_<anno>.pdf`
 
 ---
 
+## Aggiornare il programma (quando serve)
+
+Quando vuoi scaricare le novità dal programma:
+
+1. Doppio clic su `scripts/aggiorna.bat`
+2. Attendi 30 secondi
+
+Poi rigenera il PDF con `scripts/genera_agenda.bat`.
+
+**I tuoi dati non vengono toccati.**
+
+---
+
 ## Cosa scrivere nei 4 fogli
 
 ### 📋 Foglio "Impostazioni"

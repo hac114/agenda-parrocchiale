@@ -105,14 +105,13 @@ src/
 ├── fogli_excel.py              # Creazione dei 4 fogli Excel
 ├── crea_config_template.py     # CLI: genera config.xlsx
 │
-└── generatore_pdf.py           # HTML → PDF (WeasyPrint)
-├── fogli_excel.py              # Creazione dei 4 fogli Excel
-├── crea_config_template.py     # CLI: genera config.xlsx
-│
 ├── generatore_pdf.py           # HTML → PDF (WeasyPrint)
 │
 └── (scripts/)
-    └── genera_mockup.py        # Genera PDF di prova del layout
+    ├── genera_mockup.py        # Genera PDF di prova del layout
+    ├── genera_agenda.sh        # Launcher Linux/macOS
+    ├── genera_agenda.bat       # Launcher Windows
+    └── aggiorna.bat            # Aggiorna l'app da GitHub (Windows)
 ```
 
 ---
