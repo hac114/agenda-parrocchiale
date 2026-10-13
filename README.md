@@ -20,6 +20,10 @@ L'agenda è **multi-profilo**: ogni parrocchia ha la sua configurazione.
 - ✅ Festa del Voto con slittamento automatico se coincide con Corpus Domini
 - ✅ Registro intenzioni di Messa
 - ✅ Pagina dedicata alle prenotazioni matrimoni degli anni successivi
+- ✅ Date dei sabati precompilate in Excel (anno corrente + successivo)
+- ✅ Orari speciali configurabili (Giovedì Santo, Venerdì Santo, Sabato Santo, Festa del Voto)
+- ✅ Note liturgiche in agenda (riquadro evidenziato)
+- ✅ Layout pagina giorno configurabile da YAML (righe extra per orari)
 - ✅ Output PDF pronto per la tipografia (A4 verticale)
 - ✅ Sistema di raccolta warning con riepilogo finale
 
@@ -233,6 +237,7 @@ agenda-parrocchiale/
 ├── scripts/                       # Launcher per l'utente finale
 │   ├── genera_agenda.bat          # Per Windows
 │   └── genera_agenda.sh           # Per Linux/macOS
+│   └── genera_mockup.py           # Genera il PDF di prova del layout
 │
 ├── src/                           # Codice Python
 │   ├── calcolo_liturgico.py       # Pasqua, feste mobili
@@ -248,11 +253,13 @@ agenda-parrocchiale/
 │   └── util.py                    # Utility (logging, formattazione)
 │
 ├── templates/                     # Template HTML/CSS per PDF
-│   ├── agenda.html                # Pagina giorno
+│   ├── agenda.html                # Pagina giorno (layout ufficiale)
 │   ├── copertina.html             # Copertina
 │   ├── registro_intenzioni.html   # Registro intenzioni
 │   ├── matrimoni_futuri.html      # Prenotazioni matrimoni anno successivo
-│   └── style.css                  # Stile A4
+│   ├── agenda_mockup.html         # Pagina giorno (mockup di sviluppo)
+│   ├── style.css                  # Stile A4 (ufficiale)
+│   └── style_mockup.css           # Stile A4 (mockup di sviluppo)
 │
 ├── tests/                         # Test pytest
 │   ├── test_calcolo_liturgico.py

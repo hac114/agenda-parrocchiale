@@ -106,6 +106,13 @@ src/
 ├── crea_config_template.py     # CLI: genera config.xlsx
 │
 └── generatore_pdf.py           # HTML → PDF (WeasyPrint)
+├── fogli_excel.py              # Creazione dei 4 fogli Excel
+├── crea_config_template.py     # CLI: genera config.xlsx
+│
+├── generatore_pdf.py           # HTML → PDF (WeasyPrint)
+│
+└── (scripts/)
+    └── genera_mockup.py        # Genera PDF di prova del layout
 ```
 
 ---
@@ -134,6 +141,16 @@ Calcola tutte le date mobili dell'anno liturgico a partire dalla **Pasqua**.
 | `calcola_nove_mercoledi` | 9 mercoledì San Salvatore | (calcolo) |
 | `calcola_festa_voto` | Con slittamento | (calcolo) |
 | `calcola_tutte_date_mobili` | **API pubblica** | — |
+
+### `genera_mockup.py` (in `scripts/`)
+
+Script di sviluppo per generare un PDF di prova (mockup) con 4 giorni
+rappresentativi. Utile per mostrare il nuovo layout a un utente
+PRIMA di applicarlo a tutta l'agenda.
+
+Output: `output/Mockup_Layout.pdf`
+
+Uso: `python scripts/genera_mockup.py`
 
 ### `generatore_agenda.py`
 
