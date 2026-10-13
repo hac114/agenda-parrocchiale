@@ -64,7 +64,7 @@ def cartella_backup(profilo_dir: Path) -> Path:
 
 
 def crea_backup(profilo_dir: Path) -> Path | None:
-    """Crea un backup timestampato del config.xlsx esistente.
+    """Crea un backup con timestamp del config.xlsx esistente.
 
     Returns:
         Il percorso del backup creato, o None se non c'era nulla da salvare.

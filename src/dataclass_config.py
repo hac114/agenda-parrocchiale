@@ -152,7 +152,7 @@ class Config:
     """Struttura finale unificata.
 
     Contiene tutti i dati necessari al generatore di agenda,
-    unendo le informazioni da YAML (stabili) e Excel (annuali).
+    unendo le informazioni da YAML (stabili) ed Excel (annuali).
     """
 
     # --- Da YAML (regole stabili) ---

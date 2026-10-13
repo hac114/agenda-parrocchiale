@@ -27,11 +27,10 @@ from config import carica_config  # noqa: E402
 from generatore_agenda import (  # noqa: E402
     applica_divieti_pomeridiani,
     applica_eccezioni_orari,
+    applica_orari_speciali,
     determina_tipo_giorno,
     festivita_del_giorno,
-    matrimoni_del_giorno,
     orari_per_giorno,
-    trova_periodo,
 )
 from util import formatta_data_italiana, nome_giorno_italiano  # noqa: E402
 
@@ -50,34 +49,29 @@ GIORNI_MOCKUP = [
     date(2027, 5, 15),  # Maggio (7 Messe)
 ]
 
-# Configurazione righe extra (dal YAML in futuro)
-RIGHE_EXTRA_DEFAULT = {
-    "18:00": 3,
-    "19:00": 3,
-    "21:00": 3,
-}
-
 
 # ======================================================================
 # FUNZIONI
 # ======================================================================
 
 
-def prepara_righe_messe(orari: list[str]) -> list[dict]:
+def _prepara_righe_messe(orari: list[str], config) -> list[dict]:
     """Prepara le righe della tabella messe con eventuali righe extra.
 
     Args:
         orari: lista di orari (es. ["7:00", "10:00", "18:00"])
+        config: Config con il layout (righe_default + righe_extra)
 
     Returns:
         Lista di dict con "orario" e "righe_extra".
     """
     righe = []
     for orario in orari:
+        righe_extra = config.layout.righe_extra.get(orario, config.layout.righe_default)
         righe.append(
             {
                 "orario": orario,
-                "righe_extra": RIGHE_EXTRA_DEFAULT.get(orario, 1),
+                "righe_extra": righe_extra,
             }
         )
     return righe
@@ -118,10 +112,11 @@ def genera_mockup() -> Path:
         # Orari
         orari = orari_per_giorno(giorno_data, tipo, config)
         orari = applica_eccezioni_orari(giorno_data, orari, config)
-        orari = applica_divieti_pomeridiani(giorno_data, orari, config)
+        orari, _nota_divieto = applica_divieti_pomeridiani(giorno_data, orari, config)
+        orari, _nota_speciale = applica_orari_speciali(giorno_data, orari, config, date_mobili)
 
         # Righe per la tabella
-        righe_messe = prepara_righe_messe(orari)
+        righe_messe = _prepara_righe_messe(orari, config)
 
         # Renderizza
         html = template.render(
