@@ -19,6 +19,7 @@ from dataclass_config import (
 from generatore_agenda import (
     applica_divieti_pomeridiani,
     applica_eccezioni_orari,
+    applica_orari_speciali,
     determina_tipo_giorno,
     festivita_del_giorno,
     festivo_fisso,
@@ -911,3 +912,157 @@ def test_genera_agenda_da_profilo() -> None:
     calendario = genera_agenda_da_profilo("san_pietro_in_silki")
     assert calendario.anno == 2027
     assert len(calendario.giorni) == 365
+
+
+# ======================================================================
+# TEST — applica_orari_speciali (celebrazioni mobili)
+# ======================================================================
+
+
+def test_orari_speciali_giovedi_santo() -> None:
+    """Giovedì Santo 2027 → orari speciali ['10:00', '18:00']."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["7:00", "10:00", "18:00"]
+
+    orari, nota = applica_orari_speciali(date(2027, 3, 25), orari_base, config, date_mobili)
+    assert orari == ["10:00", "18:00"]
+    assert "Messa Crismale" in nota
+
+
+def test_orari_speciali_venerdi_santo() -> None:
+    """Venerdì Santo 2027 → no Messe, solo nota."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["7:00", "10:00", "18:00"]
+
+    orari, nota = applica_orari_speciali(date(2027, 3, 26), orari_base, config, date_mobili)
+    assert orari == []
+    assert "Passione" in nota
+
+
+def test_orari_speciali_sabato_santo() -> None:
+    """Sabato Santo 2027 → solo Veglia alle 23:00."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["7:00", "10:00", "18:00"]
+
+    orari, nota = applica_orari_speciali(date(2027, 3, 27), orari_base, config, date_mobili)
+    assert orari == ["23:00"]
+    assert "Veglia" in nota or "Pasquale" in nota
+
+
+def test_orari_speciali_lunedi_angelo() -> None:
+    """Lunedì Angelo 2027 → orari speciali ['10:00', '18:00']."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["8:30", "10:00", "11:30", "18:00"]
+
+    orari, _nota = applica_orari_speciali(date(2027, 3, 29), orari_base, config, date_mobili)
+    assert orari == ["10:00", "18:00"]
+
+
+def test_orari_speciali_giorno_normale() -> None:
+    """Un giorno normale non ha orari speciali."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["7:00", "10:00", "18:00"]
+
+    orari, nota = applica_orari_speciali(date(2027, 10, 15), orari_base, config, date_mobili)
+    assert orari == orari_base
+    assert nota == ""
+
+
+# ======================================================================
+# TEST — applica_orari_speciali (Festa del Voto)
+# ======================================================================
+
+
+def test_orari_speciali_festa_voto_sabato() -> None:
+    """Festa del Voto: il sabato precedente ha orari speciali."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["7:00", "10:00", "19:00"]
+
+    # Sabato 5 giugno 2027 (giorno prima della Festa del Voto 6 giugno)
+    orari, nota = applica_orari_speciali(date(2027, 6, 5), orari_base, config, date_mobili)
+    assert orari == ["7:00", "10:00", "17:00"]
+    assert nota
+
+
+def test_orari_speciali_festa_voto_domenica() -> None:
+    """Festa del Voto: la domenica ha orari speciali."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["8:30", "10:00", "11:30", "18:00"]
+
+    # Domenica 6 giugno 2027 (Festa del Voto)
+    orari, nota = applica_orari_speciali(date(2027, 6, 6), orari_base, config, date_mobili)
+    assert orari == ["8:30", "10:00", "11:30"]
+    assert nota
+
+
+# ======================================================================
+# TEST — nota del divieto pomeridiano (Corpus Domini)
+# ======================================================================
+
+
+def test_nota_corpus_domini() -> None:
+    """Il Corpus Domini ha la nota 'Processione dalla cattedrale'."""
+    config = carica_config("san_pietro_in_silki")
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+
+    orari_finali, nota = applica_divieti_pomeridiani(date(2027, 5, 27), orari, config)
+    assert nota == "Processione dalla cattedrale"
+    assert orari_finali == ["8:30", "10:00", "11:30"]
+
+
+def test_nota_assunta_vuota() -> None:
+    """L'Assunta non ha una nota speciale."""
+    config = carica_config("san_pietro_in_silki")
+    orari = ["8:30", "10:00", "11:30", "18:00"]
+
+    _orari, nota = applica_divieti_pomeridiani(date(2027, 8, 15), orari, config)
+    assert nota == ""
+
+
+# ======================================================================
+# TEST — parsing Festa del Voto (campi nuovi)
+# ======================================================================
+
+
+def test_parsing_festa_voto_orari_speciali() -> None:
+    """La Festa del Voto è caricata con orari_speciali_sabato e domenica."""
+    config = carica_config("san_pietro_in_silki")
+
+    # Trova la Festa del Voto
+    festa_voto = next(
+        (r for r in config.ricorrenze_proprie if r.nome == "Festa del Voto"),
+        None,
+    )
+    assert festa_voto is not None
+    assert festa_voto.orari_speciali_sabato == ["7:00", "10:00", "17:00"]
+    assert festa_voto.orari_speciali_domenica == ["8:30", "10:00", "11:30"]
+
+
+def test_parsing_celebrazioni_mobili_orari_speciali() -> None:
+    """Le celebrazioni mobili sono caricate con orari_speciali e no_messe."""
+    config = carica_config("san_pietro_in_silki")
+
+    # Giovedì Santo
+    giovedi_santo = next(
+        (c for c in config.celebrazioni_mobili if c.nome == "Giovedì Santo"),
+        None,
+    )
+    assert giovedi_santo is not None
+    assert giovedi_santo.orari_speciali == ["10:00", "18:00"]
+    assert giovedi_santo.no_messe is False
+
+    # Venerdì Santo
+    venerdi_santo = next(
+        (c for c in config.celebrazioni_mobili if c.nome == "Venerdì Santo"),
+        None,
+    )
+    assert venerdi_santo is not None
+    assert venerdi_santo.no_messe is True
+    assert venerdi_santo.orari_speciali is None

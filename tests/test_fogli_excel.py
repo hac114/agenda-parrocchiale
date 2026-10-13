@@ -165,13 +165,13 @@ def test_foglio_intenzioni_freeze_panes(wb_vuoto: Workbook) -> None:
 
 def test_foglio_matrimoni_creato(wb_vuoto: Workbook) -> None:
     """Il foglio Matrimoni viene creato."""
-    crea_foglio_matrimoni(wb_vuoto)
+    crea_foglio_matrimoni(wb_vuoto, anno=2027)
     assert "Matrimoni" in wb_vuoto.sheetnames
 
 
 def test_foglio_matrimoni_intestazioni(wb_vuoto: Workbook) -> None:
     """Le intestazioni sono scritte correttamente."""
-    crea_foglio_matrimoni(wb_vuoto)
+    crea_foglio_matrimoni(wb_vuoto, anno=2027)
     ws = wb_vuoto["Matrimoni"]
 
     assert ws["A1"].value == "Data"
@@ -183,7 +183,7 @@ def test_foglio_matrimoni_intestazioni(wb_vuoto: Workbook) -> None:
 
 def test_foglio_matrimoni_formato_date(wb_vuoto: Workbook) -> None:
     """La colonna A ha formato data."""
-    crea_foglio_matrimoni(wb_vuoto, righe=5)
+    crea_foglio_matrimoni(wb_vuoto, anno=2027, righe=5)
     ws = wb_vuoto["Matrimoni"]
 
     assert ws["A2"].number_format == "DD/MM/YYYY"
@@ -191,10 +191,56 @@ def test_foglio_matrimoni_formato_date(wb_vuoto: Workbook) -> None:
 
 def test_foglio_matrimoni_formato_ora(wb_vuoto: Workbook) -> None:
     """La colonna B ha formato ora."""
-    crea_foglio_matrimoni(wb_vuoto, righe=5)
+    crea_foglio_matrimoni(wb_vuoto, anno=2027, righe=5)
     ws = wb_vuoto["Matrimoni"]
 
     assert ws["B2"].number_format == "HH:MM"
+
+
+def test_foglio_matrimoni_date_precompilate(wb_vuoto: Workbook) -> None:
+    """Le date dei sabati sono precompilate."""
+    from datetime import date
+
+    crea_foglio_matrimoni(wb_vuoto, anno=2027, righe=10)
+    ws = wb_vuoto["Matrimoni"]
+
+    # A2 deve contenere il primo sabato dell'anno (2 gennaio 2027)
+    assert ws["A2"].value == date(2027, 1, 2)
+
+    # A3 = 9 gennaio 2027 (secondo sabato)
+    assert ws["A3"].value == date(2027, 1, 9)
+
+
+def test_foglio_matrimoni_esclude_maggio(wb_vuoto: Workbook) -> None:
+    """Le date precompilate non includono maggio."""
+    crea_foglio_matrimoni(wb_vuoto, anno=2027, righe=200)
+    ws = wb_vuoto["Matrimoni"]
+
+    # Scorri le date precompilate e verifica che nessuna sia di maggio
+    for r in range(2, 202):
+        valore = ws.cell(row=r, column=1).value
+        if valore is None:
+            break
+        if isinstance(valore, date):
+            assert valore.month != 5, f"Trovato sabato di maggio alla riga {r}: {valore}"
+
+
+def test_foglio_matrimoni_include_anno_successivo(wb_vuoto: Workbook) -> None:
+    """Le date precompilate includono anche l'anno successivo."""
+    crea_foglio_matrimoni(wb_vuoto, anno=2027, righe=200)
+    ws = wb_vuoto["Matrimoni"]
+
+    # Cerca almeno una data del 2028
+    anni_trovati = set()
+    for r in range(2, 202):
+        valore = ws.cell(row=r, column=1).value
+        if valore is None:
+            break
+        if isinstance(valore, date):
+            anni_trovati.add(valore.year)
+
+    assert 2027 in anni_trovati
+    assert 2028 in anni_trovati
 
 
 # ======================================================================

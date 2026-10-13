@@ -66,7 +66,7 @@ ricorrenze_proprie:
     slitta_a: "prima_domenica_giugno"
     orari_speciali_sabato: [ "7:00", "10:00", "17:00" ]
     orari_speciali_domenica: [ "8:30", "10:00", "11:30" ]
-    nota: "Se coincide con Corpus Domini, slitta alla prima domenica di giugno. Il sabato precedente e la domenica hanno orari speciali"
+    nota: "Festa del Voto. Se coincide con Corpus Domini, slitta alla prima domenica di giugno. Il sabato precedente e la domenica hanno orari speciali"
 
   - nome: "Ottavario Natività BVM"
     data: { mese: 9, giorno_da: 1, giorno_a: 7 }
