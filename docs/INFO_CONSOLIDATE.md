@@ -366,5 +366,79 @@ Sezione `layout` in regole.yaml:
 - righe_extra: dict orario → righe extra
   Es. San Pietro: {"18:00": 3} → la Messa delle 18:00 ha 3 righe
 
-FINE DOCUMENTO — 12/10/2026
+---------------------------------------------------------------------
+22. LAYOUT CONFIGURABILE DAL YAML (dettagli)
+---------------------------------------------------------------------
+Sezione `layout` in regole.yaml:
+- righe_default: numero righe di default per ogni Messa (1)
+- righe_extra: dict orario → righe extra
+
+San Pietro in Silki:
+  righe_extra: { "18:00": 3 }
+  → la Messa delle 18:00 ha 3 righe per le intenzioni
+
+---------------------------------------------------------------------
+23. ORARI SPECIALI (dal questionario del 12/10/2026)
+---------------------------------------------------------------------
+Configurabili dalla sezione `celebrazioni_mobili` e `ricorrenze_proprie`
+del YAML:
+
+Giovedì Santo:
+- orari_speciali: ["10:00", "18:00"]
+- nota: "Messa Crismale 10:00 (cattedrale), Coena Domini 18:00.
+  Intenzioni solo per la Coena Domini"
+
+Venerdì Santo:
+- no_messe: true
+- nota: "Celebrazione della Passione del Signore e Via Crucis"
+
+Sabato Santo:
+- orari_speciali: ["23:00"]
+- nota: "Solo Veglia Pasquale (giorno aneucaristico)"
+
+Lunedì dell'Angelo:
+- orari_speciali: ["10:00", "18:00"]
+
+Festa del Voto (domenica + sabato precedente):
+- orari_speciali_sabato: ["7:00", "10:00", "17:00"]
+- orari_speciali_domenica: ["8:30", "10:00", "11:30"]
+
+Corpus Domini:
+- divieto pomeridiano (già gestito)
+- nota: "Processione dalla cattedrale"
+
+---------------------------------------------------------------------
+24. NOTE LITURGICHE IN AGENDA
+---------------------------------------------------------------------
+Le note delle celebrazioni speciali appaiono in agenda in un
+riquadro giallo con bordo arancione, in cima alla pagina del giorno.
+
+Esempi:
+- Giovedì Santo: "Messa Crismale 10:00 (cattedrale), Coena Domini 18:00..."
+- Venerdì Santo: "Celebrazione della Passione del Signore e Via Crucis"
+- Corpus Domini: "Processione dalla cattedrale"
+
+---------------------------------------------------------------------
+25. TEST E COPERTURA
+---------------------------------------------------------------------
+- 273 test verdi
+- Coverage: 86%
+- Test automatici su:
+  * calcolo liturgico (Pasqua, feste mobili, 9 mercoledì)
+  * generazione agenda (calendario giorno per giorno)
+  * rendering PDF (template e layout)
+  * orari speciali (Triduo, Festa del Voto, ecc.)
+  * layout configurabile (righe_extra)
+
+---------------------------------------------------------------------
+26. STATO FINALE
+---------------------------------------------------------------------
+- ✅ Fase 1 (Layout pagina giorno) - COMPLETATA
+- ✅ Fase 2 (Dettagli liturgici) - COMPLETATA
+- ✅ Layout configurabile da YAML - COMPLETATO
+- ⏳ Fase 3 (Date sabati precompilate in Excel) - DA FARE
+- ⏳ Documentazione utente aggiornata - DA FARE
+- ⏳ Test su Windows - DA FARE
+
+FINE DOCUMENTO — 13/10/2026
 
