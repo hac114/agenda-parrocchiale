@@ -24,7 +24,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 from calcolo_liturgico import (
-    calcola_corpus_domini,
+    calcola_domenica_corpus_domini,
     calcola_prima_domenica_giugno,
     calcola_ultima_domenica_maggio,
 )
@@ -130,9 +130,7 @@ def _ricorrenza_da_dict(dati: dict, anno: int) -> Ricorrenza | None:
         # Applica slittamento se necessario
         slitta = dati.get("slitta_se_corpus_domini", False)
         if slitta and tipo_data == "ultima_domenica_maggio":
-            corpus_domini = calcola_corpus_domini(anno)
-            # La domenica del Corpus Domini = giovedì + 3 giorni
-            domenica_corpus = corpus_domini + timedelta(days=3)
+            domenica_corpus = calcola_domenica_corpus_domini(anno)
             if data_inizio == domenica_corpus:
                 logger.info(
                     "Ricorrenza '%s': slitta a prima domenica di giugno "

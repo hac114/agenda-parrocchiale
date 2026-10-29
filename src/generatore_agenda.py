@@ -22,7 +22,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
-from calcolo_liturgico import calcola_corpus_domini, calcola_tutte_date_mobili
+from calcolo_liturgico import calcola_domenica_corpus_domini, calcola_tutte_date_mobili
 from config import carica_config
 from dataclass_config import (
     Config,
@@ -304,8 +304,8 @@ def _e_divieto_pomeridiano(data: date, config: Config) -> bool:
     for divieto in config.divieti_pomeridiani_mobili:
         tipo = divieto.get("tipo")
         if tipo == "corpus_domini":
-            corpus_domini = calcola_corpus_domini(data.year)
-            if data == corpus_domini:
+            domenica_corpus = calcola_domenica_corpus_domini(data.year)
+            if data == domenica_corpus:
                 return True
 
     return False
@@ -546,7 +546,7 @@ def festivita_del_giorno(
         "ascensione",
         "pentecoste",
         "trinita",
-        "corpus_domini",
+        "domenica_corpus_domini",
         "festa_voto",
     ]
 
@@ -588,7 +588,7 @@ def _nome_celebrazione_mobile(chiave: str) -> str:
         "ascensione": "Ascensione",
         "pentecoste": "Pentecoste",
         "trinita": "Santissima Trinità",
-        "corpus_domini": "Corpus Domini",
+        "domenica_corpus_domini": "Corpus Domini",
         "festa_voto": "Festa del Voto",
     }
     return mapping.get(chiave, chiave)
@@ -839,8 +839,8 @@ def _nota_divieto_pomeridiano(data: date, config: Config) -> str:
     for divieto in config.divieti_pomeridiani_mobili:
         tipo = divieto.get("tipo")
         if tipo == "corpus_domini":
-            corpus_domini = calcola_corpus_domini(data.year)
-            if data == corpus_domini:
+            domenica_corpus = calcola_domenica_corpus_domini(data.year)
+            if data == domenica_corpus:
                 return str(divieto.get("nota", ""))
 
     return ""

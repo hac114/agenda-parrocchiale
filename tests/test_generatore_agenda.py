@@ -439,18 +439,18 @@ def test_divieto_san_nicola() -> None:
 
 
 def test_divieto_corpus_domini_2027() -> None:
-    """Corpus Domini 2027 (27 maggio) rimuove orari pomeridiani."""
+    """Corpus Domini 2027 (domenica 30 maggio) rimuove orari pomeridiani."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "18:00"]
-    risultato, _nota = applica_divieti_pomeridiani(date(2027, 5, 27), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2027, 5, 30), orari, config)
     assert risultato == ["8:30", "10:00", "11:30"]
 
 
 def test_divieto_corpus_domini_2028() -> None:
-    """Corpus Domini 2028 (15 giugno) rimuove orari pomeridiani."""
+    """Corpus Domini 2028 (domenica 18 giugno) rimuove orari pomeridiani."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "19:00"]
-    risultato, _nota = applica_divieti_pomeridiani(date(2028, 6, 15), orari, config)
+    risultato, _nota = applica_divieti_pomeridiani(date(2028, 6, 18), orari, config)
     assert risultato == ["8:30", "10:00", "11:30"]
 
 
@@ -583,11 +583,11 @@ def test_festivita_mobili_config_reale_pasqua() -> None:
 
 
 def test_festivita_mobili_config_reale_corpus_domini() -> None:
-    """Corpus Domini 2027 (27 maggio) è riconosciuto."""
+    """Corpus Domini 2027 (domenica 30 maggio) è riconosciuto."""
     config = carica_config("san_pietro_in_silki")
     date_mobili = calcola_tutte_date_mobili(2027)
 
-    info = festivita_del_giorno(date(2027, 5, 27), config, date_mobili)
+    info = festivita_del_giorno(date(2027, 5, 30), config, date_mobili)
     assert info["nome"] == "Corpus Domini"
     assert info["particolare"] is False
 
@@ -898,8 +898,8 @@ def test_genera_agenda_maggio_7_messe() -> None:
     assert len(maggio) == 31
 
     for g in maggio:
-        if g.data == date(2027, 5, 27):
-            # Corpus Domini: divieto pomeridiano → 5 orari (mattina)
+        if g.data == date(2027, 5, 30):
+            # Corpus Domini (domenica 30 maggio): divieto pomeridiano → 5 orari (mattina)
             assert (
                 len(g.orari) == 5
             ), f"{g.data} (Corpus Domini) ha {len(g.orari)} orari invece di 5"
@@ -1008,11 +1008,11 @@ def test_orari_speciali_festa_voto_domenica() -> None:
 
 
 def test_nota_corpus_domini() -> None:
-    """Il Corpus Domini ha la nota 'Processione dalla cattedrale'."""
+    """Il Corpus Domini (domenica 30 maggio 2027) ha la nota 'Processione dalla cattedrale'."""
     config = carica_config("san_pietro_in_silki")
     orari = ["8:30", "10:00", "11:30", "18:00"]
 
-    orari_finali, nota = applica_divieti_pomeridiani(date(2027, 5, 27), orari, config)
+    orari_finali, nota = applica_divieti_pomeridiani(date(2027, 5, 30), orari, config)
     assert nota == "Processione dalla cattedrale"
     assert orari_finali == ["8:30", "10:00", "11:30"]
 

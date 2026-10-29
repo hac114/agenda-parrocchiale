@@ -560,6 +560,7 @@ def test_tutte_date_mobili_contiene_tutte_le_chiavi() -> None:
         "pentecoste",
         "trinita",
         "corpus_domini",
+        "domenica_corpus_domini",
         "festa_voto",
         # Liste
         "domeniche_quaresima",

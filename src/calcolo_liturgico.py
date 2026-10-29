@@ -239,6 +239,27 @@ def calcola_corpus_domini(anno: int) -> date:
     return calcola_pasqua(anno) + timedelta(days=60)
 
 
+def calcola_domenica_corpus_domini(anno: int) -> date:
+    """Domenica del Corpus Domini (celebrazione in Italia, delibera CEI).
+
+    In Italia il Corpus Domini si celebra la domenica successiva al
+    giovedì liturgico (che resta il riferimento nel calendario romano).
+    Il giovedì del Corpus Domini è a +60 giorni dalla Pasqua; la
+    domenica è a +63.
+
+    Args:
+        anno: anno di riferimento
+
+    Returns:
+        Data della domenica del Corpus Domini.
+
+    Examples:
+        >>> calcola_domenica_corpus_domini(2027)
+        datetime.date(2027, 5, 30)
+    """
+    return calcola_corpus_domini(anno) + timedelta(days=3)
+
+
 # ======================================================================
 # DOMENICHE DI QUARESIMA
 # ======================================================================
@@ -425,9 +446,7 @@ def calcola_festa_voto(anno: int) -> date:
     """
     ultima_domenica_maggio = calcola_ultima_domenica_maggio(anno)
 
-    # Corpus Domini (giovedì) + 3 giorni = domenica del Corpus Domini
-    corpus_domini = calcola_corpus_domini(anno)
-    domenica_corpus_domini = corpus_domini + timedelta(days=3)
+    domenica_corpus_domini = calcola_domenica_corpus_domini(anno)
 
     # Se la Festa del Voto coincide con la domenica del Corpus Domini, slitta
     if ultima_domenica_maggio == domenica_corpus_domini:
@@ -480,6 +499,7 @@ def calcola_tutte_date_mobili(anno: int) -> dict[str, date | list[date]]:
         "pentecoste": calcola_pentecoste(anno),
         "trinita": calcola_trinita(anno),
         "corpus_domini": calcola_corpus_domini(anno),
+        "domenica_corpus_domini": calcola_domenica_corpus_domini(anno),
         "festa_voto": calcola_festa_voto(anno),
         # --- Liste di date ---
         "domeniche_quaresima": calcola_domeniche_quaresima(anno),

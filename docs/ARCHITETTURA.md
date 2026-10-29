@@ -134,7 +134,8 @@ Calcola tutte le date mobili dell'anno liturgico a partire dalla **Pasqua**.
 | `calcola_ascensione` | Ascensione | +39 |
 | `calcola_pentecoste` | Pentecoste | +49 |
 | `calcola_trinita` | Trinità | +56 |
-| `calcola_corpus_domini` | Corpus Domini | +60 |
+| `calcola_corpus_domini` | Corpus Domini (giovedì liturgico) | +60 |
+| `calcola_domenica_corpus_domini` | Domenica del Corpus Domini (Italia, CEI) | +63 |
 | `calcola_domeniche_quaresima` | 5 domeniche | (calcolo) |
 | `calcola_domeniche_avvento` | 4 domeniche | (calcolo) |
 | `calcola_nove_mercoledi` | 9 mercoledì San Salvatore | (calcolo) |

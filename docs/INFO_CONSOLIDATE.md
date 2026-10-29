@@ -353,9 +353,13 @@ Festa del Voto 2027 (6 giugno, slittata):
 - Sabato precedente (5 giugno): 7:00 / 10:00 / 17:00
 - Domenica (6 giugno): 8:30 / 10:00 / 11:30 (no pomeriggio)
 
-Corpus Domini 2027 (27 maggio):
+Corpus Domini 2027 (27 maggio):Corpus Domini 2027 (domenica 30 maggio):
 - NO Messa pomeridiana (divieto già gestito)
 - Processione a partire dalla cattedrale (nota in agenda)
+⚠️ NOTA: dal 2026 la CEI celebra il Corpus Domini di domenica.
+Il giovedì liturgico (27 maggio 2027) resta il riferimento del calendario
+romano, ma la celebrazione (e quindi il divieto pomeridiano e la nota
+"Processione dalla cattedrale") è sulla domenica successiva.
 
 Altre celebrazioni: nessuna
 
@@ -489,3 +493,24 @@ PAGINE TOTALI: ~399 (rispetto alle 368 precedenti)
 
 FINE DOCUMENTO — 29/10/2026
 
+---------------------------------------------------------------------
+28. CORPUS DOMINI DI DOMENICA (29/10/2026)
+---------------------------------------------------------------------
+Su indicazione della CEI (Conferenza Episcopale Italiana), il Corpus
+Domini si celebra in Italia la DOMENICA successiva al giovedì liturgico.
+
+Conseguenze nel codice:
+- `calcola_corpus_domini(anno)` continua a restituire il GIOVEDÌ
+  liturgico (Pasqua + 60), come riferimento del calendario romano.
+- Nuova funzione `calcola_domenica_corpus_domini(anno)`: Pasqua + 63.
+- Divieto pomeridiano, nota "Processione dalla cattedrale" e voce
+  "Corpus Domini" in agenda: tutti sulla DOMENICA.
+- Festa del Voto: slitta alla prima domenica di giugno se l'ultima
+  domenica di maggio coincide con la domenica del Corpus Domini.
+
+Nel 2027:
+- Giovedì liturgico: 27 maggio 2027 (nessuna celebrazione, nessun divieto)
+- Domenica Corpus Domini: 30 maggio 2027 (divieto pomeridiano + processione)
+- Festa del Voto: slitta al 6 giugno 2027
+
+FINE DOCUMENTO — 29/10/2026
