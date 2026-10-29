@@ -161,10 +161,11 @@ def test_renderizza_giorno_con_sezione_intenzioni(
         ],
     )
     html = renderizza_giorno(giorno, config_minima, env_jinja)
-    # Verifica che ci sia la tabella intenzioni
-    assert "tabella-intenzioni" in html
+    # Verifica che ci sia la tabella intenzioni di applicazione
+    assert "tabella-intenzioni-registro" in html
     assert "Luogo della celebrazione" in html
     assert "Intenzione" in html
+    assert "Firma" in html
 
 
 # ======================================================================
@@ -234,7 +235,7 @@ def test_estrai_body_senza_body() -> None:
 
 
 def test_assembla_html_produce_html_completo(config_minima: Config, env_jinja: Environment) -> None:
-    """assembla_html produce un HTML completo."""
+    """assembla_html produce un HTML completo con tutte le sezioni."""
     calendario = genera_agenda(config_minima)
     html = assembla_html(config_minima, calendario, env_jinja)
 
@@ -242,17 +243,22 @@ def test_assembla_html_produce_html_completo(config_minima: Config, env_jinja: E
     assert "<html" in html
     assert "<style>" in html
     assert "Test Parrocchia" in html
+    assert "INTENZIONI LIBERE" in html
     assert "Registro Intenzioni" in html
+    assert "MATRIMONI 2027" in html
+    assert "MATRIMONI 2028" in html
 
 
 def test_assembla_html_contiene_tutti_i_giorni(
     config_minima: Config, env_jinja: Environment
 ) -> None:
-    """L'HTML contiene una pagina per ogni giorno."""
+    """L'HTML contiene una pagina per ogni giorno + 10 pagine intenzioni libere."""
     calendario = genera_agenda(config_minima)
     html = assembla_html(config_minima, calendario, env_jinja)
 
     assert html.count('class="pagina-giorno"') == len(calendario.giorni)
+    assert html.count('class="pagina-intenzioni-libere"') == 10
+    assert html.count('class="pagina-matrimoni-annuali"') == 1
 
 
 # ======================================================================
@@ -291,3 +297,125 @@ def test_genera_pdf_da_profilo_crea_file() -> None:
     assert percorso.exists()
     assert percorso.suffix == ".pdf"
     assert percorso.stat().st_size > 10_000
+
+
+# ======================================================================
+# TEST — renderizza_intenzioni_libere
+# ======================================================================
+
+
+def test_renderizza_intenzioni_libere_contiene_titolo(
+    config_minima: Config, env_jinja: Environment
+) -> None:
+    """La pagina intenzioni libere contiene il titolo corretto."""
+    from generatore_pdf import renderizza_intenzioni_libere
+
+    html = renderizza_intenzioni_libere(config_minima, env_jinja)
+    assert "INTENZIONI LIBERE" in html
+    assert "Data consegna" in html
+    assert "Intenzione" in html
+    assert "Offerta" in html
+    assert "Data applicazione" in html
+
+
+# ======================================================================
+# TEST — renderizza_matrimoni_annuali
+# ======================================================================
+
+
+def test_renderizza_matrimoni_annuali_contiene_2027_e_2028(
+    config_minima: Config, env_jinja: Environment
+) -> None:
+    """La sezione matrimoni annuali mostra 2027 (anno agenda) e 2028."""
+    from generatore_pdf import renderizza_matrimoni_annuali
+
+    html = renderizza_matrimoni_annuali(config_minima, env_jinja)
+    assert "MATRIMONI 2027" in html
+    assert "MATRIMONI 2028" in html
+    assert "Nomi degli sposi" in html
+    assert "Recapiti" in html
+    assert "Parrocchia" in html
+    assert "Sacerdote" in html
+
+
+def test_renderizza_matrimoni_annuali_con_matrimonio(
+    config_minima: Config, env_jinja: Environment
+) -> None:
+    """Un matrimonio prenotato compare nella tabella dell'anno corretto."""
+    from dataclass_config import Matrimonio
+    from generatore_pdf import renderizza_matrimoni_annuali
+
+    config_minima.matrimoni_prenotati = [
+        Matrimonio(
+            data=date(2027, 1, 2),
+            ora="15:30",
+            nome_sposi="Maria Rossi e Luca Bianchi",
+            contatti="333-1111111",
+        ),
+    ]
+    html = renderizza_matrimoni_annuali(config_minima, env_jinja)
+    assert "Maria Rossi e Luca Bianchi" in html
+    assert "15:30" in html
+    assert "333-1111111" in html
+
+
+def test_renderizza_matrimoni_annuali_anno_futuro(
+    config_minima: Config, env_jinja: Environment
+) -> None:
+    """Un matrimonio nel 2029 aggiunge una tabella MATRIMONI 2029."""
+    from dataclass_config import Matrimonio
+    from generatore_pdf import renderizza_matrimoni_annuali
+
+    config_minima.matrimoni_prenotati = [
+        Matrimonio(
+            data=date(2029, 6, 9),
+            ora="11:00",
+            nome_sposi="Test Sposi",
+        ),
+    ]
+    html = renderizza_matrimoni_annuali(config_minima, env_jinja)
+    assert "MATRIMONI 2027" in html
+    assert "MATRIMONI 2028" in html
+    assert "MATRIMONI 2029" in html
+
+
+# ======================================================================
+# TEST — layout pagina giorno (v2)
+# ======================================================================
+
+
+def test_renderizza_giorno_ha_3_sub_righe_per_messa(
+    config_minima: Config, env_jinja: Environment
+) -> None:
+    """Ogni Messa ha esattamente 3 sub-righe (riga-defunto + riga-firma)."""
+    giorno = GiornoAgenda(
+        data=date(2027, 6, 15),
+        tipo="feriale",
+        orari=["7:00"],
+    )
+    html = renderizza_giorno(giorno, config_minima, env_jinja)
+
+    # 1 Messa → 3 riga-defunto e 3 riga-firma
+    assert html.count('class="riga-defunto"') == 3
+    assert html.count('class="riga-firma"') == 3
+
+
+def test_renderizza_giorno_senza_annotazioni_libere(
+    config_minima: Config, env_jinja: Environment
+) -> None:
+    """La sezione 'Annotazioni libere' è stata rimossa."""
+    giorno = GiornoAgenda(
+        data=date(2027, 6, 15),
+        tipo="feriale",
+        orari=["7:00"],
+    )
+    html = renderizza_giorno(giorno, config_minima, env_jinja)
+
+    assert "spazio-annotazioni-libere" not in html
+    assert "Annotazioni libere" not in html
+
+
+def test_style_css_ha_rilegatura_30mm() -> None:
+    """Il CSS ufficiale ha margini di rilegatura 30mm su entrambi i lati."""
+    css = leggi_css()
+    assert "margin: 12mm 30mm 12mm 30mm" in css

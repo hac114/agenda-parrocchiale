@@ -281,3 +281,63 @@ def test_foglio_note_celle_compilabili(wb_vuoto: Workbook) -> None:
     for col in "ABC":
         cella = ws[f"{col}2"]
         assert cella.fill.fgColor.rgb in ("00FFF9C4", "FFF9C4")
+
+
+# ======================================================================
+# TEST — calcola_sabati_anno
+# ======================================================================
+
+
+def test_calcola_sabati_anno_solo_sabati() -> None:
+    """Tutte le date restituite sono sabati."""
+    from fogli_excel import calcola_sabati_anno
+
+    sabati = calcola_sabati_anno(2027)
+    assert len(sabati) > 0
+    for s in sabati:
+        assert s.weekday() == 5, f"{s} non è un sabato"
+
+
+def test_calcola_sabati_anno_esclude_maggio() -> None:
+    """Nessun sabato di maggio."""
+    from fogli_excel import calcola_sabati_anno
+
+    sabati = calcola_sabati_anno(2027)
+    for s in sabati:
+        assert s.month != 5, f"Trovato sabato di maggio: {s}"
+
+
+def test_calcola_sabati_anno_anno_corretto() -> None:
+    """Tutti i sabati appartengono all'anno richiesto."""
+    from fogli_excel import calcola_sabati_anno
+
+    sabati = calcola_sabati_anno(2027)
+    for s in sabati:
+        assert s.year == 2027
+
+
+def test_calcola_sabati_anno_ordinati() -> None:
+    """I sabati sono in ordine cronologico."""
+    from fogli_excel import calcola_sabati_anno
+
+    sabati = calcola_sabati_anno(2027)
+    for i in range(len(sabati) - 1):
+        assert sabati[i] < sabati[i + 1]
+
+
+def test_calcola_sabati_anno_primo_e_ultimo_2027() -> None:
+    """Primo sabato 2027 = 2 gennaio, ultimo = 25 dicembre (no maggio)."""
+    from fogli_excel import calcola_sabati_anno
+
+    sabati = calcola_sabati_anno(2027)
+    assert sabati[0] == date(2027, 1, 2)
+    # Ultimo sabato di dicembre 2027 = 25 dicembre
+    assert sabati[-1] == date(2027, 12, 25)
+
+
+def test_calcola_sabati_anno_conteggio_plausibile() -> None:
+    """Un anno ha ~48 sabati validi (52 totali − ~4 di maggio)."""
+    from fogli_excel import calcola_sabati_anno
+
+    sabati = calcola_sabati_anno(2027)
+    assert 40 <= len(sabati) <= 52

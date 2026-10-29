@@ -1120,14 +1120,39 @@ def test_data_celebrazione_mobile_tipo_lista_restituisce_none() -> None:
 
 
 # ======================================================================
-# TEST — matrimoni_futuri
+# TEST — matrimoni_per_anno
 # ======================================================================
 
 
-def test_matrimoni_futuri_nessuno() -> None:
-    """Se non ci sono matrimoni futuri, la lista è vuota."""
+def test_matrimoni_per_anno_nessun_matrimonio() -> None:
+    """Se non ci sono matrimoni, la tabella contiene solo le date dei sabati."""
+    from dataclass_config import Config
+    from generatore_agenda import matrimoni_per_anno
+
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2027,
+        matrimoni_prenotati=[],
+    )
+    tabelle = matrimoni_per_anno(config, [2027])
+    assert len(tabelle) == 1
+    assert tabelle[0]["anno"] == 2027
+
+    righe = tabelle[0]["righe"]
+    assert len(righe) > 40  # ~44 sabati escluso maggio
+    # Tutte le righe hanno solo la data, senza matrimonio
+    for riga in righe:
+        assert riga["nome_sposi"] == ""
+        assert riga["ora"] == ""
+        assert riga["contatti"] == ""
+        assert riga["data_formattata"] != ""
+
+
+def test_matrimoni_per_anno_uno() -> None:
+    """Un matrimonio nell'anno viene collegato alla riga del suo sabato."""
     from dataclass_config import Config, Matrimonio
-    from generatore_agenda import matrimoni_futuri
+    from generatore_agenda import matrimoni_per_anno
 
     config = Config(
         nome_parrocchia="Test",
@@ -1135,42 +1160,28 @@ def test_matrimoni_futuri_nessuno() -> None:
         anno=2027,
         matrimoni_prenotati=[
             Matrimonio(
-                data=date(2027, 6, 12),
+                data=date(2027, 1, 2),  # sabato
                 ora="15:30",
                 nome_sposi="Maria Rossi e Luca Bianchi",
+                contatti="333-1111111",
             ),
         ],
     )
-    assert matrimoni_futuri(config) == []
+    tabelle = matrimoni_per_anno(config, [2027])
+    righe = tabelle[0]["righe"]
+
+    # Trova la riga del 2 gennaio 2027
+    riga = next(r for r in righe if r["data"] == date(2027, 1, 2))
+    assert riga["ora"] == "15:30"
+    assert riga["nome_sposi"] == "Maria Rossi e Luca Bianchi"
+    assert riga["contatti"] == "333-1111111"
+    assert riga["data_formattata"] == "2 GEN"
 
 
-def test_matrimoni_futuri_uno() -> None:
-    """Un matrimonio del 2028 è classificato come futuro."""
+def test_matrimoni_per_anno_ignora_senza_data() -> None:
+    """Un matrimonio senza data non viene collegato a nessuna riga."""
     from dataclass_config import Config, Matrimonio
-    from generatore_agenda import matrimoni_futuri
-
-    config = Config(
-        nome_parrocchia="Test",
-        citta="Roma",
-        anno=2027,
-        matrimoni_prenotati=[
-            Matrimonio(
-                data=date(2028, 9, 10),
-                ora="11:00",
-                nome_sposi="Luca Verdi e Sara Neri",
-            ),
-        ],
-    )
-    futuri = matrimoni_futuri(config)
-    assert len(futuri) == 1
-    assert futuri[0]["nome_sposi"] == "Luca Verdi e Sara Neri"
-    assert futuri[0]["ora"] == "11:00"
-
-
-def test_matrimoni_futuri_ignora_senza_data() -> None:
-    """Un matrimonio senza data viene ignorato."""
-    from dataclass_config import Config, Matrimonio
-    from generatore_agenda import matrimoni_futuri
+    from generatore_agenda import matrimoni_per_anno
 
     config = Config(
         nome_parrocchia="Test",
@@ -1184,4 +1195,53 @@ def test_matrimoni_futuri_ignora_senza_data() -> None:
             ),
         ],
     )
-    assert matrimoni_futuri(config) == []
+    tabelle = matrimoni_per_anno(config, [2027])
+    righe = tabelle[0]["righe"]
+
+    # Nessuna riga deve avere nome_sposi popolato
+    for riga in righe:
+        assert riga["nome_sposi"] == ""
+
+
+def test_matrimoni_per_anno_multi_anno() -> None:
+    """Con due anni, produce due tabelle separate."""
+    from dataclass_config import Config, Matrimonio
+    from generatore_agenda import matrimoni_per_anno
+
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2027,
+        matrimoni_prenotati=[
+            Matrimonio(
+                data=date(2028, 9, 9),  # sabato 2028
+                ora="11:00",
+                nome_sposi="Luca Verdi e Sara Neri",
+            ),
+        ],
+    )
+    tabelle = matrimoni_per_anno(config, [2027, 2028])
+    assert len(tabelle) == 2
+    assert tabelle[0]["anno"] == 2027
+    assert tabelle[1]["anno"] == 2028
+
+    # La tabella 2027 è vuota (solo date)
+    for riga in tabelle[0]["righe"]:
+        assert riga["nome_sposi"] == ""
+
+    # La tabella 2028 ha la riga popolata
+    riga_2028 = next(r for r in tabelle[1]["righe"] if r["data"] == date(2028, 9, 9))
+    assert riga_2028["nome_sposi"] == "Luca Verdi e Sara Neri"
+    assert riga_2028["ora"] == "11:00"
+
+
+def test_matrimoni_per_anno_esclude_maggio() -> None:
+    """Le righe non includono mai maggio."""
+    from dataclass_config import Config
+    from generatore_agenda import matrimoni_per_anno
+
+    config = Config(nome_parrocchia="Test", citta="Roma", anno=2027)
+    tabelle = matrimoni_per_anno(config, [2027])
+
+    for riga in tabelle[0]["righe"]:
+        assert riga["data"].month != 5

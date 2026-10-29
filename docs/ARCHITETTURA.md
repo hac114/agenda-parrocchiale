@@ -344,12 +344,12 @@ Senza GTK 3, il PDF non viene generato.
 | `util.py` | 100% |
 | `stili.py` | 99% |
 | `generatore_pdf.py` | 98% |
-| `generatore_agenda.py` | 97% |
+| `generatore_agenda.py` | 98% |
 | `lettura_excel.py` | 96% |
-| `config.py` | 94% |
+| `config.py` | 92% |
 | `lettura_yaml.py` | 89% |
 | `crea_config_template.py` | 0% (CLI, difficile) |
-| **TOTALE** | **86%** (da aggiornare: nuovi template e funzioni matrimoni non ancora coperte) |
+| **TOTALE** | **87%** |
 
 ### Comandi
 
