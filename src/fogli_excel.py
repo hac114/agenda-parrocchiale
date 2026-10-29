@@ -388,8 +388,8 @@ def crea_foglio_matrimoni(
     # ------------------------------------------------------------------
     # CALCOLO SABATI (anno corrente + anno successivo, escluso maggio)
     # ------------------------------------------------------------------
-    sabati_anno_corrente = _calcola_sabati_anno(anno)
-    sabati_anno_successivo = _calcola_sabati_anno(anno + 1)
+    sabati_anno_corrente = calcola_sabati_anno(anno)
+    sabati_anno_successivo = calcola_sabati_anno(anno + 1)
     sabati = sabati_anno_corrente + sabati_anno_successivo
 
     # ------------------------------------------------------------------
@@ -443,7 +443,7 @@ def crea_foglio_matrimoni(
     ws.sheet_view.showGridLines = False
 
 
-def _calcola_sabati_anno(anno: int) -> list[date]:
+def calcola_sabati_anno(anno: int) -> list[date]:
     """Calcola tutti i sabati di un anno, escluso il mese di maggio.
 
     Al santuario i matrimoni si celebrano solo il sabato e mai a maggio.

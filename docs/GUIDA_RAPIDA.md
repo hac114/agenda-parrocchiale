@@ -81,8 +81,8 @@ Poi rigenera il PDF con `scripts/genera_agenda.bat`.
 
 | Data matrimonio | Posizione nel PDF |
 |---|---|
-| Nell'anno dell'agenda | Nel giorno specifico |
-| Negli anni successivi | Pagina finale "Prenotazioni" |
+| Nell'anno dell'agenda | Nel giorno specifico + tabella "MATRIMONI \<anno\>" in coda |
+| Negli anni successivi | Solo nella tabella "MATRIMONI \<anno\>" in coda |
 
 ### 📋 Foglio "Note"
 
@@ -99,7 +99,7 @@ Poi rigenera il PDF con `scripts/genera_agenda.bat`.
 1. ✅ Modifica **solo le celle GIALLE**
 2. ✅ **Chiudi Excel** prima di generare il PDF
 3. ✅ **Un giorno = una riga** nel foglio Intenzioni
-4. ✅ La **data matrimonio** decide dove appare nel PDF
+4. ✅ La **data matrimonio** decide in quali tabelle annuali appare in coda al PDF (il giorno specifico è automatico)
 5. ❌ Non cancellare colonne, non rinominare fogli
 
 ---
@@ -107,17 +107,20 @@ Poi rigenera il PDF con `scripts/genera_agenda.bat`.
 ## Cosa contiene il PDF
 
 1. **Copertina**
-2. **365 pagine giorno** (una per giorno, con tabella Messe + tabella Intenzioni + spazi annotazioni)
-3. **Registro intenzioni**
-4. **Prenotazioni Matrimoni** (anni successivi)
+2. **10 pagine "Intenzioni libere"** (subito dopo la copertina, da compilare a mano)
+3. **365 pagine giorno** (una per giorno, con tabella Messe + tabella Intenzioni + spazio iniziative)
+4. **Registro intenzioni**
+5. **Tabelle matrimoni annuali** in coda: "MATRIMONI 2027", "MATRIMONI 2028"
+   (una riga per ogni sabato disponibile, escluso maggio)
 
 Ogni pagina giorno contiene:
 - Data, giorno settimana, festività
 - Note liturgiche (se presenti)
-- Tabella Messe (Ora / Intenzioni / Firma)
-- Tabella Intenzioni di applicazione
+- Tabella Messe (Ora / Intenzioni / Firma, 3 sub-righe per Messa)
+- Tabella Intenzioni di applicazione (Luogo / Intenzione / Firma)
 - Spazio "Altre iniziative / Note"
-- Spazio "Annotazioni libere"
+
+Il PDF ha **margini di rilegatura di 30 mm** su entrambi i lati.
 
 ---
 

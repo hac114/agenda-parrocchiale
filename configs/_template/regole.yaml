@@ -136,7 +136,4 @@ layout:
   righe_default: 1
   # Orari con righe extra (permettono di scrivere più intenzioni)
   # Es. "18:00": 3 → la Messa delle 18:00 ha 3 righe per le intenzioni
-  righe_extra:
-    "18:00": 3
-    "19:00": 3
-    "21:00": 3
+  righe_extra: {}

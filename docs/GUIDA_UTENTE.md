@@ -32,7 +32,8 @@ formato PDF, pronto per essere mandato in tipografia.
 - Rispetta i divieti pomeridiani (Assunta, San Nicola, Corpus Domini)
 - Inserisce le ricorrenze proprie (Triduo San Salvatore, Nove Mercoledì)
 - Compila il registro delle intenzioni di Messa
-- Aggiunge in fondo una pagina dedicata alle prenotazioni dei matrimoni degli anni successivi
+- Aggiunge 10 pagine "Intenzioni libere" dopo la copertina (compilabili a mano)
+- Aggiunge in coda le tabelle matrimoni annuali (anno corrente + anni successivi)
 
 **Cosa devi fare tu:**
 - Compilare un file Excel con gli orari, le intenzioni, i matrimoni
@@ -252,13 +253,14 @@ dell'agenda, sia degli anni successivi.
 
 | Data del matrimonio | Dove appare nel PDF |
 |---|---|
-| Nell'anno dell'agenda (es. 2027) | Nel **giorno specifico** del calendario |
-| Negli anni successivi (es. 2028, 2029) | Nella **pagina finale** "Prenotazioni Matrimoni" |
+| Nell'anno dell'agenda (es. 2027) | Nel **giorno specifico** del calendario + tabella **"MATRIMONI 2027"** in coda |
+| Negli anni successivi (es. 2028, 2029) | Solo nella tabella **"MATRIMONI <anno>"** in coda |
 
 **Esempio:** se stai facendo l'agenda 2027 e inserisci un matrimonio
-del 15/06/2027, apparirà nel giorno 15 giugno 2027.
-Se inserisci un matrimonio del 10/09/2028, apparirà nella pagina finale
-dedicata alle prenotazioni future.
+del 15/06/2027, apparirà sia nel giorno 15 giugno 2027 sia nella tabella
+"MATRIMONI 2027" in coda al PDF.
+Se inserisci un matrimonio del 10/09/2028, apparirà nella tabella
+"MATRIMONI 2028" in coda al PDF.
 
 | Colonna | Cosa scrivere |
 |---|---|
@@ -268,8 +270,17 @@ dedicata alle prenotazioni future.
 | **Contatti** | Telefono o email |
 | **Note** | Eventuali annotazioni |
 
-**Nota:** nella pagina finale "Prenotazioni Matrimoni" compaiono solo
-**data, ora e nome sposi** (i contatti e le note restano interni).
+**Nota:** nelle tabelle matrimoni annuali in coda al PDF compaiono
+**data, ora, nome sposi e recapiti**. Le colonne "Parrocchia" e "Sacerdote"
+sono lasciate **vuote**: si compilano a mano sul cartaceo. Le "Note"
+restano interne (non appaiono nel PDF).
+
+**⚠️ IMPORTANTE — Tabelle sempre presenti:**
+
+Le tabelle "MATRIMONI <anno>" vengono generate **sempre** per l'anno
+dell'agenda e per l'anno successivo, anche se non c'è nessun matrimonio
+prenotato. Questo permette ai frati di aggiungere a mano i matrimoni
+durante l'anno.
 
 **⚠️ IMPORTANTE — Date precompilate:**
 
@@ -326,18 +337,26 @@ C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\output\Agenda_2027.pdf
 
 **Cosa contiene il PDF (in ordine):**
 1. **Copertina** (nome parrocchia, città, anno)
-2. **365 pagine giorno** (una per ogni giorno dell'anno), con:
+2. **10 pagine "Intenzioni libere"** (subito dopo la copertina):
+   tabella vuota con colonne Data consegna | Intenzione | Offerta | Data applicazione,
+   da compilare a mano. Sono le intenzioni libere (distinte da quelle
+   già registrate nel sistema).
+3. **365 pagine giorno** (una per ogni giorno dell'anno; alcuni giorni
+   pieni possono occupare 2 pagine), con:
    - Data e giorno della settimana
    - Festività (se presente)
    - Note liturgiche (riquadro giallo) — es. Giovedì Santo, Venerdì Santo
-   - Tabella Messe: Ora | Intenzioni (3 righe) | Firma
+   - Tabella Messe: Ora | Intenzioni (3 sub-righe) | Firma
    - Tabella Intenzioni di applicazione: Luogo | Intenzione | Firma
    - Sezione "Altre iniziative / Note"
-   - Sezione "Annotazioni libere"
-3. **Registro intenzioni** (elenco di tutte le intenzioni)
-4. **Prenotazioni Matrimoni** (pagina finale)
+4. **Registro intenzioni** (elenco di tutte le intenzioni)
+5. **Tabelle matrimoni annuali** in coda: "MATRIMONI 2027", "MATRIMONI 2028"
+   (una riga per ogni sabato disponibile, escluso maggio; i matrimoni
+   prenotati sono precompilati, gli altri si compilano a mano)
 
-5. Se ci sono errori, il programma mostra un riepilogo tipo:
+Il PDF è impaginato con **margini di rilegatura di 30 mm** su entrambi i lati.
+
+6. Se ci sono errori, il programma mostra un riepilogo tipo:
 ```text
 ⚠️  ATTENZIONE: 3 problemi rilevati durante la lettura
 ...

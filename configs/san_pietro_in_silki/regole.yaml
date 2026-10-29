@@ -140,5 +140,4 @@ intenzioni:
 # --- Layout pagina giorno ---
 layout:
   righe_default: 1
-  righe_extra:
-    "18:00": 3
+  righe_extra: {}

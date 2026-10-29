@@ -84,6 +84,20 @@ def renderizza_copertina(config: Config, env: Environment) -> str:
     )
 
 
+def renderizza_intenzioni_libere(config: Config, env: Environment) -> str:
+    """Renderizza una singola pagina 'Intenzioni libere'.
+
+    Args:
+        config: Config con anno
+        env: Environment Jinja2 configurato
+
+    Returns:
+        HTML della pagina intenzioni libere.
+    """
+    template = env.get_template("intenzioni_libere.html")
+    return template.render(anno=config.anno)
+
+
 def _prepara_righe_messe(orari: list[str], config: Config) -> list[dict]:
     """Prepara le righe della tabella messe con eventuali righe extra.
 
@@ -198,6 +212,12 @@ def assembla_html(config: Config, calendario: CalendarioAgenda, env: Environment
     # Estrai il body della copertina (senza <head>)
     copertina_body = estrai_body(html_copertina)
 
+    # 10 pagine "Intenzioni libere" (subito dopo la copertina)
+    pagine_intenzioni_libere: list[str] = []
+    for _ in range(10):
+        html_il = renderizza_intenzioni_libere(config, env)
+        pagine_intenzioni_libere.append(estrai_body(html_il))
+
     # Pagine giorno
     pagine_giorni: list[str] = []
     for giorno in calendario.giorni:
@@ -209,7 +229,7 @@ def assembla_html(config: Config, calendario: CalendarioAgenda, env: Environment
     registro_body = estrai_body(html_registro)
 
     # Matrimoni futuri
-    html_matrimoni = renderizza_matrimoni_futuri(config, env)
+    html_matrimoni = renderizza_matrimoni_annuali(config, env)
     matrimoni_body = estrai_body(html_matrimoni)
 
     # Assembla tutto in un unico documento
@@ -224,6 +244,7 @@ def assembla_html(config: Config, calendario: CalendarioAgenda, env: Environment
     </head>
     <body>
     {copertina_body}
+    {"".join(pagine_intenzioni_libere)}
     {"".join(pagine_giorni)}
     {registro_body}
     {matrimoni_body}
@@ -304,24 +325,38 @@ def genera_pdf_da_profilo(profilo: str) -> Path:
     return genera_pdf(config, calendario)
 
 
-def renderizza_matrimoni_futuri(config: Config, env: Environment) -> str:
-    """Renderizza il template delle prenotazioni matrimoni future.
+def renderizza_matrimoni_annuali(config: Config, env: Environment) -> str:
+    """Renderizza le tabelle annuali dei matrimoni (un'area per anno).
+
+    Per l'anno dell'agenda vengono sempre generate le righe (una per
+    sabato valido, escluso maggio), anche se non ci sono matrimoni
+    prenotati, in modo che i frati possano aggiungerli a mano sul
+    cartaceo. Per gli anni successivi vengono generate tabelle solo
+    se esistono matrimoni prenotati in quell'anno.
 
     Args:
         config: Config con anno e matrimoni_prenotati
         env: Environment Jinja2 configurato
 
     Returns:
-        HTML della pagina matrimoni futuri.
+        HTML della sezione matrimoni annuali.
     """
-    from generatore_agenda import matrimoni_futuri
+    from generatore_agenda import matrimoni_per_anno
 
-    anno_successivo = config.anno + 1
-    matrimoni = matrimoni_futuri(config)
+    # Anno dell'agenda sempre; anni futuri solo se hanno matrimoni prenotati
+    anni: list[int] = [config.anno, config.anno + 1]
+    anni_con_matrimoni_set: set[int] = set()
+    for m in config.matrimoni_prenotati:
+        if m.data is None:
+            continue
+        if m.data.year > config.anno + 1:
+            anni_con_matrimoni_set.add(m.data.year)
+    anni.extend(sorted(anni_con_matrimoni_set))
 
-    template = env.get_template("matrimoni_futuri.html")
+    tabelle = matrimoni_per_anno(config, anni)
+
+    template = env.get_template("matrimoni_annuali.html")
     return template.render(
-        anno_successivo=anno_successivo,
-        matrimoni=matrimoni,
+        tabelle=tabelle,
         nome_parrocchia=config.nome_parrocchia,
     )

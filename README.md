@@ -19,10 +19,12 @@ L'agenda è **multi-profilo**: ogni parrocchia ha la sua configurazione.
 - ✅ Nove mercoledì di San Salvatore (calcolo automatico)
 - ✅ Festa del Voto con slittamento automatico se coincide con Corpus Domini
 - ✅ Registro intenzioni di Messa
-- ✅ Pagina dedicata alle prenotazioni matrimoni degli anni successivi
+- ✅ Tabelle matrimoni annuali in coda al PDF (anno corrente + anni successivi, con date dei sabati disponibili)
 - ✅ Date dei sabati precompilate in Excel (anno corrente + successivo)
 - ✅ Orari speciali configurabili (Giovedì Santo, Venerdì Santo, Sabato Santo, Festa del Voto)
 - ✅ Note liturgiche in agenda (riquadro evidenziato)
+- ✅ 10 pagine "Intenzioni libere" dopo la copertina (compilabili a mano)
+- ✅ Rilegatura 30 mm su entrambi i lati per tutta l'agenda
 - ✅ Layout pagina giorno configurabile da YAML (righe extra per orari)
 - ✅ Script di aggiornamento automatico (`aggiorna.bat`)
 - ✅ Output PDF pronto per la tipografia (A4 verticale)
@@ -115,7 +117,7 @@ Apri configs/<profilo>/config.xlsx con Excel o LibreOffice e compila i 4 fogli:
 |---|---|
 | **Impostazioni** | Anno, nome parrocchia, città, periodi stagionali |
 | **Intenzioni** | Registro delle intenzioni di Messa |
-| **Matrimoni** | Prenotazioni matrimoni per l'anno successivo |
+| **Matrimoni** | Prenotazioni matrimoni per l'anno corrente e successivi |
 | **Note** | Annotazioni libere (triduo, mese mariano, ecc.) |
 
 Le celle GIALLE sono compilabili. Le altre sono protette.
@@ -257,8 +259,9 @@ agenda-parrocchiale/
 ├── templates/                     # Template HTML/CSS per PDF
 │   ├── agenda.html                # Pagina giorno (layout ufficiale)
 │   ├── copertina.html             # Copertina
+│   ├── intenzioni_libere.html     # 10 pagine "Intenzioni libere" (compilabili a mano)
+│   ├── matrimoni_annuali.html     # Tabelle matrimoni annuali (anno corrente + successivi)
 │   ├── registro_intenzioni.html   # Registro intenzioni
-│   ├── matrimoni_futuri.html      # Prenotazioni matrimoni anno successivo
 │   ├── agenda_mockup.html         # Pagina giorno (mockup di sviluppo)
 │   ├── style.css                  # Stile A4 (ufficiale)
 │   └── style_mockup.css           # Stile A4 (mockup di sviluppo)

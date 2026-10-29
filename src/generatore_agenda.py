@@ -36,6 +36,23 @@ from util import formatta_data_italiana
 
 logger = logging.getLogger(__name__)
 
+# Nomi abbreviati dei mesi per l'intestazione delle tabelle matrimoni
+MESI_ABBR = [
+    "",
+    "GEN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAG",
+    "GIU",
+    "LUG",
+    "AGO",
+    "SET",
+    "OTT",
+    "NOV",
+    "DIC",
+]
+
 # ======================================================================
 # DATACLASS
 # ======================================================================
@@ -746,44 +763,61 @@ def genera_agenda_da_profilo(profilo: str) -> CalendarioAgenda:
     return genera_agenda(config)
 
 
-def matrimoni_futuri(config: Config) -> list[dict]:
-    """Restituisce i matrimoni prenotati per gli anni successivi.
+def matrimoni_per_anno(config: Config, anni: list[int]) -> list[dict]:
+    """Per ogni anno richiesto, produce una lista di righe (una per sabato valido).
 
-    Filtra `config.matrimoni_prenotati` tenendo solo quelli con anno
-    strettamente maggiore dell'anno dell'agenda (config.anno).
-
-    Ogni matrimonio è restituito come dict con i campi:
-    - data: date
-    - data_formattata: str (formato italiano, es. "15 giugno 2028")
-    - ora: str
-    - nome_sposi: str
+    Ogni riga corrisponde a un sabato in cui è possibile celebrare matrimoni
+    (tutti i sabati dell'anno, escluso maggio). Se in quella data esiste un
+    matrimonio prenotato, i campi ora/nome_sposi/contatti sono popolati;
+    altrimenti restano vuoti (per compilazione manuale sul cartaceo).
 
     Args:
-        config: Config con anno e matrimoni_prenotati
+        config: Config con i matrimoni prenotati
+        anni: lista di anni per cui generare le tabelle (es. [2027, 2028])
 
     Returns:
-        Lista di dict ordinati per data crescente.
+        Lista di dict, uno per anno, con:
+        - anno: int
+        - righe: list[dict] con chiavi data, data_formattata, ora,
+          nome_sposi, contatti
     """
-    anno_agenda = config.anno
-    futuri: list[dict] = []
+    from fogli_excel import calcola_sabati_anno
 
-    for m in config.matrimoni_prenotati:
-        if m.data is None:
-            continue
-        if m.data.year > anno_agenda:
-            futuri.append(
+    risultato: list[dict] = []
+
+    for anno in anni:
+        sabati = calcola_sabati_anno(anno)
+        righe: list[dict] = []
+
+        for sabato in sabati:
+            # Cerca un matrimonio prenotato in questa data
+            matrimonio = next(
+                (m for m in config.matrimoni_prenotati if m.data == sabato),
+                None,
+            )
+
+            if matrimonio is not None:
+                ora = matrimonio.ora
+                nome_sposi = matrimonio.nome_sposi
+                contatti = matrimonio.contatti
+            else:
+                ora = ""
+                nome_sposi = ""
+                contatti = ""
+
+            righe.append(
                 {
-                    "data": m.data,
-                    "data_formattata": formatta_data_italiana(m.data),
-                    "ora": m.ora,
-                    "nome_sposi": m.nome_sposi,
+                    "data": sabato,
+                    "data_formattata": f"{sabato.day} {MESI_ABBR[sabato.month]}",
+                    "ora": ora,
+                    "nome_sposi": nome_sposi,
+                    "contatti": contatti,
                 }
             )
 
-    # Ordina per data crescente
-    futuri.sort(key=lambda x: x["data"])
+        risultato.append({"anno": anno, "righe": righe})
 
-    return futuri
+    return risultato
 
 
 def _nota_divieto_pomeridiano(data: date, config: Config) -> str:

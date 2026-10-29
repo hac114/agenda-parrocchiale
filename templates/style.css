@@ -6,7 +6,7 @@
 /* --- Impostazioni pagina A4 --- */
 @page {
     size: A4;
-    margin: 12mm 12mm 12mm 12mm;
+    margin: 12mm 30mm 12mm 30mm;
 
     @bottom-center {
         content: counter(page);
@@ -139,6 +139,7 @@ body {
     border-bottom: none;
 }
 
+/* .riga-extra — COMMENTATO (non serve più: righe_extra svuotato nel YAML)
 .riga-extra {
     min-height: 30mm;
 }
@@ -150,6 +151,7 @@ body {
 .riga-extra .riga-firma {
     height: 10mm;
 }
+*/
 
 /* =====================================================================
    TABELLA 2 — INTENZIONI
@@ -273,7 +275,7 @@ body {
 /* =====================================================================
    SPAZIO ANNOTAZIONI LIBERE
    ===================================================================== */
-
+/*.spazio-annotazioni-libere — COMMENTATO (blocco rimosso da agenda.html)
 .spazio-annotazioni-libere {
     margin-top: 4mm;
     border-top: 1px dashed #999;
@@ -291,7 +293,7 @@ body {
     min-height: 30mm;
     border: 1px dotted #ccc;
 }
-
+*/
 /* =====================================================================
    COPERTINA (invariata)
    ===================================================================== */
@@ -369,6 +371,19 @@ body {
     border: 1px solid #ccc;
     padding: 2mm;
     vertical-align: top;
+    height: 10mm;
+}
+
+.tabella-intenzioni-registro .col-luogo {
+    width: 30%;
+}
+
+.tabella-intenzioni-registro .col-intenzione {
+    width: 35%;
+}
+
+.tabella-intenzioni-registro .col-firma {
+    width: 35%;
 }
 
 .tabella-intenzioni-registro tr:nth-child(even) td {
@@ -455,4 +470,140 @@ body {
     font-size: 10pt;
     font-style: italic;
     color: #5d4e00;
+}
+
+
+/* =====================================================================
+   INTENZIONI LIBERE (10 pagine dopo la copertina)
+   ===================================================================== */
+
+.pagina-intenzioni-libere {
+    page-break-before: always;
+    page-break-after: always;
+}
+
+.titolo-intenzioni-libere {
+    font-size: 20pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 8mm;
+    border-bottom: 2px solid #333;
+    padding-bottom: 3mm;
+}
+
+.tabella-intenzioni-libere {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+}
+
+.tabella-intenzioni-libere th {
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    padding: 2mm;
+    text-align: center;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.tabella-intenzioni-libere td {
+    border: 1px solid #ccc;
+    padding: 2mm;
+    vertical-align: top;
+    height: 12mm;
+}
+
+.tabella-intenzioni-libere .col-data-consegna {
+    width: 20%;
+}
+
+.tabella-intenzioni-libere .col-intenzione {
+    width: 40%;
+}
+
+.tabella-intenzioni-libere .col-offerta {
+    width: 15%;
+}
+
+.tabella-intenzioni-libere .col-data-applicazione {
+    width: 25%;
+}
+
+/* =====================================================================
+   MATRIMONI ANNUALI (tabelle per anno, in coda al PDF)
+   ===================================================================== */
+
+.pagina-matrimoni-annuali {
+    page-break-before: always;
+}
+
+.titolo-matrimoni-annuali {
+    font-size: 20pt;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 8mm;
+    margin-bottom: 6mm;
+    border-bottom: 2px solid #333;
+    padding-bottom: 3mm;
+}
+
+.titolo-matrimoni-annuali:first-child {
+    margin-top: 0;
+}
+
+.tabella-matrimoni-annuali {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11pt;
+    margin-bottom: 8mm;
+}
+
+.tabella-matrimoni-annuali th {
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    padding: 2mm;
+    text-align: center;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.tabella-matrimoni-annuali td {
+    border: 1px solid #ccc;
+    padding: 2mm;
+    vertical-align: top;
+    height: 15mm;
+}
+
+.tabella-matrimoni-annuali .col-data {
+    width: 12%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.tabella-matrimoni-annuali .col-nomi {
+    width: 38%;
+}
+
+.tabella-matrimoni-annuali .col-recapiti {
+    width: 20%;
+}
+
+.tabella-matrimoni-annuali .col-parrocchia {
+    width: 15%;
+}
+
+.tabella-matrimoni-annuali .col-sacerdote {
+    width: 15%;
+}
+
+.tabella-matrimoni-annuali .data-sabato {
+    font-size: 11pt;
+    font-weight: bold;
+}
+
+.tabella-matrimoni-annuali .ora-matrimonio {
+    font-size: 9pt;
+    font-style: italic;
+    color: #555;
+    margin-top: 1mm;
 }

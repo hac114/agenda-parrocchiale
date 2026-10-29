@@ -6,7 +6,7 @@
 /* --- Impostazioni pagina A4 --- */
 @page {
     size: A4;
-    margin: 12mm 12mm 12mm 12mm;
+    margin: 12mm 30mm 12mm 30mm;
 
     @bottom-center {
         content: counter(page);
@@ -141,6 +141,7 @@ body {
 }
 
 /* --- Riga con extra (es. 18:00 con 3 righe) --- */
+/* riga-extra — COMMENTATO (non serve più: righe_extra svuotato nel YAML)
 .riga-extra {
     min-height: 30mm;
 }
@@ -152,6 +153,7 @@ body {
 .riga-extra .riga-firma {
     height: 10mm;
 }
+*/
 
 /* =====================================================================
    TABELLA 2 — INTENZIONI
@@ -180,15 +182,15 @@ body {
 }
 
 .tabella-intenzioni .col-luogo {
-    width: 35%;
+    width: 30%;
 }
 
 .tabella-intenzioni .col-intenzione {
-    width: 40%;
+    width: 35%;
 }
 
 .tabella-intenzioni .col-firma {
-    width: 25%;
+    width: 35%;
 }
 
 /* =====================================================================
@@ -225,7 +227,7 @@ body {
 /* =====================================================================
    SPAZIO ANNOTAZIONI LIBERE
    ===================================================================== */
-
+/* .spazio-annotazioni-libere — COMMENTATO (blocco rimosso da agenda_mockup.html)
 .spazio-annotazioni-libere {
     margin-top: 4mm;
     border-top: 1px dashed #999;
@@ -243,3 +245,4 @@ body {
     min-height: 30mm;
     border: 1px dotted #ccc;
 }
+*/

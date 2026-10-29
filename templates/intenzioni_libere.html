@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Intenzioni libere — {{ anno }}</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="pagina-intenzioni-libere">
+
+    <h1 class="titolo-intenzioni-libere">INTENZIONI LIBERE</h1>
+
+    <table class="tabella-intenzioni-libere">
+        <thead>
+            <tr>
+                <th class="col-data-consegna">Data consegna</th>
+                <th class="col-intenzione">Intenzione</th>
+                <th class="col-offerta">Offerta</th>
+                <th class="col-data-applicazione">Data applicazione</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(20) %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

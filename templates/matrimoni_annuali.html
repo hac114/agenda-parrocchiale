@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrimoni</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="pagina-matrimoni-annuali">
+    {% for tabella in tabelle %}
+    <h1 class="titolo-matrimoni-annuali">MATRIMONI {{ tabella.anno }}</h1>
+
+    <table class="tabella-matrimoni-annuali">
+        <thead>
+            <tr>
+                <th class="col-data">Data</th>
+                <th class="col-nomi">Nomi degli sposi</th>
+                <th class="col-recapiti">Recapiti</th>
+                <th class="col-parrocchia">Parrocchia</th>
+                <th class="col-sacerdote">Sacerdote</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for riga in tabella.righe %}
+            <tr>
+                <td class="col-data">
+                    <div class="data-sabato">{{ riga.data_formattata }}</div>
+                    {% if riga.ora %}
+                    <div class="ora-matrimonio">{{ riga.ora }}</div>
+                    {% endif %}
+                </td>
+                <td class="col-nomi">{{ riga.nome_sposi }}</td>
+                <td class="col-recapiti">{{ riga.contatti }}</td>
+                <td class="col-parrocchia"></td>
+                <td class="col-sacerdote"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+</div>
+
+</body>
+</html>

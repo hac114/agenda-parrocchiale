@@ -36,12 +36,12 @@
             <tr class="riga-messa {% if riga.righe_extra %}riga-extra{% endif %}">
                 <td class="col-ora">{{ riga.orario }}</td>
                 <td class="col-defunti">
-                    {% for i in range(riga.righe_extra or 1) %}
+                    {% for i in range(3) %}
                     <div class="riga-defunto"></div>
                     {% endfor %}
                 </td>
                 <td class="col-firma">
-                    {% for i in range(riga.righe_extra or 1) %}
+                    {% for i in range(3) %}
                     <div class="riga-firma"></div>
                     {% endfor %}
                 </td>
@@ -79,14 +79,6 @@
         {% endfor %}
     </div>
 </div>
-
-<!-- SPAZIO LIBERO PER ANNOTAZIONI -->
-<div class="spazio-annotazioni-libere">
-    <h3>Annotazioni libere</h3>
-    <div class="area-libera"></div>
 </div>
-
-</div>
-
 </body>
 </html>

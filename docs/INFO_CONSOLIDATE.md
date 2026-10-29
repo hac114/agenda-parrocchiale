@@ -236,6 +236,9 @@ Nelle Solennità le messe seguono l'orario della domenica.
 ---------------------------------------------------------------------
 Struttura di ogni pagina giorno:
 
+⚠️ NOTA: le specifiche sotto riportano il layout ORIGINALE (v1, 2026).
+Il layout attuale (v2, ottobre 2026) è descritto nella sezione 27.
+
 TABELLA 1 — Messe del giorno:
 - Colonna 1: Ora della Messa
 - Colonna 2: Spazio per segnare i defunti (3 righe per Messa)
@@ -361,6 +364,10 @@ Configurabili dal YAML: SÌ
 ---------------------------------------------------------------------
 21. LAYOUT CONFIGURABILE DAL YAML
 ---------------------------------------------------------------------
+⚠️ NOTA: la sezione `layout.righe_extra` è stata SVUOTATA in v2.
+La configurazione attuale prevede solo `righe_default` e il numero di
+sub-righe per Messa è fisso nel template (3).
+
 Sezione `layout` in regole.yaml:
 - righe_default: numero righe di default per ogni Messa (1)
 - righe_extra: dict orario → righe extra
@@ -441,4 +448,44 @@ Esempi:
 - ✅ Test su Windows
 
 FINE DOCUMENTO — 13/10/2026
+
+---------------------------------------------------------------------
+27. AGGIORNAMENTI LAYOUT (29/10/2026)
+---------------------------------------------------------------------
+Modifiche richieste dall'utente finale e implementate nel PDF:
+
+TABELLA 1 — Messe del giorno:
+- 3 sub-righe per ogni Messa (non più righe_extra differenziate per orario)
+- Altezza complessiva ~30 mm per Messa
+- Larghezze colonne invariate (Defunti 45%, Firma 35%)
+- Nessuna distinzione "riga extra" per la Messa delle 18:00
+
+TABELLA 2 — Intenzioni di applicazione:
+- 3 righe, altezza 10 mm
+- Colonna Firma più larga (35%) per permettere la firma a penna del sacerdote
+- Luogo 30%, Intenzione 35%, Firma 35%
+
+RIMOZIONI:
+- Sezione "Annotazioni libere" eliminata dalla pagina giorno
+
+AGGIUNTE:
+- 10 pagine "INTENZIONI LIBERE" subito dopo la copertina:
+  - tabella vuota, da compilare a mano
+  - colonne: Data consegna | Intenzione | Offerta | Data applicazione
+  - 20 righe da 12 mm
+  - intenzioni libere, distinte da quelle già nel sistema
+- Tabelle "MATRIMONI <anno>" in coda al PDF:
+  - una tabella per anno (anno corrente + anno successivo, sempre presenti)
+  - una riga per ogni sabato valido (escluso maggio)
+  - colonne: Data (con ora) | Nomi sposi | Recapiti | Parrocchia | Sacerdote
+  - Parrocchia e Sacerdote vuoti, da compilare a mano
+  - righe con matrimoni prenotati precompilate
+
+RILEGATURA:
+- Margini 30 mm sinistro e destro su TUTTE le pagine
+- Margini superiore e inferiore: 12 mm
+
+PAGINE TOTALI: ~399 (rispetto alle 368 precedenti)
+
+FINE DOCUMENTO — 29/10/2026
 

@@ -53,7 +53,7 @@ flowchart TD
     D[config.xlsx<br/>dati annuali] -->|leggi_foglio_*| C
     C -->|calcola_tutte_date_mobili| E[CalendarioAgenda<br/>365 giorni]
     C -->|calcola date mobili| E
-    E -->|genera_pdf| F[PDF A4<br/>368 pagine]
+    E -->|genera_pdf| F[PDF A4<br/>~400 pagine<br/>con 10 intenzioni libere + matrimoni annuali]
 ```
 
 ### Fase 1 — Lettura
@@ -75,7 +75,7 @@ flowchart TD
 
 | Step | Input | Funzione | Output |
 |---|---|---|---|
-| 1 | `CalendarioAgenda` + `Config` | `genera_pdf()` | `PDF A4` (368 pagine) |
+| 1 | `CalendarioAgenda` + `Config` | `genera_pdf()` | `PDF A4` (~400 pagine) |
 
 ### I 3 moduli chiave
 
@@ -102,7 +102,7 @@ src/
 ├── calcolo_liturgico.py        # Pasqua, feste mobili, 9 mercoledì
 ├── generatore_agenda.py        # Calendario giorno per giorno
 │
-├── fogli_excel.py              # Creazione dei 4 fogli Excel
+├── fogli_excel.py              # Creazione 4 fogli Excel + calcola_sabati_anno
 ├── crea_config_template.py     # CLI: genera config.xlsx
 │
 ├── generatore_pdf.py           # HTML → PDF (WeasyPrint)
@@ -167,7 +167,7 @@ Costruisce il **CalendarioAgenda** (365 giorni).
 | `intenzioni_del_giorno` | Collega intenzioni |
 | `matrimoni_del_giorno` | Collega matrimoni |
 | `note_del_giorno` | Collega note |
-| `matrimoni_futuri` | Matrimoni degli anni successivi (per pagina finale) |
+| `matrimoni_per_anno` | Righe matrimoni annuali (una per sabato valido, anno corrente + futuri) |
 | `genera_agenda` | **API pubblica** |
 | `genera_agenda_da_profilo` | Wrapper |
 
@@ -190,7 +190,8 @@ Trasforma il `CalendarioAgenda` in un PDF A4 impaginato.
 | `renderizza_copertina` | HTML copertina |
 | `renderizza_giorno` | HTML di un giorno |
 | `renderizza_registro_intenzioni` | HTML del registro intenzioni |
-| `renderizza_matrimoni_futuri` | HTML prenotazioni matrimoni anno successivo |
+| `renderizza_intenzioni_libere` | HTML pagina "Intenzioni libere" (una per le 10 pagine) |
+| `renderizza_matrimoni_annuali` | HTML tabelle matrimoni (anno corrente + anni successivi) |
 | `leggi_css` | Legge `templates/style.css` |
 | `estrai_body` | Estrae il contenuto del `<body>` |
 | `assembla_html` | Assembla tutto l'HTML completo |
@@ -348,7 +349,7 @@ Senza GTK 3, il PDF non viene generato.
 | `config.py` | 94% |
 | `lettura_yaml.py` | 89% |
 | `crea_config_template.py` | 0% (CLI, difficile) |
-| **TOTALE** | **86%** |
+| **TOTALE** | **86%** (da aggiornare: nuovi template e funzioni matrimoni non ancora coperte) |
 
 ### Comandi
 
