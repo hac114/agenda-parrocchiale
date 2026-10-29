@@ -91,6 +91,7 @@ def _ricorrenza_da_dict(dati: dict, anno: int) -> Ricorrenza | None:
             nota=dati.get("nota", ""),
             orari_speciali_sabato=dati.get("orari_speciali_sabato"),
             orari_speciali_domenica=dati.get("orari_speciali_domenica"),
+            orari_speciali_feriale=dati.get("orari_speciali_feriale"),
         )
 
     # Caso 2: intervallo (giorno_da + giorno_a, stesso mese o mese_a)
@@ -108,6 +109,7 @@ def _ricorrenza_da_dict(dati: dict, anno: int) -> Ricorrenza | None:
             nota=dati.get("nota", ""),
             orari_speciali_sabato=dati.get("orari_speciali_sabato"),
             orari_speciali_domenica=dati.get("orari_speciali_domenica"),
+            orari_speciali_feriale=dati.get("orari_speciali_feriale"),
         )
 
     # Caso 3: tipo speciale (es. ultima_domenica_maggio)
@@ -149,6 +151,7 @@ def _ricorrenza_da_dict(dati: dict, anno: int) -> Ricorrenza | None:
             nota=dati.get("nota", ""),
             orari_speciali_sabato=dati.get("orari_speciali_sabato"),
             orari_speciali_domenica=dati.get("orari_speciali_domenica"),
+            orari_speciali_feriale=dati.get("orari_speciali_feriale"),
         )
 
     logger.warning(

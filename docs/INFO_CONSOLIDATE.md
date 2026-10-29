@@ -514,3 +514,22 @@ Nel 2027:
 - Festa del Voto: slitta al 6 giugno 2027
 
 FINE DOCUMENTO — 29/10/2026
+
+
+---------------------------------------------------------------------
+29. SANTA CHIARA — ORARI SPECIALI (29/10/2026)
+---------------------------------------------------------------------
+L'11 agosto (Santa Chiara) ha orari speciali che sostituiscono
+quelli del periodo stagionale:
+
+- Se cade in giorno feriale (lun-sab): 7:00 / 10:00 / 19:00
+- Se cade di domenica: 8:30 / 10:00 / 11:30 / 21:00
+
+Configurato in `ricorrenze_proprie` del YAML con i campi:
+- `orari_speciali_feriale`: orari per i giorni feriali
+- `orari_speciali_domenica`: orari per la domenica
+
+Nuovo campo `orari_speciali_feriale` aggiunto alla dataclass
+`Ricorrenza` per completare il set (feriale / sabato / domenica).
+
+FINE DOCUMENTO — 29/10/2026

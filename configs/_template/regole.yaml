@@ -39,6 +39,7 @@ ricorrenze_proprie: []
   # Campi opzionali per ricorrenze con orari speciali:
   #   - orari_speciali_sabato: orari del sabato precedente
   #   - orari_speciali_domenica: orari della domenica
+  #   - orari_speciali_feriale: orari dei giorni feriali (lun-sab, non domenica)
   #   - slitta_se_corpus_domini: True se la ricorrenza slitta quando
   #     coincide con la domenica del Corpus Domini
   #
@@ -58,6 +59,11 @@ ricorrenze_proprie: []
   #   orari_speciali_sabato: ["7:00", "10:00", "17:00"]
   #   orari_speciali_domenica: ["8:30", "10:00", "11:30"]
   #   nota: "Se coincide con Corpus Domini, slitta alla prima domenica di giugno"
+  # - nome: "Santa Chiara"
+  #   data: { mese: 8, giorno: 11 }
+  #   orari_speciali_feriale: ["7:00", "10:00", "19:00"]
+  #   orari_speciali_domenica: ["8:30", "10:00", "11:30", "21:00"]
+  #   nota: "Se feriale: 7:00/10:00/19:00. Se domenica: 8:30/10:00/11:30/21:00"
 
 # --- Nove mercoledì (opzionale) ---
 nove_mercoledi:

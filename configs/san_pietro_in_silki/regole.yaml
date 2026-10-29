@@ -15,7 +15,6 @@ festivi_fissi:
   - { mese: 1,  giorno: 6,  nome: "Epifania" }
   - { mese: 3,  giorno: 19, nome: "San Giuseppe" }
   - { mese: 8,  giorno: 2,  nome: "Perdono di Assisi" }
-  - { mese: 8,  giorno: 11, nome: "Santa Chiara" }
   - { mese: 8,  giorno: 15, nome: "Assunta" }
   - { mese: 8,  giorno: 25, nome: "San Ludovico" }
   - { mese: 9,  giorno: 8,  nome: "Natività della Beata Vergine Maria" }
@@ -59,6 +58,12 @@ ricorrenze_proprie:
 
   - nome: "Beata Vergine delle Grazie"
     data: { mese: 5, giorno: 9 }
+
+  - nome: "Santa Chiara"
+    data: { mese: 8, giorno: 11 }
+    orari_speciali_feriale: [ "7:00", "10:00", "19:00" ]
+    orari_speciali_domenica: [ "8:30", "10:00", "11:30", "21:00" ]
+    nota: "Solennità di Santa Chiara. Se feriale: 7:00/10:00/19:00. Se domenica: 8:30/10:00/11:30/21:00"
 
   - nome: "Festa del Voto"
     data: { tipo: "ultima_domenica_maggio" }

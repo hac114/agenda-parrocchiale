@@ -1245,3 +1245,43 @@ def test_matrimoni_per_anno_esclude_maggio() -> None:
 
     for riga in tabelle[0]["righe"]:
         assert riga["data"].month != 5
+
+
+# ======================================================================
+# TEST — applica_orari_speciali (Santa Chiara)
+# ======================================================================
+
+
+def test_santa_chiara_feriale_2027() -> None:
+    """Santa Chiara 2027 (mercoledì, feriale) → orari speciali feriale."""
+    config = carica_config("san_pietro_in_silki")
+    date_mobili = calcola_tutte_date_mobili(2027)
+    orari_base = ["8:30", "10:00", "11:30", "21:00"]  # orari festivi estate
+
+    orari, _nota = applica_orari_speciali(date(2027, 8, 11), orari_base, config, date_mobili)
+    assert orari == ["7:00", "10:00", "19:00"]
+
+
+def test_santa_chiara_domenica_2030() -> None:
+    """Santa Chiara 2030 (domenica) → orari speciali domenica."""
+    from dataclass_config import Config, Ricorrenza
+    from generatore_agenda import applica_orari_speciali
+
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2030,
+        ricorrenze_proprie=[
+            Ricorrenza(
+                nome="Santa Chiara",
+                data_inizio=date(2030, 8, 11),
+                orari_speciali_feriale=["7:00", "10:00", "19:00"],
+                orari_speciali_domenica=["8:30", "10:00", "11:30", "21:00"],
+            ),
+        ],
+    )
+    date_mobili = calcola_tutte_date_mobili(2030)
+    orari_base = ["7:00", "10:00", "19:00"]
+
+    orari, _nota = applica_orari_speciali(date(2030, 8, 11), orari_base, config, date_mobili)
+    assert orari == ["8:30", "10:00", "11:30", "21:00"]

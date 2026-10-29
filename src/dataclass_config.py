@@ -82,6 +82,7 @@ class Ricorrenza:
         nota: nota informativa opzionale
         orari_speciali_sabato: orari speciali per il sabato precedente
         orari_speciali_domenica: orari speciali per la domenica
+        orari_speciali_feriale: orari speciali per i giorni feriali (lun-sab, non domenica)
     """
 
     nome: str
@@ -92,6 +93,7 @@ class Ricorrenza:
     nota: str = ""
     orari_speciali_sabato: list[str] | None = None
     orari_speciali_domenica: list[str] | None = None
+    orari_speciali_feriale: list[str] | None = None
 
 
 @dataclass

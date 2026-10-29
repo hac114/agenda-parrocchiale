@@ -374,7 +374,8 @@ def applica_orari_speciali(
     1. Celebrazioni mobili con no_messe=True → lista vuota
     2. Celebrazioni mobili con orari_speciali → sostituiscono gli orari
     3. Ricorrenze proprie con orari_speciali_sabato (il sabato precedente)
-    4. Ricorrenze proprie con orari_speciali_domenica (la domenica)
+    4. Ricorrenze proprie con orari_speciali_domenica (se la data è domenica)
+    5. Ricorrenze proprie con orari_speciali_feriale (se la data non è domenica)
 
     Args:
         data: data del giorno
@@ -408,10 +409,14 @@ def applica_orari_speciali(
             )
             return list(celebrazione.orari_speciali), celebrazione.nota
 
-    # 2. Ricorrenze proprie (Festa del Voto, ecc.)
+    # 2. Ricorrenze proprie (Festa del Voto, Santa Chiara, ecc.)
     for ricorrenza in config.ricorrenze_proprie:
-        # Domenica della ricorrenza
-        if ricorrenza.orari_speciali_domenica and data == ricorrenza.data_inizio:
+        # Domenica della ricorrenza (solo se la data è effettivamente domenica)
+        if (
+                ricorrenza.orari_speciali_domenica
+                and data == ricorrenza.data_inizio
+                and data.weekday() == 6
+        ):
             logger.info(
                 "Ricorrenza '%s' (%s): orari domenica %s.",
                 ricorrenza.nome,
@@ -420,7 +425,21 @@ def applica_orari_speciali(
             )
             return list(ricorrenza.orari_speciali_domenica), ricorrenza.nota
 
-        # Sabato precedente
+        # Feriale della ricorrenza (solo se la data NON è domenica)
+        if (
+                ricorrenza.orari_speciali_feriale
+                and data == ricorrenza.data_inizio
+                and data.weekday() != 6
+        ):
+            logger.info(
+                "Ricorrenza '%s' (%s): orari feriale %s.",
+                ricorrenza.nome,
+                data,
+                ricorrenza.orari_speciali_feriale,
+            )
+            return list(ricorrenza.orari_speciali_feriale), ricorrenza.nota
+
+        # Sabato precedente (Festa del Voto)
         if ricorrenza.orari_speciali_sabato:
             sabato = ricorrenza.data_inizio - timedelta(days=1)
             if data == sabato:
