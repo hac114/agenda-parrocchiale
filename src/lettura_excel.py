@@ -394,11 +394,17 @@ def leggi_foglio_matrimoni(ws: Worksheet) -> list[Matrimonio]:
         # - un oggetto datetime.datetime (raro)
         # Gestiamo tutti i casi.
         ora_raw = ws.cell(row=riga, column=COL_MAT_ORA).value
+        nome_sposi_raw = ws.cell(row=riga, column=COL_MAT_NOME_SPOSI).value
         ora_str = ""
 
         if ora_raw is None:
+            # Riga precompilata (solo Data, senza Ora né Nome sposi):
+            # è normale, non serve avvisare. La si salta silenziosamente.
+            if nome_sposi_raw is None:
+                continue
+            # Riga "vera" con Nome sposi ma senza Ora: errore di compilazione
             logger.warning(
-                "Matrimoni, riga %d: 'Ora' mancante. Riga ignorata.",
+                "Matrimoni, riga %d: 'Ora' mancante ma 'Nome sposi' presente. " "Riga ignorata.",
                 riga,
             )
             continue

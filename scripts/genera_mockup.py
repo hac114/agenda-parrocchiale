@@ -44,9 +44,10 @@ CARTELLA_OUTPUT = ROOT_PROGETTO / "output"
 # Giorni rappresentativi da mostrare nel mockup
 GIORNI_MOCKUP = [
     date(2027, 1, 3),  # Domenica normale (4 Messe)
-    date(2027, 1, 4),  # Feriale normale (3 Messe)
-    date(2027, 3, 17),  # San Salvatore (solennità)
-    date(2027, 5, 15),  # Maggio (7 Messe)
+    date(2027, 1, 13),  # I mercoledì di san Salvatore (feriale)
+    date(2027, 3, 15),  # Triduo San Salvatore (1/3)
+    date(2027, 5, 30),  # Corpus Domini (domenica, divieto pomeridiano + nota)
+    date(2027, 8, 11),  # Santa Chiara (mercoledì, orari feriali speciali)
 ]
 
 
