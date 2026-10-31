@@ -413,9 +413,9 @@ def applica_orari_speciali(
     for ricorrenza in config.ricorrenze_proprie:
         # Domenica della ricorrenza (solo se la data è effettivamente domenica)
         if (
-                ricorrenza.orari_speciali_domenica
-                and data == ricorrenza.data_inizio
-                and data.weekday() == 6
+            ricorrenza.orari_speciali_domenica
+            and data == ricorrenza.data_inizio
+            and data.weekday() == 6
         ):
             logger.info(
                 "Ricorrenza '%s' (%s): orari domenica %s.",
@@ -427,9 +427,9 @@ def applica_orari_speciali(
 
         # Feriale della ricorrenza (solo se la data NON è domenica)
         if (
-                ricorrenza.orari_speciali_feriale
-                and data == ricorrenza.data_inizio
-                and data.weekday() != 6
+            ricorrenza.orari_speciali_feriale
+            and data == ricorrenza.data_inizio
+            and data.weekday() != 6
         ):
             logger.info(
                 "Ricorrenza '%s' (%s): orari feriale %s.",
@@ -547,8 +547,14 @@ def festivita_del_giorno(
     # 1. Ricorrenze proprie
     ricorrenza = _ricorrenza_per_data(data, config)
     if ricorrenza is not None:
+        nome = ricorrenza.nome
+        # Se la ricorrenza è multi-giorno, aggiungi numerazione (es. "(1/3)")
+        if ricorrenza.data_fine is not None and ricorrenza.data_fine > ricorrenza.data_inizio:
+            durata = (ricorrenza.data_fine - ricorrenza.data_inizio).days + 1
+            posizione = (data - ricorrenza.data_inizio).days + 1
+            nome = f"{nome} ({posizione}/{durata})"
         return {
-            "nome": ricorrenza.nome,
+            "nome": nome,
             "particolare": True,
             "tipo_override": None,
         }
@@ -579,7 +585,19 @@ def festivita_del_giorno(
                 "tipo_override": None,
             }
 
-    # 3. Nessuna festività specifica
+    # 3. Nove mercoledì di San Salvatore (I–IX)
+    nove_mercoledi = date_mobili.get("nove_mercoledi")
+    if isinstance(nove_mercoledi, list) and data in nove_mercoledi:
+        indice = nove_mercoledi.index(data)
+        numeri_romani = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+        nome = f"{numeri_romani[indice]} mercoledì di san Salvatore"
+        return {
+            "nome": nome,
+            "particolare": True,
+            "tipo_override": None,
+        }
+
+    # 4. Nessuna festività specifica
     return {
         "nome": None,
         "particolare": False,

@@ -169,6 +169,7 @@ Costruisce il **CalendarioAgenda** (365 giorni).
 | `matrimoni_del_giorno` | Collega matrimoni |
 | `note_del_giorno` | Collega note |
 | `matrimoni_per_anno` | Righe matrimoni annuali (una per sabato valido, anno corrente + futuri) |
+| `_ricorrenza_per_data` | Trova la ricorrenza attiva in una data (multi-giorno con numerazione) |
 | `genera_agenda` | **API pubblica** |
 | `genera_agenda_da_profilo` | Wrapper |
 

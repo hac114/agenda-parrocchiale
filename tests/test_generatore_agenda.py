@@ -6,7 +6,7 @@ from datetime import date
 
 import pytest
 
-from calcolo_liturgico import calcola_tutte_date_mobili
+from calcolo_liturgico import calcola_nove_mercoledi, calcola_tutte_date_mobili
 from config import carica_config
 from dataclass_config import (
     Config,
@@ -536,10 +536,15 @@ def test_festivita_ricorrenza_singola(config_con_ricorrenze: Config) -> None:
 
 
 def test_festivita_ricorrenza_multigiorno(config_con_ricorrenze: Config) -> None:
-    """Una ricorrenza multi-giorno copre tutti i giorni."""
-    for giorno in [15, 16, 17]:
+    """Una ricorrenza multi-giorno copre tutti i giorni, con numerazione."""
+    attesi = {
+        15: "Triduo di San Salvatore (1/3)",
+        16: "Triduo di San Salvatore (2/3)",
+        17: "Triduo di San Salvatore (3/3)",
+    }
+    for giorno, nome_atteso in attesi.items():
         info = festivita_del_giorno(date(2027, 3, giorno), config_con_ricorrenze, {})
-        assert info["nome"] == "Triduo di San Salvatore"
+        assert info["nome"] == nome_atteso
         assert info["particolare"] is True
 
 
@@ -612,14 +617,60 @@ def test_festivita_config_reale_san_salvatore() -> None:
 
 
 def test_festivita_config_reale_triduo_san_salvatore() -> None:
-    """Triduo San Salvatore 2027 (15-17 marzo)."""
+    """Triduo San Salvatore 2027 (15-17 marzo), con numerazione."""
     config = carica_config("san_pietro_in_silki")
     date_mobili = calcola_tutte_date_mobili(2027)
 
-    for giorno in [15, 16, 17]:
+    attesi = {
+        15: "Triduo di San Salvatore (1/3)",
+        16: "Triduo di San Salvatore (2/3)",
+        17: "Triduo di San Salvatore (3/3)",
+    }
+    for giorno, nome_atteso in attesi.items():
         info = festivita_del_giorno(date(2027, 3, giorno), config, date_mobili)
-        assert info["nome"] == "Triduo di San Salvatore"
+        assert info["nome"] == nome_atteso
         assert info["particolare"] is True
+
+
+# ======================================================================
+# TEST — San Salvatore (nove mercoledì + triduo numerato)
+# ======================================================================
+
+
+def test_nove_mercoledi_san_salvatore() -> None:
+    """I 9 mercoledì di San Salvatore 2027 hanno numerazione romana I–IX."""
+    config = carica_config("san_pietro_in_silki")
+    cal = genera_agenda(config)
+
+    date_mercoledi = calcola_nove_mercoledi(2027)
+    numeri_romani = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+
+    # Il 10 febbraio 2027 è Mercoledì delle Ceneri → vince sulle Ceneri
+    ceneri_2027 = date(2027, 2, 10)
+
+    for i, d in enumerate(date_mercoledi):
+        g = next(g for g in cal.giorni if g.data == d)
+        if d == ceneri_2027:
+            assert g.nome == "Mercoledì delle Ceneri"
+        else:
+            assert g.nome == f"{numeri_romani[i]} mercoledì di san Salvatore"
+            assert g.particolare is True
+
+
+def test_triduo_san_salvatore_numerato() -> None:
+    """Il Triduo di San Salvatore 2027 è numerato (1/3), (2/3), (3/3)."""
+    config = carica_config("san_pietro_in_silki")
+    cal = genera_agenda(config)
+
+    attesi = {
+        date(2027, 3, 15): "Triduo di San Salvatore (1/3)",
+        date(2027, 3, 16): "Triduo di San Salvatore (2/3)",
+        date(2027, 3, 17): "Triduo di San Salvatore (3/3)",
+    }
+    for data_attesa, nome_atteso in attesi.items():
+        g = next(g for g in cal.giorni if g.data == data_attesa)
+        assert g.nome == nome_atteso
+        assert g.particolare is True
 
 
 # ======================================================================
@@ -858,13 +909,18 @@ def test_genera_agenda_san_salvatore_particolare() -> None:
 
 
 def test_genera_agenda_triduo_multigiorno() -> None:
-    """Il Triduo di San Salvatore copre 15-17 marzo."""
+    """Il Triduo di San Salvatore copre 15-17 marzo con numerazione."""
     config = carica_config("san_pietro_in_silki")
     calendario = genera_agenda(config)
 
-    for giorno in [15, 16, 17]:
+    attesi = {
+        15: "Triduo di San Salvatore (1/3)",
+        16: "Triduo di San Salvatore (2/3)",
+        17: "Triduo di San Salvatore (3/3)",
+    }
+    for giorno, nome_atteso in attesi.items():
         g = next(g for g in calendario.giorni if g.data == date(2027, 3, giorno))
-        assert g.nome == "Triduo di San Salvatore"
+        assert g.nome == nome_atteso
         assert g.particolare is True
 
 

@@ -451,7 +451,6 @@ Esempi:
 - ✅ Documentazione utente aggiornata
 - ✅ Test su Windows
 
-FINE DOCUMENTO — 13/10/2026
 
 ---------------------------------------------------------------------
 27. AGGIORNAMENTI LAYOUT (29/10/2026)
@@ -491,7 +490,6 @@ RILEGATURA:
 
 PAGINE TOTALI: ~399 (rispetto alle 368 precedenti)
 
-FINE DOCUMENTO — 29/10/2026
 
 ---------------------------------------------------------------------
 28. CORPUS DOMINI DI DOMENICA (29/10/2026)
@@ -513,8 +511,6 @@ Nel 2027:
 - Domenica Corpus Domini: 30 maggio 2027 (divieto pomeridiano + processione)
 - Festa del Voto: slitta al 6 giugno 2027
 
-FINE DOCUMENTO — 29/10/2026
-
 
 ---------------------------------------------------------------------
 29. SANTA CHIARA — ORARI SPECIALI (29/10/2026)
@@ -532,4 +528,19 @@ Configurato in `ricorrenze_proprie` del YAML con i campi:
 Nuovo campo `orari_speciali_feriale` aggiunto alla dataclass
 `Ricorrenza` per completare il set (feriale / sabato / domenica).
 
-FINE DOCUMENTO — 29/10/2026
+
+---------------------------------------------------------------------
+30. SAN SALVATORE — NUMERAZIONE (29/10/2026)
+---------------------------------------------------------------------
+I 9 mercoledì che precedono il Triduo di San Salvatore sono numerati
+con numeri romani (I–IX) e appaiono nel nome del giorno (riquadro
+grigio), come "I mercoledì di san Salvatore" ecc.
+
+Il Triduo (15-16-17 marzo) è numerato "(1/3)", "(2/3)", "(3/3)".
+
+Priorità: se un mercoledì di San Salvatore coincide con il Mercoledì
+delle Ceneri, vince il Mercoledì delle Ceneri (il mercoledì di San
+Salvatore non viene mostrato per quel giorno, ma la numerazione
+I–IX resta invariata).
+
+FINE DOCUMENTO — 31/10/2026
