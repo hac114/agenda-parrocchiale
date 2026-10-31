@@ -60,6 +60,9 @@ ricorrenze_proprie: []
   #   orari_speciali_domenica: ["8:30", "10:00", "11:30"]
   #   nota: "Se coincide con Corpus Domini, slitta alla prima domenica di giugno"
   # - nome: "Santa Chiara"
+  # - nome: "Novena dell'Immacolata"
+  #   data: { mese: 11, giorno_da: 29, mese_a: 12, giorno_a: 7 }
+  #   tipo: "novena"
   #   data: { mese: 8, giorno: 11 }
   #   orari_speciali_feriale: ["7:00", "10:00", "19:00"]
   #   orari_speciali_domenica: ["8:30", "10:00", "11:30", "21:00"]

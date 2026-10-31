@@ -543,4 +543,22 @@ delle Ceneri, vince il Mercoledì delle Ceneri (il mercoledì di San
 Salvatore non viene mostrato per quel giorno, ma la numerazione
 I–IX resta invariata).
 
+
+---------------------------------------------------------------------
+31. DOMENICHE DI QUARESIMA E AVVENTO — NUMERAZIONE (29/10/2026)
+---------------------------------------------------------------------
+Le 5 domeniche di Quaresima (successive al Mercoledì delle Ceneri)
+e le 4 domeniche di Avvento sono numerate con numeri romani e
+appaiono nel nome del giorno (riquadro grigio):
+
+- "I domenica di Quaresima" ... "V domenica di Quaresima"
+- "I domenica di Avvento" ... "IV domenica di Avvento"
+
+Priorità: le domeniche di Quaresima e Avvento vincono sulle
+ricorrenze di tipo "novena" (Novena dell'Immacolata, Novena di
+Natale). Questo significa che se una domenica di Avvento cade
+dentro una Novena, viene mostrata la domenica (non la Novena).
+
+Nota: le Novene mantengono la priorità nei giorni feriali.
+
 FINE DOCUMENTO — 31/10/2026

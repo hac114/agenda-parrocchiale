@@ -506,6 +506,10 @@ def _ricorrenza_per_data(data: date, config: Config) -> Ricorrenza | None:
     Una ricorrenza è attiva se data è compresa tra data_inizio e data_fine
     (o solo data_inizio se data_fine è None).
 
+    Le ricorrenze di tipo "novena" cedono il passo alle domeniche
+    (Avvento, Quaresima), perché il giorno liturgico domenicale è più
+    importante di un periodo devozionale.
+
     Args:
         data: data da verificare
         config: Config con ricorrenze_proprie
@@ -517,6 +521,9 @@ def _ricorrenza_per_data(data: date, config: Config) -> Ricorrenza | None:
         inizio = ricorrenza.data_inizio
         fine = ricorrenza.data_fine or ricorrenza.data_inizio
         if inizio <= data <= fine:
+            # Le novene cedono il passo alle domeniche
+            if ricorrenza.tipo == "novena" and data.weekday() == 6:
+                continue
             return ricorrenza
     return None
 
@@ -597,7 +604,29 @@ def festivita_del_giorno(
             "tipo_override": None,
         }
 
-    # 4. Nessuna festività specifica
+    # 4. Domeniche di Quaresima (I–V)
+    domeniche_quaresima = date_mobili.get("domeniche_quaresima")
+    if isinstance(domeniche_quaresima, list) and data in domeniche_quaresima:
+        indice = domeniche_quaresima.index(data)
+        numeri_romani = ["I", "II", "III", "IV", "V"]
+        return {
+            "nome": f"{numeri_romani[indice]} domenica di Quaresima",
+            "particolare": False,
+            "tipo_override": None,
+        }
+
+    # 5. Domeniche di Avvento (I–IV)
+    domeniche_avvento = date_mobili.get("domeniche_avvento")
+    if isinstance(domeniche_avvento, list) and data in domeniche_avvento:
+        indice = domeniche_avvento.index(data)
+        numeri_romani = ["I", "II", "III", "IV"]
+        return {
+            "nome": f"{numeri_romani[indice]} domenica di Avvento",
+            "particolare": False,
+            "tipo_override": None,
+        }
+
+    # 6. Nessuna festività specifica
     return {
         "nome": None,
         "particolare": False,

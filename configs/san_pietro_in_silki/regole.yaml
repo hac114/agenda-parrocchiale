@@ -84,9 +84,11 @@ ricorrenze_proprie:
 
   - nome: "Novena dell'Immacolata"
     data: { mese: 11, giorno_da: 29, mese_a: 12, giorno_a: 7 }
+    tipo: "novena"
 
   - nome: "Novena di Natale"
     data: { mese: 12, giorno_da: 15, giorno_a: 23 }
+    tipo: "novena"
 
 # --- Nove mercoledì di San Salvatore ---
 nove_mercoledi:

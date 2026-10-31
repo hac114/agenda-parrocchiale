@@ -6,7 +6,12 @@ from datetime import date
 
 import pytest
 
-from calcolo_liturgico import calcola_nove_mercoledi, calcola_tutte_date_mobili
+from calcolo_liturgico import (
+    calcola_domeniche_avvento,
+    calcola_domeniche_quaresima,
+    calcola_nove_mercoledi,
+    calcola_tutte_date_mobili,
+)
 from config import carica_config
 from dataclass_config import (
     Config,
@@ -1341,3 +1346,56 @@ def test_santa_chiara_domenica_2030() -> None:
 
     orari, _nota = applica_orari_speciali(date(2030, 8, 11), orari_base, config, date_mobili)
     assert orari == ["8:30", "10:00", "11:30", "21:00"]
+
+
+# ======================================================================
+# TEST — Domeniche di Quaresima e Avvento
+# ======================================================================
+
+
+def test_domeniche_quaresima_numerate() -> None:
+    """Le 5 domeniche di Quaresima 2027 hanno numerazione romana I–V."""
+    config = carica_config("san_pietro_in_silki")
+    cal = genera_agenda(config)
+
+    numeri_romani = ["I", "II", "III", "IV", "V"]
+    for i, d in enumerate(calcola_domeniche_quaresima(2027)):
+        g = next(g for g in cal.giorni if g.data == d)
+        assert g.nome == f"{numeri_romani[i]} domenica di Quaresima"
+        assert g.particolare is False
+
+
+def test_domeniche_avvento_numerate() -> None:
+    """Le 4 domeniche di Avvento 2027 hanno numerazione romana I–IV."""
+    config = carica_config("san_pietro_in_silki")
+    cal = genera_agenda(config)
+
+    numeri_romani = ["I", "II", "III", "IV"]
+    for i, d in enumerate(calcola_domeniche_avvento(2027)):
+        g = next(g for g in cal.giorni if g.data == d)
+        assert g.nome == f"{numeri_romani[i]} domenica di Avvento"
+        assert g.particolare is False
+
+
+def test_novena_cede_alla_domenica_di_avvento() -> None:
+    """Le Novene cedono il passo alle domeniche di Avvento (5 e 19 dic 2027)."""
+    config = carica_config("san_pietro_in_silki")
+    cal = genera_agenda(config)
+
+    # 5 dicembre 2027 = II domenica di Avvento (dentro Novena Immacolata)
+    g = next(g for g in cal.giorni if g.data == date(2027, 12, 5))
+    assert g.nome == "II domenica di Avvento"
+
+    # 19 dicembre 2027 = IV domenica di Avvento (dentro Novena di Natale)
+    g = next(g for g in cal.giorni if g.data == date(2027, 12, 19))
+    assert g.nome == "IV domenica di Avvento"
+
+
+def test_novena_feriale_resta_visibile() -> None:
+    """In un giorno feriale la Novena resta visibile."""
+    config = carica_config("san_pietro_in_silki")
+    cal = genera_agenda(config)
+
+    # 16 dicembre 2027 (giovedì) = Novena di Natale (2/9)
+    g = next(g for g in cal.giorni if g.data == date(2027, 12, 16))
+    assert g.nome == "Novena di Natale (2/9)"
