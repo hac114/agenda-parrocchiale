@@ -845,7 +845,7 @@ def matrimoni_per_anno(config: Config, anni: list[int]) -> list[dict]:
         Lista di dict, uno per anno, con:
         - anno: int
         - righe: list[dict] con chiavi data, data_formattata, ora,
-          nome_sposi, contatti
+          nome_sposi, contatti, parrocchia, sacerdote
     """
     from fogli_excel import calcola_sabati_anno
 
@@ -866,10 +866,14 @@ def matrimoni_per_anno(config: Config, anni: list[int]) -> list[dict]:
                 ora = matrimonio.ora
                 nome_sposi = matrimonio.nome_sposi
                 contatti = matrimonio.contatti
+                parrocchia = matrimonio.parrocchia
+                sacerdote = matrimonio.sacerdote
             else:
                 ora = ""
                 nome_sposi = ""
                 contatti = ""
+                parrocchia = ""
+                sacerdote = ""
 
             righe.append(
                 {
@@ -878,6 +882,8 @@ def matrimoni_per_anno(config: Config, anni: list[int]) -> list[dict]:
                     "ora": ora,
                     "nome_sposi": nome_sposi,
                     "contatti": contatti,
+                    "parrocchia": parrocchia,
+                    "sacerdote": sacerdote,
                 }
             )
 

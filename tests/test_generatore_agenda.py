@@ -1207,6 +1207,8 @@ def test_matrimoni_per_anno_nessun_matrimonio() -> None:
         assert riga["nome_sposi"] == ""
         assert riga["ora"] == ""
         assert riga["contatti"] == ""
+        assert riga["parrocchia"] == ""
+        assert riga["sacerdote"] == ""
         assert riga["data_formattata"] != ""
 
 
@@ -1225,6 +1227,8 @@ def test_matrimoni_per_anno_uno() -> None:
                 ora="15:30",
                 nome_sposi="Maria Rossi e Luca Bianchi",
                 contatti="333-1111111",
+                parrocchia="San Pietro in Silki",
+                sacerdote="Don Giovanni",
             ),
         ],
     )
@@ -1236,6 +1240,8 @@ def test_matrimoni_per_anno_uno() -> None:
     assert riga["ora"] == "15:30"
     assert riga["nome_sposi"] == "Maria Rossi e Luca Bianchi"
     assert riga["contatti"] == "333-1111111"
+    assert riga["parrocchia"] == "San Pietro in Silki"
+    assert riga["sacerdote"] == "Don Giovanni"
     assert riga["data_formattata"] == "2 GEN"
 
 

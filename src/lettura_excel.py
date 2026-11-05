@@ -335,6 +335,8 @@ COL_MAT_ORA = 2
 COL_MAT_NOME_SPOSI = 3
 COL_MAT_CONTATTI = 4
 COL_MAT_NOTE = 5
+COL_MAT_PARROCCHIA = 6
+COL_MAT_SACERDOTE = 7
 
 
 # ======================================================================
@@ -359,7 +361,8 @@ def leggi_foglio_matrimoni(ws: Worksheet) -> list[Matrimonio]:
         - Data non-data → warning + riga ignorata.
         - Nome sposi mancante → warning + riga ignorata.
         - Ora mancante o non valida → warning + riga ignorata.
-        - Contatti e Note sono opzionali (stringa vuota se mancanti).
+        - Contatti, Note, Parrocchia, Sacerdote sono opzionali
+          (stringa vuota se mancanti).
     """
     matrimoni: list[Matrimonio] = []
 
@@ -447,10 +450,12 @@ def leggi_foglio_matrimoni(ws: Worksheet) -> list[Matrimonio]:
             continue
 
         # ------------------------------------------------------------------
-        # Contatti e Note (opzionali)
+        # Contatti, Note, Parrocchia, Sacerdote (opzionali)
         # ------------------------------------------------------------------
         contatti = valore_come_stringa(ws.cell(row=riga, column=COL_MAT_CONTATTI)).strip()
         note = valore_come_stringa(ws.cell(row=riga, column=COL_MAT_NOTE)).strip()
+        parrocchia = valore_come_stringa(ws.cell(row=riga, column=COL_MAT_PARROCCHIA)).strip()
+        sacerdote = valore_come_stringa(ws.cell(row=riga, column=COL_MAT_SACERDOTE)).strip()
 
         # ------------------------------------------------------------------
         # Crea oggetto Matrimonio
@@ -462,6 +467,8 @@ def leggi_foglio_matrimoni(ws: Worksheet) -> list[Matrimonio]:
                 nome_sposi=nome_sposi,
                 contatti=contatti,
                 note=note,
+                parrocchia=parrocchia,
+                sacerdote=sacerdote,
             )
         )
 

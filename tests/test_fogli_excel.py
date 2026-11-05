@@ -179,6 +179,8 @@ def test_foglio_matrimoni_intestazioni(wb_vuoto: Workbook) -> None:
     assert ws["C1"].value == "Nome sposi"
     assert ws["D1"].value == "Contatti"
     assert ws["E1"].value == "Note"
+    assert ws["F1"].value == "Parrocchia"
+    assert ws["G1"].value == "Sacerdote"
 
 
 def test_foglio_matrimoni_formato_date(wb_vuoto: Workbook) -> None:
@@ -195,6 +197,16 @@ def test_foglio_matrimoni_formato_ora(wb_vuoto: Workbook) -> None:
     ws = wb_vuoto["Matrimoni"]
 
     assert ws["B2"].number_format == "HH:MM"
+
+
+def test_foglio_matrimoni_celle_compilabili(wb_vuoto: Workbook) -> None:
+    """Le colonne A–G sono gialle (compilabili)."""
+    crea_foglio_matrimoni(wb_vuoto, anno=2027, righe=5)
+    ws = wb_vuoto["Matrimoni"]
+
+    for col in "ABCDEFG":
+        cella = ws[f"{col}2"]
+        assert cella.fill.fgColor.rgb in ("00FFF9C4", "FFF9C4"), f"Colonna {col} non gialla"
 
 
 def test_foglio_matrimoni_date_precompilate(wb_vuoto: Workbook) -> None:

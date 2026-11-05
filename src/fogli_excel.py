@@ -348,6 +348,8 @@ def crea_foglio_matrimoni(
     - C: Nome sposi (testo libero, compilabile)
     - D: Contatti (testo libero, compilabile)
     - E: Note (testo libero, compilabile)
+    - F: Parrocchia (testo libero, compilabile)
+    - G: Sacerdote (testo libero, compilabile)
 
     Precompilazione:
     Le prime righe sono precompilate con TUTTI i SABATI dell'anno
@@ -369,7 +371,7 @@ def crea_foglio_matrimoni(
     # ------------------------------------------------------------------
     # INTESTAZIONI
     # ------------------------------------------------------------------
-    intestazioni = ["Data", "Ora", "Nome sposi", "Contatti", "Note"]
+    intestazioni = ["Data", "Ora", "Nome sposi", "Contatti", "Note", "Parrocchia", "Sacerdote"]
 
     for i, intest in enumerate(intestazioni, start=1):
         cella = ws.cell(row=1, column=i, value=intest)
@@ -402,7 +404,7 @@ def crea_foglio_matrimoni(
         if indice_sabato < len(sabati):
             data_sabato = sabati[indice_sabato]
 
-        for c in range(1, 6):
+        for c in range(1, 8):
             cella = ws.cell(row=r, column=c)
             cella.fill = FILL_GIALLO
             cella.border = BORDO_SOTTILE
@@ -424,6 +426,8 @@ def crea_foglio_matrimoni(
     ws.column_dimensions["C"].width = 35  # Nome sposi
     ws.column_dimensions["D"].width = 25  # Contatti
     ws.column_dimensions["E"].width = 35  # Note
+    ws.column_dimensions["F"].width = 25  # Parrocchia
+    ws.column_dimensions["G"].width = 25  # Sacerdote
 
     # ------------------------------------------------------------------
     # PROTEZIONE FOGLIO
@@ -433,7 +437,7 @@ def crea_foglio_matrimoni(
             cell.protection = Protection(locked=True)
 
     for r in range(2, righe + 2):
-        for c in range(1, 6):
+        for c in range(1, 8):
             ws.cell(row=r, column=c).protection = Protection(locked=False)
 
     ws.protection.sheet = True

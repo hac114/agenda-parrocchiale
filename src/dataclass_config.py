@@ -127,6 +127,8 @@ class Matrimonio:
         nome_sposi: nomi degli sposi
         contatti: telefono/email di contatto
         note: note aggiuntive
+        parrocchia: parrocchia di appartenenza degli sposi
+        sacerdote: sacerdote celebrante
     """
 
     data: date | None
@@ -134,6 +136,8 @@ class Matrimonio:
     nome_sposi: str
     contatti: str = ""
     note: str = ""
+    parrocchia: str = ""
+    sacerdote: str = ""
 
 
 @dataclass

@@ -292,6 +292,8 @@ def foglio_matrimoni_valido() -> Worksheet:
     ws.cell(row=2, column=3, value="Maria Rossi e Luca Bianchi")
     ws.cell(row=2, column=4, value="333-1234567")
     ws.cell(row=2, column=5, value="Ricevimento in parrocchia")
+    ws.cell(row=2, column=6, value="San Pietro in Silki")
+    ws.cell(row=2, column=7, value="Don Giovanni")
 
     ws.cell(row=3, column=1, value=date(2028, 7, 15))
     ws.cell(row=3, column=2, value="10:00")
@@ -316,11 +318,15 @@ def test_leggi_matrimoni_valido(foglio_matrimoni_valido: Worksheet) -> None:
     assert m1.nome_sposi == "Maria Rossi e Luca Bianchi"
     assert m1.contatti == "333-1234567"
     assert m1.note == "Ricevimento in parrocchia"
+    assert m1.parrocchia == "San Pietro in Silki"
+    assert m1.sacerdote == "Don Giovanni"
 
     m2 = matrimoni[1]
     assert m2.data == date(2028, 7, 15)
     assert m2.contatti == ""
     assert m2.note == ""
+    assert m2.parrocchia == ""
+    assert m2.sacerdote == ""
 
 
 def test_leggi_matrimoni_foglio_vuoto() -> None:
