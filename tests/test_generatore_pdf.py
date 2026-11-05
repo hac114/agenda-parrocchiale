@@ -419,3 +419,63 @@ def test_style_css_ha_rilegatura_30mm() -> None:
     """Il CSS ufficiale ha margini di rilegatura 30mm su entrambi i lati."""
     css = leggi_css()
     assert "margin: 12mm 30mm 12mm 30mm" in css
+
+
+# ======================================================================
+# TEST — warning per intenzioni in eccesso
+# ======================================================================
+
+
+def test_warning_intenzioni_con_ora_oltre_3(
+    config_minima: Config, env_jinja: Environment, caplog
+) -> None:
+    """Se una Messa ha più di 3 intenzioni con ora, scatta un warning."""
+    from dataclass_config import Intenzione
+
+    giorno = GiornoAgenda(
+        data=date(2027, 6, 15),
+        tipo="feriale",
+        orari=["7:00", "10:00", "18:00"],
+        intenzioni=[
+            Intenzione(
+                numero=i,
+                data_consegna=date(2027, 6, 10),
+                testo=f"Intenzione {i}",
+                ora_applicazione="10:00",
+            )
+            for i in range(1, 5)  # 4 intenzioni, tutte alle 10:00
+        ],
+    )
+
+    with caplog.at_level("WARNING"):
+        renderizza_giorno(giorno, config_minima, env_jinja)
+
+    assert "ha 4 intenzioni, ma la tabella ha solo 3 sub-righe" in caplog.text
+
+
+def test_warning_intenzioni_senza_ora_oltre_3(
+    config_minima: Config, env_jinja: Environment, caplog
+) -> None:
+    """Se la Tabella 2 ha più di 3 intenzioni senza ora, scatta un warning."""
+    from dataclass_config import Intenzione
+
+    giorno = GiornoAgenda(
+        data=date(2027, 6, 15),
+        tipo="feriale",
+        orari=["7:00", "10:00", "18:00"],
+        intenzioni_senza_ora=[
+            Intenzione(
+                numero=i,
+                data_consegna=date(2027, 6, 10),
+                testo=f"Libera {i}",
+                data_applicazione=date(2027, 6, 15),
+                ora_applicazione="libera",
+            )
+            for i in range(1, 5)  # 4 intenzioni senza ora
+        ],
+    )
+
+    with caplog.at_level("WARNING"):
+        renderizza_giorno(giorno, config_minima, env_jinja)
+
+    assert "4 intenzioni a orario libero, ma la tabella ne mostra solo 3" in caplog.text

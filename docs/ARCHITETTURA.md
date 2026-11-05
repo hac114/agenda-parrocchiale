@@ -338,20 +338,20 @@ Senza GTK 3, il PDF non viene generato.
 
 ### Coverage
 
-| Modulo                    | Coverage                 |
-|---------------------------|--------------------------|
-| `calcolo_liturgico.py`    | 100%                     |
-| `dataclass_config.py`     | 100%                     |
-| `fogli_excel.py`          | 100%                     |
-| `util.py`                 | 100%                     |
-| `stili.py`                | 99%                      |
-| `generatore_pdf.py`       | 98%                      |
-| `generatore_agenda.py`    | 98%                      |
-| `lettura_excel.py`        | 96%                      |
-| `config.py`               | 92%                      |
-| `lettura_yaml.py`         | 89%                      |
-| `crea_config_template.py` | 0% (CLI, difficile)      |
-| **TOTALE**                | **87%** (da ricalcolare) |
+| Modulo                    | Coverage            |
+|---------------------------|---------------------|
+| `calcolo_liturgico.py`    | 100%                |
+| `dataclass_config.py`     | 100%                |
+| `fogli_excel.py`          | 100%                |
+| `util.py`                 | 100%                |
+| `stili.py`                | 99%                 |
+| `generatore_agenda.py`    | 98%                 |
+| `generatore_pdf.py`       | 98%                 |
+| `lettura_excel.py`        | 96%                 |
+| `config.py`               | 92%                 |
+| `lettura_yaml.py`         | 89%                 |
+| `crea_config_template.py` | 0% (CLI, difficile) |
+| **TOTALE**                | **88%**             |
 
 ### Comandi
 
