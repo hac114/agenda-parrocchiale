@@ -183,18 +183,23 @@ def foglio_intenzioni_valido() -> Worksheet:
     ws = crea_foglio_vuoto()
     ws.title = "Intenzioni"
 
+    # Riga 2: intenzione con ora specifica e note
     ws.cell(row=2, column=2, value=date(2027, 1, 15))
     ws.cell(row=2, column=3, value="Per la pace nel mondo")
     ws.cell(row=2, column=4, value=10.0)
     ws.cell(row=2, column=5, value=date(2027, 1, 20))
-    ws.cell(row=2, column=6, value="Richiesta da Mario")
+    ws.cell(row=2, column=6, value="10:00")
+    ws.cell(row=2, column=7, value="Richiesta da Mario")
 
+    # Riga 3: intenzione senza ora (orario libero)
     ws.cell(row=3, column=2, value=date(2027, 2, 1))
     ws.cell(row=3, column=3, value="Per i defunti della famiglia Rossi")
     ws.cell(row=3, column=4, value=20.0)
 
+    # Riga 5: intenzione con ora "libera" esplicita
     ws.cell(row=5, column=2, value=date(2027, 3, 10))
     ws.cell(row=5, column=3, value="Per la salute di Anna")
+    ws.cell(row=5, column=6, value="libera")
 
     return ws
 
@@ -215,16 +220,19 @@ def test_leggi_intenzioni_valido(foglio_intenzioni_valido: Worksheet) -> None:
     assert i1.testo == "Per la pace nel mondo"
     assert i1.offerta == 10.0
     assert i1.data_applicazione == date(2027, 1, 20)
+    assert i1.ora_applicazione == "10:00"
     assert i1.note == "Richiesta da Mario"
 
     i2 = intenzioni[1]
     assert i2.numero == 2
     assert i2.data_applicazione is None
     assert i2.offerta == 20.0
+    assert i2.ora_applicazione == ""
 
     i3 = intenzioni[2]
     assert i3.numero == 3
     assert i3.offerta is None
+    assert i3.ora_applicazione == "libera"
 
 
 def test_leggi_intenzioni_foglio_vuoto() -> None:
@@ -516,3 +524,62 @@ def test_leggi_note_al_uguale_dal() -> None:
     note = leggi_foglio_note(ws)
     assert len(note) == 1
     assert note[0]["dal"] == note[0]["al"]
+
+
+# ======================================================================
+# TEST — su ora applicazione e casi limite
+# ======================================================================
+
+
+def test_leggi_intenzioni_ora_applicazione_formato_ora() -> None:
+    """Ora applicazione in formato nativo (datetime.time) viene convertita."""
+    from datetime import time
+
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    ws.cell(row=2, column=2, value=date(2027, 1, 15))
+    ws.cell(row=2, column=3, value="Test")
+    ws.cell(row=2, column=6, value=time(10, 30))
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert len(intenzioni) == 1
+    assert intenzioni[0].ora_applicazione == "10:30"
+
+
+def test_leggi_intenzioni_ora_applicazione_libera() -> None:
+    """Ora applicazione 'libera' viene letta come stringa."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    ws.cell(row=2, column=2, value=date(2027, 1, 15))
+    ws.cell(row=2, column=3, value="Test")
+    ws.cell(row=2, column=6, value="libera")
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert intenzioni[0].ora_applicazione == "libera"
+
+
+def test_leggi_intenzioni_ora_applicazione_vuota() -> None:
+    """Ora applicazione vuota → stringa vuota."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    ws.cell(row=2, column=2, value=date(2027, 1, 15))
+    ws.cell(row=2, column=3, value="Test")
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert intenzioni[0].ora_applicazione == ""
+
+
+def test_leggi_intenzioni_ora_applicazione_tipo_invalido() -> None:
+    """Ora applicazione con tipo invalido → warning + stringa vuota."""
+    ws = crea_foglio_vuoto()
+    ws.title = "Intenzioni"
+
+    ws.cell(row=2, column=2, value=date(2027, 1, 15))
+    ws.cell(row=2, column=3, value="Test")
+    ws.cell(row=2, column=6, value=12345)  # int, non ora/str/time
+
+    intenzioni = leggi_foglio_intenzioni(ws)
+    assert intenzioni[0].ora_applicazione == ""

@@ -735,24 +735,27 @@ def config_con_dati() -> Config:
 
 
 def test_intenzioni_del_giorno_una(config_con_dati: Config) -> None:
-    """Trova 1 intenzione applicata in una data."""
-    intenzioni = intenzioni_del_giorno(date(2027, 3, 15), config_con_dati)
-    assert len(intenzioni) == 1
-    assert intenzioni[0].testo == "Per la salute"
+    """Trova 1 intenzione applicata in una data (senza ora)."""
+    con_ora, senza_ora = intenzioni_del_giorno(date(2027, 3, 15), config_con_dati)
+    assert len(con_ora) == 0
+    assert len(senza_ora) == 1
+    assert senza_ora[0].testo == "Per la salute"
 
 
 def test_intenzioni_del_giorno_due_stessa_data(config_con_dati: Config) -> None:
-    """Trova 2 intenzioni applicate nella stessa data."""
-    intenzioni = intenzioni_del_giorno(date(2027, 1, 20), config_con_dati)
-    assert len(intenzioni) == 2
-    testi = {i.testo for i in intenzioni}
+    """Trova 2 intenzioni applicate nella stessa data (senza ora)."""
+    con_ora, senza_ora = intenzioni_del_giorno(date(2027, 1, 20), config_con_dati)
+    assert len(con_ora) == 0
+    assert len(senza_ora) == 2
+    testi = {i.testo for i in senza_ora}
     assert testi == {"Per la pace", "Per i defunti"}
 
 
 def test_intenzioni_del_giorno_nessuna(config_con_dati: Config) -> None:
     """Nessuna intenzione applicata in una data."""
-    intenzioni = intenzioni_del_giorno(date(2027, 12, 25), config_con_dati)
-    assert intenzioni == []
+    con_ora, senza_ora = intenzioni_del_giorno(date(2027, 12, 25), config_con_dati)
+    assert con_ora == []
+    assert senza_ora == []
 
 
 def test_intenzioni_del_giorno_ignora_senza_applicazione() -> None:
@@ -769,7 +772,9 @@ def test_intenzioni_del_giorno_ignora_senza_applicazione() -> None:
             ),
         ],
     )
-    assert intenzioni_del_giorno(date(2027, 1, 15), config) == []
+    con_ora, senza_ora = intenzioni_del_giorno(date(2027, 1, 15), config)
+    assert con_ora == []
+    assert senza_ora == []
 
 
 # ======================================================================
@@ -1405,3 +1410,107 @@ def test_novena_feriale_resta_visibile() -> None:
     # 16 dicembre 2027 (giovedì) = Novena di Natale (2/9)
     g = next(g for g in cal.giorni if g.data == date(2027, 12, 16))
     assert g.nome == "Novena di Natale (2/9)"
+
+
+# ======================================================================
+# TEST — intenzioni_del_giorno (con ora / senza ora)
+# ======================================================================
+
+
+def test_intenzioni_del_giorno_con_ora() -> None:
+    """Le intenzioni con ora specifica finiscono in 'con_ora'."""
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        intenzioni=[
+            Intenzione(
+                numero=1,
+                data_consegna=date(2027, 1, 15),
+                testo="Messa 10:00",
+                data_applicazione=date(2027, 1, 20),
+                ora_applicazione="10:00",
+            ),
+            Intenzione(
+                numero=2,
+                data_consegna=date(2027, 1, 15),
+                testo="Orario libero",
+                data_applicazione=date(2027, 1, 20),
+                ora_applicazione="libera",
+            ),
+            Intenzione(
+                numero=3,
+                data_consegna=date(2027, 1, 15),
+                testo="Orario vuoto",
+                data_applicazione=date(2027, 1, 20),
+                ora_applicazione="",
+            ),
+        ],
+    )
+    con_ora, senza_ora = intenzioni_del_giorno(date(2027, 1, 20), config)
+    assert len(con_ora) == 1
+    assert con_ora[0].testo == "Messa 10:00"
+    assert len(senza_ora) == 2
+    testi = {i.testo for i in senza_ora}
+    assert testi == {"Orario libero", "Orario vuoto"}
+
+
+def test_genera_giorno_con_intenzione_ora_valida() -> None:
+    """Un'intenzione con ora valida resta in 'intenzioni' del giorno."""
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2027,
+        periodi=[
+            Periodo(
+                dal=date(2027, 1, 1),
+                al=date(2027, 12, 31),
+                orari_feriali=["7:00", "10:00", "18:00"],
+                orari_festivi=["8:30", "10:00", "11:30", "18:00"],
+            ),
+        ],
+        intenzioni=[
+            Intenzione(
+                numero=1,
+                data_consegna=date(2027, 1, 15),
+                testo="Test 10:00",
+                data_applicazione=date(2027, 1, 15),
+                ora_applicazione="10:00",
+            ),
+        ],
+    )
+    cal = genera_agenda(config)
+    g = next(g for g in cal.giorni if g.data == date(2027, 1, 15))
+    assert len(g.intenzioni) == 1
+    assert g.intenzioni[0].ora_applicazione == "10:00"
+    assert len(g.intenzioni_senza_ora) == 0
+
+
+def test_genera_giorno_con_intenzione_ora_non_valida() -> None:
+    """Un'intenzione con ora che non esiste viene spostata in 'senza_ora'."""
+    config = Config(
+        nome_parrocchia="Test",
+        citta="Roma",
+        anno=2027,
+        periodi=[
+            Periodo(
+                dal=date(2027, 1, 1),
+                al=date(2027, 12, 31),
+                orari_feriali=["7:00", "10:00", "18:00"],
+                orari_festivi=["8:30", "10:00", "11:30", "18:00"],
+            ),
+        ],
+        intenzioni=[
+            Intenzione(
+                numero=1,
+                data_consegna=date(2027, 1, 15),
+                testo="Test 15:00 (inesistente)",
+                data_applicazione=date(2027, 1, 15),
+                ora_applicazione="15:00",
+            ),
+        ],
+    )
+    cal = genera_agenda(config)
+    g = next(g for g in cal.giorni if g.data == date(2027, 1, 15))
+    assert len(g.intenzioni) == 0
+    assert len(g.intenzioni_senza_ora) == 1
+    assert g.intenzioni_senza_ora[0].testo == "Test 15:00 (inesistente)"

@@ -57,15 +57,26 @@ Poi rigenera il PDF con `scripts/genera_agenda.bat`.
 
 ### 📋 Foglio "Intenzioni"
 
-| Colonna               | Cosa scrivere                               |
-|-----------------------|---------------------------------------------|
-| **Data consegna**     | Quando il fedele ha consegnato l'intenzione |
-| **Intenzione**        | Il testo (es. "Per la pace")                |
-| **Offerta (€)**       | Solo uso interno (non appare nel PDF)       |
-| **Data applicazione** | Quando la Messa sarà celebrata              |
-| **Note**              | Eventuali annotazioni                       |
+| Colonna               | Cosa scrivere                                        |
+|-----------------------|------------------------------------------------------|
+| **Data consegna**     | Quando il fedele ha consegnato l'intenzione          |
+| **Intenzione**        | Il testo (es. "Per la pace")                         |
+| **Offerta (€)**       | Solo uso interno (non appare nel PDF)                |
+| **Data applicazione** | Quando la Messa sarà celebrata                       |
+| **Ora applicazione**  | Orario (es. "10:00"), "libera", o vuoto              |
+| **Note**              | Eventuali annotazioni                                |
 
 **Nota:** la colonna `N.` si numera da sola.
+
+**Ora applicazione — dove va l'intenzione nel PDF:**
+
+| Valore                          | Dove appare nel PDF                  |
+|---------------------------------|--------------------------------------|
+| **Ora specifica** (es. "10:00") | Tabella Messe, riga di quell'orario  |
+| **"libera" o vuota**            | Tabella "Intenzioni di applicazione" |
+| **Data applicazione vuota**     | Solo nel registro finale             |
+
+**Limite:** ogni tabella ha 3 righe. Se una Messa ha più di 3 intenzioni, il programma avvisa nel terminale e le eccedenti non compaiono nel PDF.
 
 ### 📋 Foglio "Matrimoni"
 

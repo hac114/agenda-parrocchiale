@@ -32,7 +32,6 @@ from dataclass_config import (
     Periodo,
     Ricorrenza,
 )
-from util import formatta_data_italiana
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +67,8 @@ class GiornoAgenda:
         nome: nome della festività (es. "Natale"), None se feriale/domenica
         particolare: True se è una "celebrazione particolare" del santuario
         orari: lista di orari delle Messe (es. ["7:00", "10:00", "18:00"])
-        intenzioni: lista di intenzioni di Messa applicate in questo giorno
+        intenzioni: lista di intenzioni con ora specifica (vanno in Tabella 1)
+        intenzioni_senza_ora: lista di intenzioni a orario libero (vanno in Tabella 2)
         matrimoni: lista di matrimoni previsti in questo giorno
         note: lista di note (dict con "dal", "al", "nota")
         nota_liturgica: nota liturgica della celebrazione (es. "Processione dalla cattedrale")
@@ -80,6 +80,7 @@ class GiornoAgenda:
     particolare: bool = False
     orari: list[str] = field(default_factory=list)
     intenzioni: list[Intenzione] = field(default_factory=list)
+    intenzioni_senza_ora: list[Intenzione] = field(default_factory=list)
     matrimoni: list[Matrimonio] = field(default_factory=list)
     note: list[dict] = field(default_factory=list)
     nota_liturgica: str = ""
@@ -665,19 +666,34 @@ def _nome_celebrazione_mobile(chiave: str) -> str:
 # ======================================================================
 
 
-def intenzioni_del_giorno(data: date, config: Config) -> list[Intenzione]:
-    """Restituisce le intenzioni applicate in una data.
+def intenzioni_del_giorno(data: date, config: Config) -> tuple[list[Intenzione], list[Intenzione]]:
+    """Restituisce le intenzioni applicate in una data, divise per tipo.
 
-    Cerca tra config.intenzioni quelle con data_applicazione == data.
+    Le intenzioni con `ora_applicazione` valida (es. "10:00") vanno in
+    Tabella 1 (Messe), accanto all'orario corrispondente.
+    Le intenzioni con `ora_applicazione` vuota o "libera" vanno in
+    Tabella 2 (Intenzioni di applicazione).
 
     Args:
         data: data del giorno
         config: Config con la lista intenzioni
 
     Returns:
-        Lista di Intenzione applicate in quel giorno.
+        Tupla (intenzioni_con_ora, intenzioni_senza_ora).
     """
-    return [i for i in config.intenzioni if i.data_applicazione == data]
+    con_ora: list[Intenzione] = []
+    senza_ora: list[Intenzione] = []
+
+    for i in config.intenzioni:
+        if i.data_applicazione != data:
+            continue
+        # "libera" o vuota → senza ora (Tabella 2)
+        if not i.ora_applicazione or i.ora_applicazione.lower() == "libera":
+            senza_ora.append(i)
+        else:
+            con_ora.append(i)
+
+    return con_ora, senza_ora
 
 
 def matrimoni_del_giorno(data: date, config: Config) -> list[Matrimonio]:
@@ -794,8 +810,22 @@ def _crea_giorno_agenda(
     # La nota speciale vince su quella del divieto (se presente)
     nota_liturgica = nota_speciale or nota_divieto
 
-    # 8. Collega dati
-    intenzioni = intenzioni_del_giorno(data, config)
+    # 8. Collega dati (con controllo delle ore)
+    intenzioni_con_ora, intenzioni_senza_ora = intenzioni_del_giorno(data, config)
+    # Verifica che le ore delle intenzioni corrispondano a una Messa esistente
+    for intenzione in list(intenzioni_con_ora):
+        if intenzione.ora_applicazione not in orari:
+            logger.warning(
+                "Intenzione (riga %s) del %s: l'ora '%s' non corrisponde a "
+                "nessuna Messa (orari: %s). L'intenzione verrà spostata "
+                "nella tabella 'Intenzioni di applicazione'.",
+                intenzione.numero,
+                data.strftime("%d/%m/%Y"),
+                intenzione.ora_applicazione,
+                ", ".join(orari) if orari else "nessuna Messa",
+            )
+            intenzioni_con_ora.remove(intenzione)
+            intenzioni_senza_ora.append(intenzione)
     matrimoni = matrimoni_del_giorno(data, config)
     note = note_del_giorno(data, config)
 
@@ -805,7 +835,8 @@ def _crea_giorno_agenda(
         nome=nome_finale,
         particolare=info_festivita["particolare"],
         orari=orari,
-        intenzioni=intenzioni,
+        intenzioni=intenzioni_con_ora,
+        intenzioni_senza_ora=intenzioni_senza_ora,
         matrimoni=matrimoni,
         note=note,
         nota_liturgica=nota_liturgica,

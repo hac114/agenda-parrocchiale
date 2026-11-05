@@ -118,7 +118,8 @@ def test_foglio_intenzioni_intestazioni(wb_vuoto: Workbook) -> None:
     assert ws["C1"].value == "Intenzione"
     assert ws["D1"].value == "Offerta (€)"
     assert ws["E1"].value == "Data applicazione"
-    assert ws["F1"].value == "Note"
+    assert ws["F1"].value == "Ora applicazione"
+    assert ws["G1"].value == "Note"
 
 
 def test_foglio_intenzioni_formula_numerazione(wb_vuoto: Workbook) -> None:
@@ -133,21 +134,29 @@ def test_foglio_intenzioni_formula_numerazione(wb_vuoto: Workbook) -> None:
 
 
 def test_foglio_intenzioni_celle_compilabili(wb_vuoto: Workbook) -> None:
-    """Le colonne B–F sono gialle."""
+    """Le colonne B–G sono gialle."""
     crea_foglio_intenzioni(wb_vuoto, righe=10)
     ws = wb_vuoto["Intenzioni"]
 
-    for col in "BCDEF":
+    for col in "BCDEFG":
         cella = ws[f"{col}2"]
         assert cella.fill.fgColor.rgb in ("00FFF9C4", "FFF9C4"), f"Colonna {col} non gialla"
 
 
 def test_foglio_intenzioni_protezione(wb_vuoto: Workbook) -> None:
-    """Il foglio è protetto."""
-    crea_foglio_intenzioni(wb_vuoto)
+    """Il foglio è protetto, ma le colonne B–G sono sbloccate."""
+    crea_foglio_intenzioni(wb_vuoto, righe=5)
     ws = wb_vuoto["Intenzioni"]
 
     assert ws.protection.sheet is True
+
+    # Colonna A (N.) deve essere bloccata
+    assert ws["A2"].protection.locked is True
+
+    # Colonne B–G (compilabili) devono essere sbloccate
+    for col in "BCDEFG":
+        cella = ws[f"{col}2"]
+        assert cella.protection.locked is False, f"Colonna {col} non sbloccata"
 
 
 def test_foglio_intenzioni_freeze_panes(wb_vuoto: Workbook) -> None:
@@ -353,3 +362,11 @@ def test_calcola_sabati_anno_conteggio_plausibile() -> None:
 
     sabati = calcola_sabati_anno(2027)
     assert 40 <= len(sabati) <= 52
+
+
+def test_foglio_intenzioni_ora_applicazione_larghezza(wb_vuoto: Workbook) -> None:
+    """La colonna F (Ora applicazione) ha larghezza 14."""
+    crea_foglio_intenzioni(wb_vuoto, righe=5)
+    ws = wb_vuoto["Intenzioni"]
+
+    assert ws.column_dimensions["F"].width == 14

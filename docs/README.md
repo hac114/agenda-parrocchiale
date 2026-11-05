@@ -6,12 +6,12 @@ Indice della documentazione del progetto **Agenda Parrocchiale**.
 
 ## Documenti disponibili
 
-| Documento | Descrizione |
-|---|---|
-| **[Guida Utente](GUIDA_UTENTE.md)** | Guida passo-passo per installare, configurare e utilizzare il programma su Windows. Per il frate responsabile del santuario. |
-| **[Guida Rapida](GUIDA_RAPIDA.md)** | Cheat sheet per l'uso annuale. Da stampare e tenere accanto al PC. |
-| **[Architettura](ARCHITETTURA.md)** | Scelte tecniche, struttura del codice, pattern usati. Per sviluppatori e manutentori. |
-| **[Info Consolidate](INFO_CONSOLIDATE.md)** | Riepilogo completo dei requisiti raccolti dai questionari. Fonte di verità per le regole liturgiche del santuario. |
+| Documento                                   | Descrizione                                                                                                                  |
+|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| **[Guida Utente](GUIDA_UTENTE.md)**         | Guida passo-passo per installare, configurare e utilizzare il programma su Windows. Per il frate responsabile del santuario. |
+| **[Guida Rapida](GUIDA_RAPIDA.md)**         | Cheat sheet per l'uso annuale. Da stampare e tenere accanto al PC.                                                           |
+| **[Architettura](ARCHITETTURA.md)**         | Scelte tecniche, struttura del codice, pattern usati. Per sviluppatori e manutentori.                                        |
+| **[Info Consolidate](INFO_CONSOLIDATE.md)** | Riepilogo completo dei requisiti raccolti dai questionari. Fonte di verità per le regole liturgiche del santuario.           |
 
 ---
 

@@ -201,7 +201,8 @@ COL_INT_DATA_CONSEGNA = 2
 COL_INT_TESTO = 3
 COL_INT_OFFERTA = 4
 COL_INT_DATA_APPLICAZIONE = 5
-COL_INT_NOTE = 6
+COL_INT_ORA_APPLICAZIONE = 6
+COL_INT_NOTE = 7
 
 
 # ======================================================================
@@ -227,6 +228,7 @@ def leggi_foglio_intenzioni(ws: Worksheet) -> list[Intenzione]:
         - Se Data consegna è compilata ma Intenzione è vuota → warning + ignora.
         - Offerta vuota o non valida → None.
         - Data applicazione vuota → None (può essere compilata dopo).
+        - Ora applicazione può essere "HH:MM", "libera" o vuota.
     """
     intenzioni: list[Intenzione] = []
     numero_progressivo = 0
@@ -302,6 +304,31 @@ def leggi_foglio_intenzioni(ws: Worksheet) -> list[Intenzione]:
                 )
 
         # ------------------------------------------------------------------
+        # Ora applicazione (opzionale)
+        # ------------------------------------------------------------------
+        # Può essere:
+        # - un orario "HH:MM" → intenzione con orario fisso
+        # - la parola "libera" → intenzione a orario libero
+        # - vuota → intenzione a orario libero
+        ora_applicazione_raw = ws.cell(row=riga, column=COL_INT_ORA_APPLICAZIONE).value
+        ora_applicazione = ""
+
+        if ora_applicazione_raw is not None:
+            if isinstance(ora_applicazione_raw, str):
+                ora_applicazione = ora_applicazione_raw.strip()
+            elif isinstance(ora_applicazione_raw, time):
+                ora_applicazione = ora_applicazione_raw.strftime("%H:%M")
+            elif isinstance(ora_applicazione_raw, datetime):
+                ora_applicazione = ora_applicazione_raw.strftime("%H:%M")
+            else:
+                logger.warning(
+                    "Intenzioni, riga %d: 'Ora applicazione' non valida "
+                    "(trovato: %s). Impostata a stringa vuota.",
+                    riga,
+                    type(ora_applicazione_raw).__name__,
+                )
+
+        # ------------------------------------------------------------------
         # Note (opzionale)
         # ------------------------------------------------------------------
         note = valore_come_stringa(ws.cell(row=riga, column=COL_INT_NOTE)).strip()
@@ -318,6 +345,7 @@ def leggi_foglio_intenzioni(ws: Worksheet) -> list[Intenzione]:
                 testo=testo_str,
                 offerta=offerta,
                 data_applicazione=data_applicazione,
+                ora_applicazione=ora_applicazione,
                 note=note,
             )
         )

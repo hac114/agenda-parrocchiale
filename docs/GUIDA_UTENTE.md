@@ -234,15 +234,35 @@ C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\configs\san_pietro_in_silki\
 ### 5.3 — Compilare il foglio "Intenzioni"
 Per ogni intenzione di Messa:
 
-| Colonna               | Cosa scrivere                                |
-|-----------------------|----------------------------------------------|
-| **Data consegna**     | Quando il fedele ha consegnato l'intenzione  |
-| **Intenzione**        | Il testo dell'intenzione (es. "Per la pace") |
-| **Offerta (€)**       | Solo per uso interno (non appare nel PDF)    |
-| **Data applicazione** | Quando la Messa sarà celebrata               |
-| **Note**              | Eventuali annotazioni                        |
+| Colonna               | Cosa scrivere                                                      |
+|-----------------------|--------------------------------------------------------------------|
+| **Data consegna**     | Quando il fedele ha consegnato l'intenzione                        |
+| **Intenzione**        | Il testo dell'intenzione (es. "Per la pace")                       |
+| **Offerta (€)**       | Solo per uso interno (non appare nel PDF)                          |
+| **Data applicazione** | Quando la Messa sarà celebrata                                     |
+| **Ora applicazione**  | Orario della Messa (es. "10:00") o "libera" o vuoto                |
+| **Note**              | Eventuali annotazioni                                              |
 
 **Nota: la colonna N. si numera automaticamente.**
+
+**⚠️ IMPORTANTE — Come funziona "Ora applicazione":**
+
+La colonna "Ora applicazione" decide **dove appare l'intenzione nel PDF**:
+
+- **Ora specifica** (es. "10:00"): se esiste una Messa a quell'ora nel giorno indicato, l'intenzione appare **nella tabella Messe**, accanto all'orario. Se l'ora non esiste tra le Messe di quel giorno, il programma mostra un warning e l'intenzione viene spostata nella tabella "Intenzioni di applicazione" (per non perderla).
+- **"libera" o vuota**: l'intenzione appare nella **tabella "Intenzioni di applicazione"** del giorno, nella colonna "Intenzione". La colonna "Luogo" e "Firma" restano vuote, da compilare a mano.
+- **Data applicazione vuota**: l'intenzione non appare in nessun giorno (solo nel registro finale).
+
+**Esempi:**
+
+| Data applicazione | Ora applicazione | Dove appare nel PDF                          |
+|-------------------|------------------|----------------------------------------------|
+| 15/02/2027        | 10:00            | Tabella Messe del 15/02, riga 10:00          |
+| 15/02/2027        | libera           | Tabella Intenzioni di applicazione del 15/02 |
+| 15/02/2027        | (vuoto)          | Tabella Intenzioni di applicazione del 15/02 |
+| (vuoto)           | (vuoto)          | Solo nel registro finale                     |
+
+**Limite:** ogni tabella ha **3 righe**. Se una Messa ha più di 3 intenzioni (o la tabella 2 ha più di 3 intenzioni libere), le intenzioni dalla 4ª in poi **non compaiono** nel PDF. Il programma mostra un warning nel terminale.
 
 ### 5.4 — Compilare il foglio "Matrimoni"
 

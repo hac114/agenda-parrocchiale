@@ -576,4 +576,34 @@ in coda al PDF, nelle rispettive colonne.
 Nessun'altra modifica al comportamento: le colonne sono opzionali
 (se vuote, restano vuote nel PDF, da compilare a mano sul cartaceo).
 
+
+---------------------------------------------------------------------
+33. INTENZIONI — COLONNA "ORA APPLICAZIONE" (05/11/2026)
+---------------------------------------------------------------------
+Nel foglio Excel "Intenzioni" è stata aggiunta la colonna "Ora applicazione"
+(F, tra Data applicazione e Note). La colonna Note è stata spostata a G.
+
+La colonna "Ora applicazione" decide dove appare l'intenzione nel PDF:
+
+1. INTENZIONE CON ORA SPECIFICA (es. "10:00"):
+   - Se l'ora esiste tra le Messe del giorno → appare nella Tabella 1
+     (Messe), riga dell'orario corrispondente, colonna "Intenzioni".
+   - Se l'ora NON esiste → warning + l'intenzione viene spostata nella
+     Tabella 2 (per non perderla).
+
+2. INTENZIONE CON "libera" O VUOTA:
+   - Appare nella Tabella 2 ("Intenzioni di applicazione"), colonna
+     "Intenzione". Luogo e Firma restano vuoti (da compilare a mano).
+
+3. INTENZIONE CON DATA APPLICAZIONE VUOTA:
+   - Non appare in nessun giorno (solo nel registro finale).
+
+LIMITE: ogni tabella ha 3 righe. Se una Messa ha più di 3 intenzioni,
+o la Tabella 2 ha più di 3 intenzioni libere, le intenzioni dalla 4ª
+in poi NON compaiono nel PDF. Il programma mostra un warning nel terminale.
+
+VINCOLO TECNICO: il foglio "Intenzioni" ha ora 7 colonne (A–G):
+A=N. | B=Data consegna | C=Intenzione | D=Offerta | E=Data applicazione |
+F=Ora applicazione | G=Note.
+
 FINE DOCUMENTO — 05/11/2026

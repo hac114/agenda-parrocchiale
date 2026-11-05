@@ -106,6 +106,7 @@ class Intenzione:
         testo: testo dell'intenzione
         offerta: importo offerto (opzionale)
         data_applicazione: quando è stata applicata
+        ora_applicazione: orario dell'applicazione ("HH:MM" o "libera" o "")
         note: note aggiuntive
     """
 
@@ -114,6 +115,7 @@ class Intenzione:
     testo: str
     offerta: float | None = None
     data_applicazione: date | None = None
+    ora_applicazione: str = ""
     note: str = ""
 
 

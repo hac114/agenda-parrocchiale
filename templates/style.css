@@ -607,3 +607,19 @@ body {
     color: #555;
     margin-top: 1mm;
 }
+
+/* =====================================================================
+   INTENZIONI PRECOMPILATE NELLA TABELLA MESSE
+   ===================================================================== */
+
+.riga-messa .riga-intenzione {
+    height: 10mm;
+    border-bottom: 1px dotted #ccc;
+    font-size: 10pt;
+    padding: 1mm 1mm 0 1mm;
+    overflow: hidden;
+}
+
+.riga-messa .riga-intenzione:last-child {
+    border-bottom: none;
+}

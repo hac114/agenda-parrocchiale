@@ -212,7 +212,8 @@ def crea_foglio_intenzioni(wb: Workbook, righe: int = 400) -> None:
     - C: Intenzione (testo libero, compilabile)
     - D: Offerta in € (numero positivo, compilabile)
     - E: Data applicazione (data, compilabile)
-    - F: Note (testo libero, compilabile)
+    - F: Ora applicazione (HH:MM, "libera" o vuoto, compilabile)
+    - G: Note (testo libero, compilabile)
 
     La numerazione in colonna 'A' appare solo se la colonna 'B' contiene una data.
 
@@ -228,7 +229,15 @@ def crea_foglio_intenzioni(wb: Workbook, righe: int = 400) -> None:
     # ------------------------------------------------------------------
     # INTESTAZIONI
     # ------------------------------------------------------------------
-    intestazioni = ["N.", "Data consegna", "Intenzione", "Offerta (€)", "Data applicazione", "Note"]
+    intestazioni = [
+        "N.",
+        "Data consegna",
+        "Intenzione",
+        "Offerta (€)",
+        "Data applicazione",
+        "Ora applicazione",
+        "Note",
+    ]
 
     for i, intest in enumerate(intestazioni, start=1):
         cella = ws.cell(row=1, column=i, value=intest)
@@ -256,7 +265,7 @@ def crea_foglio_intenzioni(wb: Workbook, righe: int = 400) -> None:
         cella_a.number_format = "0"
 
         # Colonne B–F: gialle, compilabili
-        for c in range(2, 7):
+        for c in range(2, 8):
             cella = ws.cell(row=r, column=c)
             cella.fill = FILL_GIALLO
             cella.border = BORDO_SOTTILE
@@ -276,7 +285,8 @@ def crea_foglio_intenzioni(wb: Workbook, righe: int = 400) -> None:
     ws.column_dimensions["C"].width = 50  # Intenzione (testo lungo)
     ws.column_dimensions["D"].width = 12  # Offerta
     ws.column_dimensions["E"].width = 14  # Data applicazione
-    ws.column_dimensions["F"].width = 30  # Note
+    ws.column_dimensions["F"].width = 14  # Ora applicazione
+    ws.column_dimensions["G"].width = 30  # Note
 
     # ------------------------------------------------------------------
     # VALIDAZIONE INPUT
@@ -318,7 +328,7 @@ def crea_foglio_intenzioni(wb: Workbook, righe: int = 400) -> None:
             cell.protection = Protection(locked=True)
 
     for r in range(2, righe + 2):
-        for c in range(2, 7):
+        for c in range(2, 8):
             ws.cell(row=r, column=c).protection = Protection(locked=False)
 
     ws.protection.sheet = True

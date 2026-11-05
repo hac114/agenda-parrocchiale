@@ -98,23 +98,31 @@ def renderizza_intenzioni_libere(config: Config, env: Environment) -> str:
     return template.render(anno=config.anno)
 
 
-def _prepara_righe_messe(orari: list[str], config: Config) -> list[dict]:
+def _prepara_righe_messe(
+    orari: list[str],
+    config: Config,
+    intenzioni_con_ora: list,
+) -> list[dict]:
     """Prepara le righe della tabella messe con eventuali righe extra.
 
     Args:
         orari: lista di orari (es. ["7:00", "10:00", "18:00"])
         config: Config con il layout (righe_default + righe_extra)
+        intenzioni_con_ora: lista di Intenzione con ora specifica
 
     Returns:
-        Lista di dict con "orario" e "righe_extra".
+        Lista di dict con "orario", "righe_extra" e "intenzioni".
     """
     righe = []
     for orario in orari:
         righe_extra = config.layout.righe_extra.get(orario, config.layout.righe_default)
+        # Filtra le intenzioni che hanno questo orario
+        intenzioni_qui = [i for i in intenzioni_con_ora if i.ora_applicazione == orario]
         righe.append(
             {
                 "orario": orario,
                 "righe_extra": righe_extra,
+                "intenzioni": intenzioni_qui,
             }
         )
     return righe
@@ -136,13 +144,37 @@ def renderizza_giorno(
         HTML del giorno.
     """
     template = env.get_template("agenda.html")
-    righe_messe = _prepara_righe_messe(giorno.orari, config)
+    righe_messe = _prepara_righe_messe(giorno.orari, config, giorno.intenzioni)
+
+    # Controllo: massimo 3 intenzioni per Messa (la tabella ha 3 sub-righe)
+    for riga in righe_messe:
+        if len(riga["intenzioni"]) > 3:
+            logger.warning(
+                "%s: la Messa delle %s ha %d intenzioni, ma la tabella "
+                "ha solo 3 sub-righe. Le intenzioni dalla 4ª in poi "
+                "non saranno visibili nel PDF.",
+                giorno.data.strftime("%d/%m/%Y"),
+                riga["orario"],
+                len(riga["intenzioni"]),
+            )
+
+    # Controllo: massimo 3 intenzioni a orario libero (Tabella 2 ha 3 righe)
+    if len(giorno.intenzioni_senza_ora) > 3:
+        logger.warning(
+            "%s: %d intenzioni a orario libero, ma la tabella "
+            "ne mostra solo 3. Le intenzioni dalla 4ª in poi "
+            "non saranno visibili nel PDF.",
+            giorno.data.strftime("%d/%m/%Y"),
+            len(giorno.intenzioni_senza_ora),
+        )
+
     return template.render(
         data_formattata=formatta_data_italiana(giorno.data),
         giorno_settimana=nome_giorno_italiano(giorno.data),
         nome_festivita=giorno.nome,
         nota_liturgica=giorno.nota_liturgica,
         righe_messe=righe_messe,
+        intenzioni_senza_ora=giorno.intenzioni_senza_ora,
         matrimoni=giorno.matrimoni,
         note=giorno.note,
         anno=config.anno,

@@ -165,7 +165,7 @@ Costruisce il **CalendarioAgenda** (365 giorni).
 | `applica_eccezioni_orari`     | Orari ridotti, salta se domenica                                                                    |
 | `applica_divieti_pomeridiani` | Rimuove orari ≥ 14:00                                                                               |
 | `festivita_del_giorno`        | Nome + flag "particolare"                                                                           |
-| `intenzioni_del_giorno`       | Collega intenzioni                                                                                  |
+| `intenzioni_del_giorno`       | Collega intenzioni, divise per tipo (con ora / senza ora)                                           |
 | `matrimoni_del_giorno`        | Collega matrimoni                                                                                   |
 | `note_del_giorno`             | Collega note                                                                                        |
 | `matrimoni_per_anno`          | Righe matrimoni annuali (una per sabato valido, anno corrente + futuri), con parrocchia e sacerdote |
@@ -227,7 +227,7 @@ Dati **annuali** che l'utente compila.
 | Foglio           | Contenuto                                                                            |
 |------------------|--------------------------------------------------------------------------------------|
 | **Impostazioni** | Anno, nome, città, periodi stagionali                                                |
-| **Intenzioni**   | Registro intenzioni (5 colonne)                                                      |
+| **Intenzioni**   | Registro intenzioni (7 colonne, con Ora applicazione)                                |
 | **Matrimoni**    | Prenotazioni matrimoni (anno corrente e anni successivi), con parrocchia e sacerdote |
 | **Note**         | Annotazioni libere                                                                   |
 
@@ -338,20 +338,20 @@ Senza GTK 3, il PDF non viene generato.
 
 ### Coverage
 
-| Modulo                    | Coverage            |
-|---------------------------|---------------------|
-| `calcolo_liturgico.py`    | 100%                |
-| `dataclass_config.py`     | 100%                |
-| `fogli_excel.py`          | 100%                |
-| `util.py`                 | 100%                |
-| `stili.py`                | 99%                 |
-| `generatore_pdf.py`       | 98%                 |
-| `generatore_agenda.py`    | 98%                 |
-| `lettura_excel.py`        | 96%                 |
-| `config.py`               | 92%                 |
-| `lettura_yaml.py`         | 89%                 |
-| `crea_config_template.py` | 0% (CLI, difficile) |
-| **TOTALE**                | **87%**             |
+| Modulo                    | Coverage                 |
+|---------------------------|--------------------------|
+| `calcolo_liturgico.py`    | 100%                     |
+| `dataclass_config.py`     | 100%                     |
+| `fogli_excel.py`          | 100%                     |
+| `util.py`                 | 100%                     |
+| `stili.py`                | 99%                      |
+| `generatore_pdf.py`       | 98%                      |
+| `generatore_agenda.py`    | 98%                      |
+| `lettura_excel.py`        | 96%                      |
+| `config.py`               | 92%                      |
+| `lettura_yaml.py`         | 89%                      |
+| `crea_config_template.py` | 0% (CLI, difficile)      |
+| **TOTALE**                | **87%** (da ricalcolare) |
 
 ### Comandi
 
@@ -392,5 +392,14 @@ Idee per il futuro (non implementate):
 | Integrazione con calendario Google | Media       |
 
 ---
+
+## 9. Modifiche recenti
+
+- **Corpus Domini di domenica** (CEI): nuova `calcola_domenica_corpus_domini`. Il divieto pomeridiano e la nota "Processione dalla cattedrale" sono sulla domenica.
+- **Santa Chiara** (11 agosto): orari speciali (feriale `7:00/10:00/19:00`, domenica `8:30/10:00/11:30/21:00`), configurati in `ricorrenze_proprie` del YAML.
+- **San Salvatore**: mercoledì I–IX numerati, Triduo `(1/3)(2/3)(3/3)`. Priorità: Mercoledì delle Ceneri vince sul mercoledì di San Salvatore.
+- **Domeniche di Quaresima e Avvento**: I–V e I–IV numerate. Le Novene cedono alle domeniche.
+- **Intenzioni con ora**: il foglio `Intenzioni` ha la colonna "Ora applicazione". Le intenzioni con ora specifica vanno in Tabella 1 (Messe), quelle con "libera" o vuota vanno in Tabella 2. Warning se l'ora non esiste tra le Messe del giorno o se una tabella ha più di 3 intenzioni.
+- **Matrimoni**: aggiunte colonne Parrocchia e Sacerdote.
 
 Per domande tecniche: [apri una issue](https://github.com/hac114/agenda-parrocchiale/issues).

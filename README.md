@@ -116,7 +116,7 @@ Apri configs/<profilo>/config.xlsx con Excel o LibreOffice e compila i 4 fogli:
 | Foglio           | Cosa contiene                                                                   |
 |------------------|---------------------------------------------------------------------------------|
 | **Impostazioni** | Anno, nome parrocchia, città, periodi stagionali                                |
-| **Intenzioni**   | Registro delle intenzioni di Messa                                              |
+| **Intenzioni**   | Registro delle intenzioni di Messa (con ora di applicazione)                    |
 | **Matrimoni**    | Prenotazioni matrimoni (anno corrente e successivi), con parrocchia e sacerdote |
 | **Note**         | Annotazioni libere (triduo, mese mariano, ecc.)                                 |
 
