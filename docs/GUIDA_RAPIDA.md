@@ -21,11 +21,11 @@ Vedi la [Guida Utente](GUIDA_UTENTE.md#32-bis--installare-gtk-3-runtime-obbligat
 
 ## I 3 passi annuali
 
-| # | Cosa fare | Dove |
-|---|---|---|
+| #     | Cosa fare                                 | Dove                            |
+|-------|-------------------------------------------|---------------------------------|
 | **1** | Compila il file Excel (solo celle gialle) | `configs/<profilo>/config.xlsx` |
-| **2** | Salva e **chiudi** Excel/LibreOffice | — |
-| **3** | Doppio clic sul launcher → PDF | `scripts/genera_agenda.bat` |
+| **2** | Salva e **chiudi** Excel/LibreOffice      | —                               |
+| **3** | Doppio clic sul launcher → PDF            | `scripts/genera_agenda.bat`     |
 
 Il PDF appare in: `output/Agenda_<anno>.pdf`
 
@@ -48,49 +48,51 @@ Poi rigenera il PDF con `scripts/genera_agenda.bat`.
 
 ### 📋 Foglio "Impostazioni"
 
-| Campo | Cosa scrivere |
-|---|---|
-| **Anno** | L'anno dell'agenda (es. 2027) |
-| **Nome parrocchia** | Es. "San Pietro in Silki" |
-| **Città** | Es. "Sassari" |
+| Campo               | Cosa scrivere                          |
+|---------------------|----------------------------------------|
+| **Anno**            | L'anno dell'agenda (es. 2027)          |
+| **Nome parrocchia** | Es. "San Pietro in Silki"              |
+| **Città**           | Es. "Sassari"                          |
 | **Periodi e orari** | Verifica che siano corretti per l'anno |
 
 ### 📋 Foglio "Intenzioni"
 
-| Colonna | Cosa scrivere |
-|---|---|
-| **Data consegna** | Quando il fedele ha consegnato l'intenzione |
-| **Intenzione** | Il testo (es. "Per la pace") |
-| **Offerta (€)** | Solo uso interno (non appare nel PDF) |
-| **Data applicazione** | Quando la Messa sarà celebrata |
-| **Note** | Eventuali annotazioni |
+| Colonna               | Cosa scrivere                               |
+|-----------------------|---------------------------------------------|
+| **Data consegna**     | Quando il fedele ha consegnato l'intenzione |
+| **Intenzione**        | Il testo (es. "Per la pace")                |
+| **Offerta (€)**       | Solo uso interno (non appare nel PDF)       |
+| **Data applicazione** | Quando la Messa sarà celebrata              |
+| **Note**              | Eventuali annotazioni                       |
 
 **Nota:** la colonna `N.` si numera da sola.
 
 ### 📋 Foglio "Matrimoni"
 
-| Colonna | Cosa scrivere |
-|---|---|
-| **Data** | gg/mm/aaaa (anno corrente o futuri) |
-| **Ora** | Es. 15:30 |
-| **Nome sposi** | Nomi completi |
-| **Contatti** | Telefono o email |
-| **Note** | Eventuali annotazioni |
+| Colonna        | Cosa scrivere                          |
+|----------------|----------------------------------------|
+| **Data**       | gg/mm/aaaa (anno corrente o futuri)    |
+| **Ora**        | Es. 15:30                              |
+| **Nome sposi** | Nomi completi                          |
+| **Contatti**   | Telefono o email                       |
+| **Note**       | Eventuali annotazioni                  |
+| **Parrocchia** | Parrocchia di appartenenza (opzionale) |
+| **Sacerdote**  | Sacerdote celebrante (opzionale)       |
 
 **Dove appaiono nel PDF:**
 
-| Data matrimonio | Posizione nel PDF |
-|---|---|
+| Data matrimonio       | Posizione nel PDF                                           |
+|-----------------------|-------------------------------------------------------------|
 | Nell'anno dell'agenda | Nel giorno specifico + tabella "MATRIMONI \<anno\>" in coda |
-| Negli anni successivi | Solo nella tabella "MATRIMONI \<anno\>" in coda |
+| Negli anni successivi | Solo nella tabella "MATRIMONI \<anno\>" in coda             |
 
 ### 📋 Foglio "Note"
 
-| Colonna | Cosa scrivere |
-|---|---|
-| **Dal** | Data di inizio |
-| **Al** | Data di fine (vuoto se un giorno solo) |
-| **Nota** | Il testo |
+| Colonna  | Cosa scrivere                          |
+|----------|----------------------------------------|
+| **Dal**  | Data di inizio                         |
+| **Al**   | Data di fine (vuoto se un giorno solo) |
+| **Nota** | Il testo                               |
 
 ---
 

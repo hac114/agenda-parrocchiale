@@ -36,11 +36,11 @@ L'agenda è **multi-profilo**: ogni parrocchia ha la sua configurazione.
 
 ### Software necessario
 
-| Sistema | Requisito |
-|---|---|
+| Sistema     | Requisito                                                                         |
+|-------------|-----------------------------------------------------------------------------------|
 | **Windows** | Python 3.12+ (consigliato 3.13), Microsoft Excel o LibreOffice, **GTK 3 Runtime** |
-| **Linux** | Python 3.12+, LibreOffice |
-| **macOS** | Python 3.12+, LibreOffice |
+| **Linux**   | Python 3.12+, LibreOffice                                                         |
+| **macOS**   | Python 3.12+, LibreOffice                                                         |
 
 ### ⚠️ Nota per Windows: GTK 3 Runtime
 
@@ -113,12 +113,12 @@ scripts\genera_agenda.bat san_pietro_in_silki 2027
 ### Compilare il file Excel
 Apri configs/<profilo>/config.xlsx con Excel o LibreOffice e compila i 4 fogli:
 
-| Foglio | Cosa contiene |
-|---|---|
-| **Impostazioni** | Anno, nome parrocchia, città, periodi stagionali |
-| **Intenzioni** | Registro delle intenzioni di Messa |
-| **Matrimoni** | Prenotazioni matrimoni per l'anno corrente e successivi |
-| **Note** | Annotazioni libere (triduo, mese mariano, ecc.) |
+| Foglio           | Cosa contiene                                                                   |
+|------------------|---------------------------------------------------------------------------------|
+| **Impostazioni** | Anno, nome parrocchia, città, periodi stagionali                                |
+| **Intenzioni**   | Registro delle intenzioni di Messa                                              |
+| **Matrimoni**    | Prenotazioni matrimoni (anno corrente e successivi), con parrocchia e sacerdote |
+| **Note**         | Annotazioni libere (triduo, mese mariano, ecc.)                                 |
 
 Le celle GIALLE sono compilabili. Le altre sono protette.
 

@@ -561,4 +561,19 @@ dentro una Novena, viene mostrata la domenica (non la Novena).
 
 Nota: le Novene mantengono la priorità nei giorni feriali.
 
-FINE DOCUMENTO — 31/10/2026
+
+---------------------------------------------------------------------
+32. MATRIMONI — COLONNE PARROCCHIA E SACERDOTE (05/11/2026)
+---------------------------------------------------------------------
+Nel foglio Excel "Matrimoni" sono state aggiunte due colonne
+compilabili:
+- F: Parrocchia (parrocchia di appartenenza degli sposi)
+- G: Sacerdote (sacerdote celebrante)
+
+Queste informazioni compaiono nelle tabelle "MATRIMONI <anno>"
+in coda al PDF, nelle rispettive colonne.
+
+Nessun'altra modifica al comportamento: le colonne sono opzionali
+(se vuote, restano vuote nel PDF, da compilare a mano sul cartaceo).
+
+FINE DOCUMENTO — 05/11/2026

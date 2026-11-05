@@ -46,12 +46,12 @@ formato PDF, pronto per essere mandato in tipografia.
 
 ### Requisiti minimi
 
-| Cosa | Dettaglio |
-|---|---|
-| **Sistema operativo** | Windows 10 o 11 |
-| **Spazio disco** | Almeno 500 MB liberi |
-| **Connessione Internet** | Solo per la prima installazione |
-| **Programma per Excel** | Microsoft Excel o LibreOffice Calc (gratuito) |
+| Cosa                     | Dettaglio                                     |
+|--------------------------|-----------------------------------------------|
+| **Sistema operativo**    | Windows 10 o 11                               |
+| **Spazio disco**         | Almeno 500 MB liberi                          |
+| **Connessione Internet** | Solo per la prima installazione               |
+| **Programma per Excel**  | Microsoft Excel o LibreOffice Calc (gratuito) |
 
 ### Software da installare
 
@@ -161,12 +161,12 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 #### Cosa fa ogni comando:
-| Comando | Cosa fa |
-|---|---|
-| `cd ...` | Entra nella cartella del progetto |
-| `python -m venv .venv` | Crea un "ambiente virtuale" isolato |
-| `.venv\Scripts\activate.bat` | Attiva l'ambiente |
-| `pip install ...` | Scarica le librerie necessarie |
+| Comando                      | Cosa fa                             |
+|------------------------------|-------------------------------------|
+| `cd ...`                     | Entra nella cartella del progetto   |
+| `python -m venv .venv`       | Crea un "ambiente virtuale" isolato |
+| `.venv\Scripts\activate.bat` | Attiva l'ambiente                   |
+| `pip install ...`            | Scarica le librerie necessarie      |
 
 **L'installazione dura 3-5 minuti. Se compaiono molte righe di testo, è normale.**
 
@@ -222,11 +222,11 @@ C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\configs\san_pietro_in_silki\
 - Si apre con Excel o LibreOffice Calc.
 
 ### 5.2 — Compilare il foglio "Impostazioni"
-| Campo | Cosa scrivere |
-|---|---|
-| **Anno** | L'anno dell'agenda (es. 2027) |
-| **Nome parrocchia** | Es. "San Pietro in Silki" |
-| **Città** | Es. "Sassari" |
+| Campo               | Cosa scrivere                                                 |
+|---------------------|---------------------------------------------------------------|
+| **Anno**            | L'anno dell'agenda (es. 2027)                                 |
+| **Nome parrocchia** | Es. "San Pietro in Silki"                                     |
+| **Città**           | Es. "Sassari"                                                 |
 | **Periodi e orari** | Verifica che siano corretti per l'anno. Se cambiano, modifica |
 
 **⚠️ Le celle GIALLE sono compilabili. Le altre sono protette.**
@@ -234,13 +234,13 @@ C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\configs\san_pietro_in_silki\
 ### 5.3 — Compilare il foglio "Intenzioni"
 Per ogni intenzione di Messa:
 
-| Colonna | Cosa scrivere |
-|---|---|
-| **Data consegna** | Quando il fedele ha consegnato l'intenzione |
-| **Intenzione** | Il testo dell'intenzione (es. "Per la pace") |
-| **Offerta (€)** | Solo per uso interno (non appare nel PDF) |
-| **Data applicazione** | Quando la Messa sarà celebrata |
-| **Note** | Eventuali annotazioni |
+| Colonna               | Cosa scrivere                                |
+|-----------------------|----------------------------------------------|
+| **Data consegna**     | Quando il fedele ha consegnato l'intenzione  |
+| **Intenzione**        | Il testo dell'intenzione (es. "Per la pace") |
+| **Offerta (€)**       | Solo per uso interno (non appare nel PDF)    |
+| **Data applicazione** | Quando la Messa sarà celebrata               |
+| **Note**              | Eventuali annotazioni                        |
 
 **Nota: la colonna N. si numera automaticamente.**
 
@@ -251,10 +251,10 @@ dell'agenda, sia degli anni successivi.
 
 **Come vengono usati nel PDF:**
 
-| Data del matrimonio | Dove appare nel PDF |
-|---|---|
-| Nell'anno dell'agenda (es. 2027) | Nel **giorno specifico** del calendario + tabella **"MATRIMONI 2027"** in coda |
-| Negli anni successivi (es. 2028, 2029) | Solo nella tabella **"MATRIMONI <anno>"** in coda |
+| Data del matrimonio                    | Dove appare nel PDF                                                            |
+|----------------------------------------|--------------------------------------------------------------------------------|
+| Nell'anno dell'agenda (es. 2027)       | Nel **giorno specifico** del calendario + tabella **"MATRIMONI 2027"** in coda |
+| Negli anni successivi (es. 2028, 2029) | Solo nella tabella **"MATRIMONI <anno>"** in coda                              |
 
 **Esempio:** se stai facendo l'agenda 2027 e inserisci un matrimonio
 del 15/06/2027, apparirà sia nel giorno 15 giugno 2027 sia nella tabella
@@ -262,17 +262,18 @@ del 15/06/2027, apparirà sia nel giorno 15 giugno 2027 sia nella tabella
 Se inserisci un matrimonio del 10/09/2028, apparirà nella tabella
 "MATRIMONI 2028" in coda al PDF.
 
-| Colonna | Cosa scrivere |
-|---|---|
-| **Data** | Data del matrimonio (gg/mm/aaaa) |
-| **Ora** | Es. 15:30 |
-| **Nome sposi** | Nomi completi |
-| **Contatti** | Telefono o email |
-| **Note** | Eventuali annotazioni |
+| Colonna        | Cosa scrivere                                      |
+|----------------|----------------------------------------------------|
+| **Data**       | Data del matrimonio (gg/mm/aaaa)                   |
+| **Ora**        | Es. 15:30                                          |
+| **Nome sposi** | Nomi completi                                      |
+| **Contatti**   | Telefono o email                                   |
+| **Note**       | Eventuali annotazioni                              |
+| **Parrocchia** | Parrocchia di appartenenza degli sposi (opzionale) |
+| **Sacerdote**  | Sacerdote celebrante (opzionale)                   |
 
 **Nota:** nelle tabelle matrimoni annuali in coda al PDF compaiono
-**data, ora, nome sposi e recapiti**. Le colonne "Parrocchia" e "Sacerdote"
-sono lasciate **vuote**: si compilano a mano sul cartaceo. Le "Note"
+**data, ora, nome sposi, recapiti, parrocchia e sacerdote**. Le "Note"
 restano interne (non appaiono nel PDF).
 
 **⚠️ IMPORTANTE — Tabelle sempre presenti:**
@@ -298,11 +299,11 @@ Questo ti evita di sbagliare data.
 
 **Esempio:**
 
-| Data | Ora | Nome sposi | Contatti | Note |
-|---|---|---|---|---|
+| Data       | Ora   | Nome sposi                 | Contatti    | Note    |
+|------------|-------|----------------------------|-------------|---------|
 | 02/01/2027 | 15:30 | Mario Rossi e Anna Bianchi | 333-1111111 | (vuoto) |
-| 09/01/2027 |  |  |  | (vuoto) |
-| 16/01/2027 | 11:00 | Luca Verdi e Sara Neri | 333-2222222 | (vuoto) |
+| 09/01/2027 |       |                            |             | (vuoto) |
+| 16/01/2027 | 11:00 | Luca Verdi e Sara Neri     | 333-2222222 | (vuoto) |
 
 Se un sabato non ha matrimoni, lascia le celle vuote.
 Il programma ignora le righe non compilate.
@@ -313,11 +314,11 @@ Annotazioni libere, per esempio:
 - Iniziative del Triduo di San Salvatore
 - Eventi speciali
 
-| Colonna | Cosa scrivere |
-|---|---|
-| **Dal** | Data di inizio (gg/mm/aaaa) |
-| **Al** | Data di fine (lascia vuoto se è un giorno solo) |
-| **Nota** | Il testo |
+| Colonna  | Cosa scrivere                                   |
+|----------|-------------------------------------------------|
+| **Dal**  | Data di inizio (gg/mm/aaaa)                     |
+| **Al**   | Data di fine (lascia vuoto se è un giorno solo) |
+| **Nota** | Il testo                                        |
 
 5.6 — Salvare e chiudere
 Salva il file (Ctrl+S) e chiudi Excel/LibreOffice.
@@ -571,9 +572,9 @@ Se `aggiorna.bat` mostra un errore:
 
 ### Riepilogo dei 2 file `.bat`
 
-| File | Quando usarlo |
-|---|---|
-| **`aggiorna.bat`** | Quando vuoi scaricare le novità dal programma |
+| File                    | Quando usarlo                                         |
+|-------------------------|-------------------------------------------------------|
+| **`aggiorna.bat`**      | Quando vuoi scaricare le novità dal programma         |
 | **`genera_agenda.bat`** | Sempre, per generare il PDF dopo aver compilato Excel |
 
 **Workflow tipico:**
