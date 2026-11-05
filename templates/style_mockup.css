@@ -159,13 +159,14 @@ body {
    TABELLA 2 — INTENZIONI
    ===================================================================== */
 
-.tabella-intenzioni {
+.tabella-intenzioni-registro {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 5mm;
+    font-size: 9pt;
 }
 
-.tabella-intenzioni th {
+.tabella-intenzioni-registro th {
     background-color: #e0e0e0;
     border: 1px solid #999;
     padding: 2mm;
@@ -174,22 +175,22 @@ body {
     font-weight: bold;
 }
 
-.tabella-intenzioni td {
+.tabella-intenzioni-registro td {
     border: 1px solid #ccc;
     padding: 2mm;
     vertical-align: top;
     height: 10mm;
 }
 
-.tabella-intenzioni .col-luogo {
+.tabella-intenzioni-registro .col-luogo {
     width: 30%;
 }
 
-.tabella-intenzioni .col-intenzione {
+.tabella-intenzioni-registro .col-intenzione {
     width: 35%;
 }
 
-.tabella-intenzioni .col-firma {
+.tabella-intenzioni-registro .col-firma {
     width: 35%;
 }
 
@@ -246,3 +247,15 @@ body {
     border: 1px dotted #ccc;
 }
 */
+
+/* =====================================================================
+   INTENZIONI PRECOMPILATE NELLA TABELLA MESSE
+   ===================================================================== */
+
+.riga-messa .riga-intenzione {
+    height: 10mm;
+    border-bottom: 1px dotted #ccc;
+    font-size: 10pt;
+    padding: 1mm 1mm 0 1mm;
+    overflow: hidden;
+}

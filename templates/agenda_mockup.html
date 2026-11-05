@@ -22,6 +22,12 @@
     </div>
     {% endif %}
 
+    {% if nota_liturgica %}
+    <div class="nota-liturgica">
+        {{ nota_liturgica }}
+    </div>
+    {% endif %}
+
     <!-- TABELLA 1: MESSE -->
     <table class="tabella-messe">
         <thead>
@@ -33,10 +39,13 @@
         </thead>
         <tbody>
             {% for riga in righe_messe %}
-            <tr class="riga-messa {% if riga.righe_extra %}riga-extra{% endif %}">
+            <tr class="riga-messa {% if riga.righe_extra > 1 %}riga-extra{% endif %}">
                 <td class="col-ora">{{ riga.orario }}</td>
                 <td class="col-defunti">
-                    {% for i in range(3) %}
+                    {% for intenzione in riga.intenzioni %}
+                    <div class="riga-intenzione">{{ intenzione.testo }}</div>
+                    {% endfor %}
+                    {% for i in range(3 - riga.intenzioni|length) %}
                     <div class="riga-defunto"></div>
                     {% endfor %}
                 </td>
@@ -50,8 +59,8 @@
         </tbody>
     </table>
 
-    <!-- TABELLA 2: INTENZIONI -->
-    <table class="tabella-intenzioni">
+    <!-- TABELLA 2: INTENZIONI APPLICAZIONE -->
+    <table class="tabella-intenzioni-registro">
         <thead>
             <tr>
                 <th class="col-luogo">Luogo della celebrazione</th>
@@ -60,7 +69,14 @@
             </tr>
         </thead>
         <tbody>
-            {% for i in range(3) %}
+            {% for intenzione in intenzioni_senza_ora %}
+            <tr>
+                <td></td>
+                <td>{{ intenzione.testo }}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+            {% for i in range(3 - intenzioni_senza_ora|length) %}
             <tr>
                 <td></td>
                 <td></td>
@@ -70,15 +86,38 @@
         </tbody>
     </table>
 
-<!-- SPAZIO INIZIATIVE -->
-<div class="spazio-iniziative">
-    <h3>Altre iniziative / Note</h3>
-    <div class="righe-iniziative">
-        {% for i in range(4) %}
-        <div class="riga-iniziativa"></div>
+    {% if matrimoni %}
+    <div class="sezione-matrimoni">
+        <h3>Matrimoni</h3>
+        {% for m in matrimoni %}
+        <div class="matrimonio">
+            <span class="ora">{{ m.ora }}</span>
+            <span class="sposi">{{ m.nome_sposi }}</span>
+        </div>
         {% endfor %}
     </div>
+    {% endif %}
+
+    {% if note %}
+    <div class="sezione-note">
+        <h3>Note</h3>
+        {% for n in note %}
+        <div class="nota">{{ n.nota }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- SPAZIO INIZIATIVE -->
+    <div class="spazio-iniziative">
+        <h3>Altre iniziative / Note</h3>
+        <div class="righe-iniziative">
+            {% for i in range(4) %}
+            <div class="riga-iniziativa"></div>
+            {% endfor %}
+        </div>
+    </div>
+
 </div>
-</div>
+
 </body>
 </html>
