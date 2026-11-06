@@ -29,7 +29,10 @@ Vedi la [Guida Utente](GUIDA_UTENTE.md#32-bis--installare-gtk-3-runtime-obbligat
 
 Il PDF appare in: `output/Agenda_<anno>.pdf`
 
----
+**Per Linux/macOS** (dal terminale, con venv attivo):
+```bash
+./scripts/genera_agenda.sh san_pietro_in_silki 2027
+```
 
 ## Aggiornare il programma (quando serve)
 
@@ -97,6 +100,8 @@ Poi rigenera il PDF con `scripts/genera_agenda.bat`.
 | Nell'anno dell'agenda | Nel giorno specifico + tabella "MATRIMONI \<anno\>" in coda |
 | Negli anni successivi | Solo nella tabella "MATRIMONI \<anno\>" in coda             |
 
+**⚠️ Sabati validi:** sono esclusi **gennaio, maggio, Quaresima e periodo 29/04 – 02/06**. Le date precompilate in Excel sono già filtrate.
+
 ### 📋 Foglio "Note"
 
 | Colonna  | Cosa scrivere                          |
@@ -124,7 +129,7 @@ Poi rigenera il PDF con `scripts/genera_agenda.bat`.
 3. **365 pagine giorno** (una per giorno, con tabella Messe + tabella Intenzioni + spazio iniziative)
 4. **Registro intenzioni**
 5. **Tabelle matrimoni annuali** in coda: "MATRIMONI 2027", "MATRIMONI 2028"
-   (una riga per ogni sabato disponibile, escluso maggio)
+   (una riga per ogni sabato valido: esclusi gennaio, maggio, Quaresima e periodo 29/04 – 02/06)
 
 Ogni pagina giorno contiene:
 - Data, giorno settimana, festività

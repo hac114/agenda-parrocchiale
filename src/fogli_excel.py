@@ -21,6 +21,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Protection
 from openpyxl.worksheet.datavalidation import DataValidation
 
+from calcolo_liturgico import calcola_mercoledi_ceneri, calcola_sabato_santo
 from stili import (
     BORDO_SOTTILE,
     FILL_GIALLO,
@@ -362,9 +363,10 @@ def crea_foglio_matrimoni(
     - G: Sacerdote (testo libero, compilabile)
 
     Precompilazione:
-    Le prime righe sono precompilate con TUTTI i SABATI dell'anno
-    corrente e dell'anno successivo (escluso maggio), perché al
-    santuario i matrimoni si celebrano solo il sabato e non a maggio.
+    Le prime righe sono precompilate con i SABATI VALIDI dell'anno
+    corrente e dell'anno successivo (esclusi gennaio, maggio,
+    Quaresima e periodo 29/04 – 02/06), perché al santuario i
+    matrimoni si celebrano solo il sabato e non in quei periodi.
     Questo copre le prenotazioni che scavalcano l'anno.
 
     Nota: nell'agenda stampata i matrimoni compaiono in fondo (ultima pagina)
@@ -398,7 +400,7 @@ def crea_foglio_matrimoni(
     ws.row_dimensions[1].height = 30
 
     # ------------------------------------------------------------------
-    # CALCOLO SABATI (anno corrente + anno successivo, escluso maggio)
+    # CALCOLO SABATI VALIDI (anno corrente + anno successivo)
     # ------------------------------------------------------------------
     sabati_anno_corrente = calcola_sabati_anno(anno)
     sabati_anno_successivo = calcola_sabati_anno(anno + 1)
@@ -457,25 +459,67 @@ def crea_foglio_matrimoni(
     ws.sheet_view.showGridLines = False
 
 
-def calcola_sabati_anno(anno: int) -> list[date]:
-    """Calcola tutti i sabati di un anno, escluso il mese di maggio.
+def _motivo_esclusione_sabato(data: date, anno: int) -> str | None:
+    """Restituisce il motivo per cui un sabato è escluso dai matrimoni.
 
-    Al santuario i matrimoni si celebrano solo il sabato e mai a maggio.
+    Al santuario i matrimoni si celebrano solo il sabato, ma alcuni
+    sabati sono esclusi per motivi liturgici o organizzativi.
+
+    Args:
+        data: data del sabato da verificare
+        anno: anno di riferimento (per calcolare la Quaresima)
+
+    Returns:
+        Stringa con il motivo dell'esclusione, oppure None se il sabato
+        è valido per i matrimoni.
+    """
+    # 1. Gennaio (organizzativo: ripresa dopo le feste)
+    if data.month == 1:
+        return "gennaio (organizzazione interna)"
+
+    # 2. Maggio (mese mariano)
+    if data.month == 5:
+        return "mese mariano (maggio)"
+
+    # 3. Quaresima (dal giorno dopo le Ceneri al Sabato Santo incluso)
+    ceneri = calcola_mercoledi_ceneri(anno)
+    sabato_santo = calcola_sabato_santo(anno)
+    if ceneri < data <= sabato_santo:
+        return "Quaresima"
+
+    # 4. Periodo organizzativo interno (29/04 – 02/06, inclusi)
+    inizio_esclusione = date(anno, 4, 29)
+    fine_esclusione = date(anno, 6, 2)
+    if inizio_esclusione <= data <= fine_esclusione:
+        return "periodo organizzativo interno (29/04 – 02/06)"
+
+    return None
+
+
+def calcola_sabati_anno(anno: int) -> list[date]:
+    """Calcola i sabati validi per matrimoni in un anno.
+
+    Al santuario i matrimoni si celebrano solo il sabato, ma alcuni
+    sabati sono esclusi (vedi `_motivo_esclusione_sabato`):
+    - Gennaio (organizzazione interna)
+    - Maggio (mese mariano)
+    - Quaresima (Ceneri+1 → Sabato Santo)
+    - Periodo organizzativo 29/04 – 02/06
 
     Args:
         anno: anno di riferimento
 
     Returns:
-        Lista di date (tutti i sabati dell'anno tranne quelli di maggio).
+        Lista di date (sabati validi per matrimoni).
     """
     sabati: list[date] = []
     corrente = date(anno, 1, 1)
     fine = date(anno, 12, 31)
 
     while corrente <= fine:
-        # weekday: 0 = lunedì, ..., 5 = sabato, 6 = domenica
-        if corrente.weekday() == 5 and corrente.month != 5:
-            sabati.append(corrente)
+        if corrente.weekday() == 5:  # sabato
+            if _motivo_esclusione_sabato(corrente, anno) is None:
+                sabati.append(corrente)
         corrente += timedelta(days=1)
 
     return sabati

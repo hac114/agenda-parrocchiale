@@ -219,17 +219,17 @@ def test_foglio_matrimoni_celle_compilabili(wb_vuoto: Workbook) -> None:
 
 
 def test_foglio_matrimoni_date_precompilate(wb_vuoto: Workbook) -> None:
-    """Le date dei sabati sono precompilate."""
+    """Le date dei sabati validi sono precompilate."""
     from datetime import date
 
     crea_foglio_matrimoni(wb_vuoto, anno=2027, righe=10)
     ws = wb_vuoto["Matrimoni"]
 
-    # A2 deve contenere il primo sabato dell'anno (2 gennaio 2027)
-    assert ws["A2"].value == date(2027, 1, 2)
+    # A2 = primo sabato valido 2027 (6 febbraio, gennaio è escluso)
+    assert ws["A2"].value == date(2027, 2, 6)
 
-    # A3 = 9 gennaio 2027 (secondo sabato)
-    assert ws["A3"].value == date(2027, 1, 9)
+    # A3 = secondo sabato valido (3 aprile 2027, dopo Quaresima)
+    assert ws["A3"].value == date(2027, 4, 3)
 
 
 def test_foglio_matrimoni_esclude_maggio(wb_vuoto: Workbook) -> None:
@@ -347,21 +347,20 @@ def test_calcola_sabati_anno_ordinati() -> None:
 
 
 def test_calcola_sabati_anno_primo_e_ultimo_2027() -> None:
-    """Primo sabato 2027 = 2 gennaio, ultimo = 25 dicembre (no maggio)."""
+    """Primo sabato valido 2027 = 6 febbraio, ultimo = 25 dicembre."""
     from fogli_excel import calcola_sabati_anno
 
     sabati = calcola_sabati_anno(2027)
-    assert sabati[0] == date(2027, 1, 2)
-    # Ultimo sabato di dicembre 2027 = 25 dicembre
+    assert sabati[0] == date(2027, 2, 6)
     assert sabati[-1] == date(2027, 12, 25)
 
 
 def test_calcola_sabati_anno_conteggio_plausibile() -> None:
-    """Un anno ha ~48 sabati validi (52 totali − ~4 di maggio)."""
+    """Un anno ha ~36 sabati validi (esclusi gennaio, maggio, Quaresima, 29/04-02/06)."""
     from fogli_excel import calcola_sabati_anno
 
     sabati = calcola_sabati_anno(2027)
-    assert 40 <= len(sabati) <= 52
+    assert 30 <= len(sabati) <= 45
 
 
 def test_foglio_intenzioni_ora_applicazione_larghezza(wb_vuoto: Workbook) -> None:
@@ -370,3 +369,51 @@ def test_foglio_intenzioni_ora_applicazione_larghezza(wb_vuoto: Workbook) -> Non
     ws = wb_vuoto["Intenzioni"]
 
     assert ws.column_dimensions["F"].width == 14
+
+
+# ======================================================================
+# TEST — _motivo_esclusione_sabato
+# ======================================================================
+
+
+def test_motivo_esclusione_gennaio() -> None:
+    """Un sabato di gennaio è escluso (organizzazione interna)."""
+    from fogli_excel import _motivo_esclusione_sabato
+
+    assert _motivo_esclusione_sabato(date(2027, 1, 2), 2027) == "gennaio (organizzazione interna)"
+    assert _motivo_esclusione_sabato(date(2027, 1, 30), 2027) == "gennaio (organizzazione interna)"
+
+
+def test_motivo_esclusione_maggio() -> None:
+    """Un sabato di maggio è escluso (mese mariano)."""
+    from fogli_excel import _motivo_esclusione_sabato
+
+    assert _motivo_esclusione_sabato(date(2027, 5, 1), 2027) == "mese mariano (maggio)"
+
+
+def test_motivo_esclusione_quaresima() -> None:
+    """Un sabato in Quaresima è escluso."""
+    from fogli_excel import _motivo_esclusione_sabato
+
+    # 2027: Ceneri = 10 febbraio, Sabato Santo = 27 marzo
+    assert _motivo_esclusione_sabato(date(2027, 2, 13), 2027) == "Quaresima"
+    assert _motivo_esclusione_sabato(date(2027, 3, 27), 2027) == "Quaresima"
+
+
+def test_motivo_esclusione_periodo_organizzativo() -> None:
+    """Un sabato tra 29/04 e 02/06 è escluso (organizzativo)."""
+    from fogli_excel import _motivo_esclusione_sabato
+
+    # 1 maggio 2027 è sabato: maggio vince su organizzativo (priorità)
+    assert _motivo_esclusione_sabato(date(2027, 5, 1), 2027) == "mese mariano (maggio)"
+
+
+def test_motivo_esclusione_sabato_valido() -> None:
+    """Un sabato fuori dai periodi esclusi è valido."""
+    from fogli_excel import _motivo_esclusione_sabato
+
+    # 4 dicembre 2027 è sabato, fuori da Quaresima e periodi esclusi
+    assert _motivo_esclusione_sabato(date(2027, 12, 4), 2027) is None
+
+    # 3 aprile 2027 è sabato (dopo Quaresima, prima di maggio) → valido
+    assert _motivo_esclusione_sabato(date(2027, 4, 3), 2027) is None

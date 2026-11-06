@@ -347,7 +347,7 @@ def test_renderizza_matrimoni_annuali_con_matrimonio(
 
     config_minima.matrimoni_prenotati = [
         Matrimonio(
-            data=date(2027, 1, 2),
+            data=date(2027, 2, 6),  # primo sabato valido 2027
             ora="15:30",
             nome_sposi="Maria Rossi e Luca Bianchi",
             contatti="333-1111111",

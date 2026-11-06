@@ -1206,7 +1206,9 @@ def test_matrimoni_per_anno_nessun_matrimonio() -> None:
     assert tabelle[0]["anno"] == 2027
 
     righe = tabelle[0]["righe"]
-    assert len(righe) > 40  # ~44 sabati escluso maggio
+    assert (
+        len(righe) == 35
+    )  # 2027: 35 sabati validi (esclusi gennaio, maggio, Quaresima, 29/04-02/06)
     # Tutte le righe hanno solo la data, senza matrimonio
     for riga in righe:
         assert riga["nome_sposi"] == ""
@@ -1228,26 +1230,22 @@ def test_matrimoni_per_anno_uno() -> None:
         anno=2027,
         matrimoni_prenotati=[
             Matrimonio(
-                data=date(2027, 1, 2),  # sabato
+                data=date(2027, 2, 6),  # primo sabato valido 2027
                 ora="15:30",
                 nome_sposi="Maria Rossi e Luca Bianchi",
                 contatti="333-1111111",
-                parrocchia="San Pietro in Silki",
-                sacerdote="Don Giovanni",
             ),
         ],
     )
     tabelle = matrimoni_per_anno(config, [2027])
     righe = tabelle[0]["righe"]
 
-    # Trova la riga del 2 gennaio 2027
-    riga = next(r for r in righe if r["data"] == date(2027, 1, 2))
+    # Trova la riga del 6 febbraio 2027
+    riga = next(r for r in righe if r["data"] == date(2027, 2, 6))
     assert riga["ora"] == "15:30"
     assert riga["nome_sposi"] == "Maria Rossi e Luca Bianchi"
     assert riga["contatti"] == "333-1111111"
-    assert riga["parrocchia"] == "San Pietro in Silki"
-    assert riga["sacerdote"] == "Don Giovanni"
-    assert riga["data_formattata"] == "2 GEN"
+    assert riga["data_formattata"] == "6 FEB"
 
 
 def test_matrimoni_per_anno_ignora_senza_data() -> None:

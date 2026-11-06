@@ -122,6 +122,21 @@ Apri configs/<profilo>/config.xlsx con Excel o LibreOffice e compila i 4 fogli:
 
 Le celle GIALLE sono compilabili. Le altre sono protette.
 
+### Rigenerare forzatamente `config.xlsx`
+Se devi rigenerare da zero il file Excel (es. dopo un aggiornamento che aggiunge colonne), usa `--force`.
+Un backup automatico viene creato in `.backup/` prima della sovrascrittura.
+
+**Linux:**
+```bash
+PYTHONPATH=src python src/crea_config_template.py --profilo san_pietro_in_silki --force
+```
+
+**Windows (cmd):**
+```cmd
+python src\crea_config_template.py --profilo san_pietro_in_silki --force
+```
+
+
 ### Rigenerare il PDF
 Dopo aver compilato l'Excel, rigenera il PDF:
 

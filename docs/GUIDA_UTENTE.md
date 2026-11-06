@@ -212,6 +212,35 @@ Cosa è stato creato:
 - configs\san_pietro_in_silki\config.xlsx → file Excel da compilare
 - output\Agenda_2027.pdf → PDF (ancora vuoto, con dati di base)
 
+### 4.1 — Rigenerare forzatamente `config.xlsx`
+
+Se hai bisogno di **rigenerare da zero** il file `config.xlsx` (es. dopo un aggiornamento del programma che ha aggiunto nuove colonne), puoi forzare la sovrascrittura.
+
+**⚠️ Attenzione:** il file attuale verrà sovrascritto. Un **backup automatico** viene creato in `.backup/` prima della sovrascrittura. Se hai dati compilati, recuperali dal backup.
+
+**Windows** (dal Prompt dei comandi, con venv attivo):
+```cmd
+cd %USERPROFILE%\Documents\agenda-parrocchiale
+.venv\Scripts\activate.bat
+python src\crea_config_template.py --profilo san_pietro_in_silki --force
+```
+**Linux** (dal terminale con venv attivo):
+```bash
+cd ~/Developer/Python/progetti/agenda-parrocchiale
+source .venv/bin/activate
+PYTHONPATH=src python src/crea_config_template.py --profilo san_pietro_in_silki --force
+```
+Cosa fa:
+
+- Crea un backup in configs/san_pietro_in_silki/.backup/
+- Rigenera config.xlsx con la struttura più recente (colonne aggiornate, formati, validazioni)
+- I dati del vecchio file non vengono copiati: vanno reinseriti manualmente (o recuperati dal backup)
+
+Quando usarlo:
+
+- Dopo un aggiornamento del programma che ha aggiunto/modificato colonne nel file Excel
+- Se il file è corrotto o ha la struttura sbagliata
+
 ## 5. Compilare l'agenda (Excel)
 ### 5.1 — Aprire il file Excel
 - Vai in:
@@ -305,8 +334,9 @@ durante l'anno.
 
 **⚠️ IMPORTANTE — Date precompilate:**
 
-Il file Excel è **già precompilato** con i sabati dell'anno corrente
-e dell'anno successivo (escluso maggio).
+Il file Excel è **già precompilato** con i sabati validi per matrimoni
+dell'anno corrente e dell'anno successivo. Sono esclusi: gennaio, maggio,
+Quaresima e il periodo 29/04 – 02/06.
 
 Per ogni sabato, troverai la data già scritta. Devi solo compilare:
 - **Ora** del matrimonio
@@ -321,9 +351,9 @@ Questo ti evita di sbagliare data.
 
 | Data       | Ora   | Nome sposi                 | Contatti    | Note    |
 |------------|-------|----------------------------|-------------|---------|
-| 02/01/2027 | 15:30 | Mario Rossi e Anna Bianchi | 333-1111111 | (vuoto) |
-| 09/01/2027 |       |                            |             | (vuoto) |
-| 16/01/2027 | 11:00 | Luca Verdi e Sara Neri     | 333-2222222 | (vuoto) |
+| 06/02/2027 | 15:30 | Mario Rossi e Anna Bianchi | 333-1111111 | (vuoto) |
+| 03/04/2027 |       |                            |             | (vuoto) |
+| 10/04/2027 | 11:00 | Luca Verdi e Sara Neri     | 333-2222222 | (vuoto) |
 
 Se un sabato non ha matrimoni, lascia le celle vuote.
 Il programma ignora le righe non compilate.
@@ -377,14 +407,44 @@ C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\output\Agenda_2027.pdf
 
 Il PDF è impaginato con **margini di rilegatura di 30 mm** su entrambi i lati.
 
+## 6. Generare il PDF
+1. Vai in: C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\scripts\
+2. Doppio clic su genera_agenda.bat
+3. Attendi 30-60 secondi
+4. Il PDF aggiornato appare in:
+
+C:\Users\<NomeUtente>\Documents\agenda-parrocchiale\output\Agenda_2027.pdf
+
+5. Apri il PDF con doppio clic per verificare che sia tutto a posto
+
+**Cosa contiene il PDF (in ordine):**
+1. **Copertina** (nome parrocchia, città, anno)
+2. **10 pagine "Intenzioni libere"** (subito dopo la copertina):
+   tabella vuota con colonne Data consegna | Intenzione | Offerta | Data applicazione,
+   da compilare a mano. Sono le intenzioni libere (distinte da quelle
+   già registrate nel sistema).
+3. **365 pagine giorno** (una per ogni giorno dell'anno; alcuni giorni
+   pieni possono occupare 2 pagine), con:
+   - Data e giorno della settimana
+   - Festività (se presente)
+   - Note liturgiche (riquadro giallo) — es. Giovedì Santo, Venerdì Santo
+   - Tabella Messe: Ora | Intenzioni (3 sub-righe) | Firma
+   - Tabella Intenzioni di applicazione: Luogo | Intenzione | Firma
+   - Sezione "Altre iniziative / Note"
+4. **Registro intenzioni** (elenco di tutte le intenzioni)
+5. **Tabelle matrimoni annuali** in coda: "MATRIMONI 2027", "MATRIMONI 2028"
+   (una riga per ogni sabato valido: esclusi gennaio, maggio, Quaresima
+   e periodo 29/04 – 02/06; i matrimoni prenotati sono precompilati,
+   gli altri si compilano a mano)
+
+Il PDF è impaginato con **margini di rilegatura di 30 mm** su entrambi i lati.
+
 6. Se ci sono errori, il programma mostra un riepilogo tipo:
 ```text
 ⚠️  ATTENZIONE: 3 problemi rilevati durante la lettura
 ...
 Vuoi comunque procedere? [y/N]:
 ```
-- Digita n per correggere gli errori in Excel
-- Digita y per procedere (il PDF avrà dei buchi)
 
 ## 7. Problemi comuni
 ### 7.1 Il nome della parrocchia non si aggiorna

@@ -401,5 +401,6 @@ Idee per il futuro (non implementate):
 - **Domeniche di Quaresima e Avvento**: I–V e I–IV numerate. Le Novene cedono alle domeniche.
 - **Intenzioni con ora**: il foglio `Intenzioni` ha la colonna "Ora applicazione". Le intenzioni con ora specifica vanno in Tabella 1 (Messe), quelle con "libera" o vuota vanno in Tabella 2. Warning se l'ora non esiste tra le Messe del giorno o se una tabella ha più di 3 intenzioni.
 - **Matrimoni**: aggiunte colonne Parrocchia e Sacerdote.
+- **Matrimoni — esclusioni sabati**: `calcola_sabati_anno` esclude gennaio, maggio, Quaresima (Ceneri+1 → Sabato Santo) e periodo 29/04 – 02/06. Motivazione esplicita in `_motivo_esclusione_sabato`.
 
 Per domande tecniche: [apri una issue](https://github.com/hac114/agenda-parrocchiale/issues).

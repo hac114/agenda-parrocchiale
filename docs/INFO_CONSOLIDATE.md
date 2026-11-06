@@ -606,4 +606,38 @@ VINCOLO TECNICO: il foglio "Intenzioni" ha ora 7 colonne (A–G):
 A=N. | B=Data consegna | C=Intenzione | D=Offerta | E=Data applicazione |
 F=Ora applicazione | G=Note.
 
-FINE DOCUMENTO — 05/11/2026
+
+---------------------------------------------------------------------
+34. MATRIMONI — ESCLUSIONI SABATI (06/11/2026)
+---------------------------------------------------------------------
+Al santuario i matrimoni si celebrano solo il sabato, ma alcuni
+sabati sono esclusi:
+
+1. GENNAIO (organizzazione interna)
+   Tutto il mese di gennaio è escluso (ripresa dopo le feste natalizie).
+
+2. MAGGIO (mese mariano)
+   Tutto il mese di maggio è escluso.
+
+3. QUARESIMA
+   I sabati dal giorno dopo le Ceneri al Sabato Santo incluso sono
+   esclusi.
+
+4. PERIODO ORGANIZZATIVO 29/04 – 02/06
+   Tutti i sabati tra il 29 aprile e il 2 giugno (inclusi) sono esclusi
+   (motivi organizzativi interni).
+
+Queste regole valgono per tutti gli anni (2027, 2028, ...).
+
+Implementazione:
+- `fogli_excel.calcola_sabati_anno(anno)` restituisce solo i sabati validi.
+- `fogli_excel._motivo_esclusione_sabato(data, anno)` restituisce il
+  motivo dell'esclusione (per logging/documentazione) o None se valido.
+- Le date precompilate nel foglio Excel "Matrimoni" riflettono queste
+  esclusioni.
+- Le tabelle "MATRIMONI <anno>" in coda al PDF mostrano solo i sabati
+  validi.
+
+Nel 2027: 35 sabati validi (primo 6 febbraio, ultimo 25 dicembre).
+
+FINE DOCUMENTO — 06/11/2026
